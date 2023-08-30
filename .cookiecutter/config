@@ -1,0 +1,5 @@
+# Change these at your peril:
+export PROJECT_NAME=discovery_child_development
+export REPO_NAME=discovery_child_development
+export DESCRIPTION=Code for Innovation Sweet Spots phase 3: early childhood development detection
+export PROJECT_OPENNESS=public
