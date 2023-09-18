@@ -1,3 +1,4 @@
+name: discovery_child_development
 channels:
   - defaults
   - conda-forge

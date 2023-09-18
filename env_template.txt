@@ -1,0 +1,9 @@
+# DO NOT save credentials in this file. Use '.env'
+
+# User email for accessing OpenAlex API
+USER_EMAIL =
+
+# AWS credentials
+AWS_ACCESS_KEY_ID=
+AWS_SECRET_ACCESS_KEY=
+S3_BUCKET =
