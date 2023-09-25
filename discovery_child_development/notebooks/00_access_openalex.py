@@ -14,6 +14,9 @@
 #     name: discovery_child_development
 # ---
 
+# %% [markdown]
+# This notebook covers 2 different ways to access OpenAlex data using the API: using the API directly via `requests`; and via the `pyalex` package. However, for the analysis in this project, we will probably just use the metaflow script that the AI-genomics team came up with (see `discovery_child_development/pipeline/openalex_metaflow.py`).
+
 # %%
 import requests
 import pandas as pd
