@@ -5,13 +5,28 @@
 # ```
 # python discovery_child_development/pipeline/openalex_workflow.py run --production=True
 # ```
+#
+# Two outputs are saved:
+# * the larger of the two is a table that includes in long format every concept that is associated with each OpenAlex ID and their scores
+# * the smaller is a table with one row per work, containing the OpenAlex ID, title, abstract (deinverted) and "text" which is simply title + ' ' + abstract.
 
 # %%
 import json
 import os
 import boto3
-from dotenv import load_dotenv
+from dotenv import load_dotenv, find_dotenv
 import pandas as pd
+from io import StringIO
+
+# %%
+# We need to change wd in order to import utils functions
+env_path = find_dotenv()
+env_dir = os.path.dirname(env_path)
+os.chdir(env_dir)
+os.getcwd()
+
+# Utils functions
+from discovery_child_development.utils import openalex_utils
 
 # %%
 filename = "openalex-works_production-True_concept-C109260823|C2993937534|C2777082460|C2911196330|C2993037610|C2779415726|C2781192327|C15471489|C178229462|C138496976_year-2023.json"
@@ -84,8 +99,6 @@ grouped_df = (
 grouped_df.head(20)
 
 # %%
-from io import StringIO
-
 csv_buffer = StringIO()
 df.to_csv(csv_buffer)
 s3_resource = boto3.resource("s3")
@@ -95,7 +108,65 @@ s3_resource.Object(
 ).put(Body=csv_buffer.getvalue())
 
 # %%
+openalex_df = pd.DataFrame(openalex_data)
+
+openalex_df.head()
+
+# %% [markdown]
+# Include only English works (for now at least!)
 
 # %%
+openalex_en = openalex_df[openalex_df["language"] == "en"]
+
+print(
+    f"Number of works lost because they were not in English: {len(openalex_df)-len(openalex_en)}"
+)
+
+# %% [markdown]
+# Reduce the number of columns that we are processing
+
+# %%
+openalex_en = openalex_en[["id", "title", "abstract_inverted_index"]]
+
+# %% [markdown]
+# Retain only works where abstract and title are not null
+
+# %%
+print(
+    f"Number of NAs in 'abstract_inverted_index': {openalex_en['abstract_inverted_index'].isna().sum()}"
+)
+print(f"Number of NAs in 'title': {openalex_en['title'].isna().sum()}")
+
+openalex_en = openalex_en[openalex_en["abstract_inverted_index"].notnull()]
+openalex_en = openalex_en[openalex_en["title"].notnull()]
+
+print(
+    f"Number of NAs in 'abstract_inverted_index': {openalex_en['abstract_inverted_index'].isna().sum()}"
+)
+print(f"Number of NAs in 'title': {openalex_en['title'].isna().sum()}")
+
+# %% [markdown]
+# Deinvert the abstract and stick together the title and abstract. This mimics preprocessing done to create [this dataset](https://huggingface.co/datasets/colonelwatch/abstracts-embeddings).
+
+# %%
+openalex_en.loc[:, "abstract"] = openalex_en["abstract_inverted_index"].apply(
+    lambda x: openalex_utils.deinvert_abstract(x)
+)
+
+openalex_en.loc[:, "text"] = openalex_en["title"] + " " + openalex_en["abstract"]
+
+# %%
+# drop the inverted abstract
+openalex_en = openalex_en[["id", "title", "abstract", "text"]]
+
+# %%
+# Write to s3
+csv_buffer = StringIO()
+openalex_en.to_csv(csv_buffer)
+s3_resource = boto3.resource("s3")
+s3_resource.Object(
+    S3_BUCKET,
+    f"inputs/data/openAlex/openalex_abstracts_C109260823|C2993937534|C2777082460|C2911196330|C2993037610|C2779415726|C2781192327|C15471489|C178229462|C138496976_year-2023.csv",
+).put(Body=csv_buffer.getvalue())
 
 # %%
