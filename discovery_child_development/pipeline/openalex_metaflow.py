@@ -11,6 +11,9 @@ import itertools
 import json
 import requests
 from metaflow import FlowSpec, S3, step, Parameter, retry, batch
+import os
+import boto3
+from dotenv import load_dotenv
 
 # Amend this to your desired concepts/years. OpenAlex allows up to 50 parameters
 # per query, so code is included by default to chunk up the concepts into 40s.
@@ -24,11 +27,18 @@ CONCEPT_IDS = [
     "C2781192327",  # child behavior checklist
     "C15471489",  # child psychotherapy
     "C178229462",  # early childhood education
+    "C138496976",  # developmental psychology (level 1)
 ]
 
 YEARS = [2023]
 
 API_ROOT = "https://api.openalex.org/works?filter="
+
+load_dotenv()
+# Define location to save the file
+S3_BUCKET = os.environ["S3_BUCKET"]
+# subfolder within the bucket
+S3_PATH = "metaflow"
 
 
 def generate_queries(concepts, years):
@@ -134,9 +144,19 @@ class OpenAlexWorksFlow(FlowSpec):
         ]  # not ideal for multiple concepts, but works for now
         concept = self.input.split(",")[0]
         filename = f"openalex-works_production-{self.production}_concept-{concept}_year-{year}.json"
-        with S3(run=self) as s3:
-            data = json.dumps(outputs)
-            s3.put(filename, data)
+
+        # Specify location to save the file within the bucket
+        custom_path = f"{S3_PATH}/{filename}"
+
+        # Use boto3 to save to the desired bucket
+        s3_client = boto3.client("s3")
+        data = json.dumps(outputs).encode("utf-8")  # Convert string to bytes
+        s3_client.put_object(Bucket=S3_BUCKET, Key=custom_path, Body=data)
+
+        # with S3(run=self) as s3:
+        #     data = json.dumps(outputs)
+        #     s3.put(custom_path, data, bucket=S3_BUCKET)
+
         self.next(self.dummy_join)
 
     @step
