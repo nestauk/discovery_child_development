@@ -29,7 +29,23 @@ os.getcwd()
 from discovery_child_development.utils import openalex_utils
 
 # %%
-filename = "openalex-works_production-True_concept-C109260823|C2993937534|C2777082460|C2911196330|C2993037610|C2779415726|C2781192327|C15471489|C178229462|C138496976_year-2023.json"
+CONCEPT_IDS = [
+    "C109260823",  # child development
+    "C2993937534",  # childhood development
+    "C2777082460",  # early childhood
+    "C2911196330",  # child rearing
+    "C2993037610",  # child care
+    "C2779415726",  # child protection
+    "C2781192327",  # child behavior checklist
+    "C15471489",  # child psychotherapy
+    "C178229462",  # early childhood education
+    # "C138496976",  # developmental psychology (level 1).
+]
+
+CONCEPT_IDS = "|".join(CONCEPT_IDS)
+
+# %%
+filename = f"openalex-works_production-True_concept-{CONCEPT_IDS}_year-2023.json"
 
 # %%
 load_dotenv()
@@ -104,7 +120,7 @@ df.to_csv(csv_buffer)
 s3_resource = boto3.resource("s3")
 s3_resource.Object(
     S3_BUCKET,
-    f"inputs/data/openAlex/concepts/concepts_metadata_C109260823|C2993937534|C2777082460|C2911196330|C2993037610|C2779415726|C2781192327|C15471489|C178229462|C138496976_year-2023.csv",
+    f"inputs/data/openAlex/concepts/concepts_metadata_{CONCEPT_IDS}_year-2023.csv",
 ).put(Body=csv_buffer.getvalue())
 
 # %%
@@ -166,7 +182,7 @@ openalex_en.to_csv(csv_buffer)
 s3_resource = boto3.resource("s3")
 s3_resource.Object(
     S3_BUCKET,
-    f"inputs/data/openAlex/openalex_abstracts_C109260823|C2993937534|C2777082460|C2911196330|C2993037610|C2779415726|C2781192327|C15471489|C178229462|C138496976_year-2023.csv",
+    f"inputs/data/openAlex/openalex_abstracts_{CONCEPT_IDS}_year-2023.csv",
 ).put(Body=csv_buffer.getvalue())
 
 # %%
