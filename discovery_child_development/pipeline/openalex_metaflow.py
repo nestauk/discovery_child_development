@@ -27,7 +27,7 @@ CONCEPT_IDS = [
     "C2781192327",  # child behavior checklist
     "C15471489",  # child psychotherapy
     "C178229462",  # early childhood education
-    "C138496976",  # developmental psychology (level 1)
+    # "C138496976",  # developmental psychology (level 1).
 ]
 
 YEARS = [2023]
@@ -152,10 +152,6 @@ class OpenAlexWorksFlow(FlowSpec):
         s3_client = boto3.client("s3")
         data = json.dumps(outputs).encode("utf-8")  # Convert string to bytes
         s3_client.put_object(Bucket=S3_BUCKET, Key=custom_path, Body=data)
-
-        # with S3(run=self) as s3:
-        #     data = json.dumps(outputs)
-        #     s3.put(custom_path, data, bucket=S3_BUCKET)
 
         self.next(self.dummy_join)
 
