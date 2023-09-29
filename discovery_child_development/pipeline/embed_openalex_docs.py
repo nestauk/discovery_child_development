@@ -81,6 +81,7 @@ if __name__ == "__main__":
     openalex_text_df = read_concepts_metadata(
         concepts_data_path=f"inputs/data/openAlex/openalex_abstracts_{CONCEPT_IDS}_year-2023.csv",
         s3_bucket=S3_BUCKET,
+        s3_client=s3_client,
     )
 
     openalex_docs = openalex_text_df["text"].tolist()
