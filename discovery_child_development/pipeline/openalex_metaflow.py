@@ -6,6 +6,18 @@ A pipeline that takes a list of concept IDs and years, and outputs OpenAlex API 
 
 The thought behind this is to break the results into manageable yearly chunks. For a given year
 and high level concept, the output works may be well over 2GB in size when saved to json.
+
+Usage:
+
+First, amend these variables:
+* CONCEPT_IDS: list of OpenAlex concept IDs to be queried
+* YEARS: list of years you want to retrieve publications from
+
+To test the flow with just the first concept in the list:
+python discovery_child_development/pipeline/openalex_metaflow.py run --production False
+
+To fetch the full dataset:
+python discovery_child_development/pipeline/openalex_metaflow.py run --production True
 """
 import itertools
 import json
@@ -14,6 +26,7 @@ from metaflow import FlowSpec, S3, step, Parameter, retry, batch
 import os
 import boto3
 from dotenv import load_dotenv
+from typing import NoReturn, List, Any
 
 # Amend this to your desired concepts/years. OpenAlex allows up to 50 parameters
 # per query, so code is included by default to chunk up the concepts into 40s.
@@ -41,7 +54,7 @@ S3_BUCKET = os.environ["S3_BUCKET"]
 S3_PATH = "metaflow"
 
 
-def generate_queries(concepts, years):
+def generate_queries(concepts: List[str], years: List[str]) -> List[str]:
     """Generates a list of queries for the list of concepts and
     years required.
 
@@ -56,7 +69,7 @@ def generate_queries(concepts, years):
     return [f"{concepts_joined},publication_year:{year}" for year in years]
 
 
-def api_generator(api_root: str, concept_ids: list) -> list:
+def api_generator(api_root: str, concept_ids: List[str]) -> list:
     """Generates a list of all URLs needed to completely collect
     all works relating to the list of concepts.
 
@@ -69,9 +82,9 @@ def api_generator(api_root: str, concept_ids: list) -> list:
     """
     concepts_text = concept_ids
     page_one = f"{api_root}concepts.id:{concepts_text}"
-    print(page_one)
+    print(f"Running API query {page_one}")
     total_results = requests.get(page_one).json()["meta"]["count"]
-    print(total_results)
+    print(f"Total number of hits: {total_results}")
     number_of_pages = -(total_results // -200)  # ceiling division
     all_pages = [
         f"{api_root}concepts.id:{concepts_text}&per-page=200&cursor="
@@ -80,7 +93,7 @@ def api_generator(api_root: str, concept_ids: list) -> list:
     return all_pages
 
 
-def get_chunks(_list, chunksize):
+def get_chunks(_list: List[Any], chunksize: int) -> List[List[Any]]:
     """
     Chunks a list.
     """
