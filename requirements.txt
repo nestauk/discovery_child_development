@@ -12,3 +12,5 @@ sentence-transformers==2.2.2
 spacy==3.6.1
 en_core_web_sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.6.0/en_core_web_sm-3.6.0-py3-none-any.whl
 umap-learn==0.5.4
+google-cloud-bigquery==3.11
+git+https://github.com/nestauk/nesta_ds_utils.git#egg=nesta_ds_utils"[s3,viz]"

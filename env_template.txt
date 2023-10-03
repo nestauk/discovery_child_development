@@ -7,4 +7,6 @@ USER_EMAIL =
 AWS_ACCESS_KEY_ID=
 AWS_SECRET_ACCESS_KEY=
 S3_BUCKET =
+# credentials for patent data (still in testing phase)
 LOGIC_MILL_TOKEN=
+GOOGLE_APPLICATION_CREDENTIALS=
