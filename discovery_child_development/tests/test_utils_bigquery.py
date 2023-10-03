@@ -1,6 +1,5 @@
 import pytest
-import os
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 from google.cloud import bigquery
 from discovery_child_development.utils.bigquery import create_client
 
