@@ -2,11 +2,10 @@
 
 ## Setup
 
-- Meet the data science cookiecutter [requirements](http://nestauk.github.io/ds-cookiecutter/quickstart), in brief:
-  - Install: `direnv` and `conda`
-- Run `make install` to configure the development environment:
-  - Setup the conda environment
-  - Configure `pre-commit`
+- Create a conda environment and install pip
+- Install the requirements from both `requirements_dev.txt` (these are common to all projects that use this cookiecutter) and `requirements.txt` (specific to this project)
+- Run `pip install -e .` to install all functions from `discovery_child_development`
+- Create a `.env` file at the root of the project and populate it following the template in `env_template.txt`
 
 ## Contributor guidelines
 
