@@ -1,3 +1,17 @@
+"""
+Embed the OpenAlex abstracts using the sentence-transformers library.
+--------------
+
+For the existing dataset of OpenAlex docs (already preprocessed with 00_preprocess_openalex.py)
+* create embeddings using HuggingFace sentence transformers and the 'all-MiniLM-L6-v2' model
+* save the document IDs and vectors to a parquet file
+
+Usage:
+
+python discovery_child_development/pipeline/embed_openalex_docs.py
+
+"""
+
 import boto3
 from io import BytesIO
 import os
