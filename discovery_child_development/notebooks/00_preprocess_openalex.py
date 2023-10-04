@@ -10,7 +10,6 @@
 # * the larger of the two is a table that includes in long format every concept that is associated with each OpenAlex ID and their scores
 # * the smaller is a table with one row per work, containing the OpenAlex ID, title, abstract (deinverted) and "text" which is simply title + ' ' + abstract.
 
-# %%
 import json
 import os
 import boto3
@@ -22,7 +21,6 @@ import logging
 # Utils functions
 from discovery_child_development.utils import openalex_utils
 
-# %%
 CONCEPT_IDS = [
     "C109260823",  # child development
     "C2993937534",  # childhood development
@@ -38,54 +36,44 @@ CONCEPT_IDS = [
 
 CONCEPT_IDS = "|".join(CONCEPT_IDS)
 
-# %%
-filename = f"openalex-works_production-True_concept-{CONCEPT_IDS}_year-2023.json"
-
-# %%
 load_dotenv()
 # Bucket where the file is saved
 S3_BUCKET = os.environ["S3_BUCKET"]
 # subfolder within the bucket
 S3_PATH = "metaflow"
 
-filepath = f"{S3_PATH}/{filename}"
+input_filename = f"openalex-works_production-True_concept-{CONCEPT_IDS}_year-2023.json"
+input_filepath = f"{S3_PATH}/{input_filename}"
+output_filename_concepts = f"concepts_metadata_{CONCEPT_IDS}_year-2023.csv"
+output_filepath_concepts = "data/openAlex/concepts/"
+output_filename_works = f"openalex_abstracts_{CONCEPT_IDS}_year-2023.csv"
+output_filepath_works = "data/openAlex/"
 
-# %%
+# read raw data from s3
 s3_client = boto3.client("s3")
-response = s3_client.get_object(Bucket=S3_BUCKET, Key=filepath)
+response = s3_client.get_object(Bucket=S3_BUCKET, Key=input_filepath)
 openalex_raw_data = response["Body"].read().decode("utf-8")  # Convert bytes to string
 
-
-# %%
 # Convert it to a list format
 openalex_data = json.loads(openalex_raw_data)
 len(openalex_data)
 
-# %%
-# Inspect the first item to check that it looks as expected!
-openalex_data[0]["concepts"]
-
-# %% [markdown]
 # # Filter the data
 #
 # * Works in English only (for now at least)
 
-# %%
 openalex_df = pd.DataFrame(openalex_data)
 
 openalex_df.head()
 
-# %%
 openalex_en = openalex_df[openalex_df["language"] == "en"]
 
 logging.info(
     f"Number of works lost because they were not in English: {len(openalex_df)-len(openalex_en)}"
 )
 
-# %% [markdown]
 # Retain only works where abstract and title are not null
 
-# %%
 logging.info(
     f"Number of NAs in 'abstract_inverted_index' before cleaning: {openalex_en['abstract_inverted_index'].isna().sum()}"
 )
@@ -102,12 +90,10 @@ logging.info(
 logging.info(f"Number of NAs in 'title': {openalex_en['title'].isna().sum()}")
 logging.info(f"Remaining number of works: {len(openalex_en)}")
 
-# %% [markdown]
 # # Concepts
 #
 # Create a dataframe that records all the concepts (concept IDs and names, concept level, wikidata, relevance score) for each work ID.
 
-# %%
 data_list = []
 
 for index, row in openalex_en[["id", "title", "concepts"]].iterrows():
@@ -124,17 +110,10 @@ for index, row in openalex_en[["id", "title", "concepts"]].iterrows():
             }
         )
 
-# %%
 df = pd.DataFrame(data_list)
-df.head(20)
 
-# %%
-len(df)
-
-# %% [markdown]
 # The code below groups by concept name and sums up the relevance score across all works within each concept. When OpenAlex tags a work with a concept, parent concepts also get tagged (eg "developmental psychology" is the child of "psychology"). While we did not directly search for works tagged with Psychology or Developmental Psychology, the concepts that we did use are children of these higher-level concepts, which is why Psychology and Developmental Psychology get such high aggregate scores.
 
-# %%
 grouped_df = (
     df.groupby("display_name")
     .agg({"score": "sum"})
@@ -142,28 +121,21 @@ grouped_df = (
     .sort_values(by="score", ascending=False)
 )
 
-grouped_df.head(20)
-
-# %%
 csv_buffer = StringIO()
 df.to_csv(csv_buffer)
 s3_resource = boto3.resource("s3")
 s3_resource.Object(
     S3_BUCKET,
-    f"inputs/data/openAlex/concepts/concepts_metadata_{CONCEPT_IDS}_year-2023.csv",
+    f"{output_filepath_concepts}{output_filename_concepts}",
 ).put(Body=csv_buffer.getvalue())
 
-# %% [markdown]
 # # OpenAlex abstracts
 
-# %%
 # Reduce the number of columns that we are processing
 openalex_en_abstracts = openalex_en[["id", "title", "abstract_inverted_index"]]
 
-# %% [markdown]
 # Deinvert the abstract and stick together the title and abstract. This mimics preprocessing done to create [this dataset](https://huggingface.co/datasets/colonelwatch/abstracts-embeddings).
 
-# %%
 openalex_en_abstracts.loc[:, "abstract"] = openalex_en_abstracts[
     "abstract_inverted_index"
 ].apply(lambda x: openalex_utils.deinvert_abstract(x))
@@ -172,16 +144,14 @@ openalex_en_abstracts.loc[:, "text"] = (
     openalex_en_abstracts["title"] + " " + openalex_en_abstracts["abstract"]
 )
 
-# %%
 # drop the inverted abstract
 openalex_en_abstracts = openalex_en_abstracts[["id", "title", "abstract", "text"]]
 
-# %%
 # Write to s3
 csv_buffer = StringIO()
 openalex_en_abstracts.to_csv(csv_buffer)
 s3_resource = boto3.resource("s3")
 s3_resource.Object(
     S3_BUCKET,
-    f"inputs/data/openAlex/openalex_abstracts_{CONCEPT_IDS}_year-2023.csv",
+    f"{output_filepath_works}{output_filename_works}",
 ).put(Body=csv_buffer.getvalue())
