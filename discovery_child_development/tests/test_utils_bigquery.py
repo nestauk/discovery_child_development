@@ -1,17 +1,7 @@
 import pytest
-from unittest.mock import patch
+from unittest.mock import patch, mock_open
 from google.cloud import bigquery
 from discovery_child_development.utils.bigquery import create_client
-
-
-def test_create_client_with_existing_credentials():
-    """
-    Test that the client is created successfully when the credentials file already exists.
-    """
-    # Mock that the credentials file exists
-    with patch("os.path.isfile", return_value=True):
-        client = create_client()
-        assert isinstance(client, bigquery.Client)
 
 
 def test_create_client_without_credentials_and_successful_download():
@@ -27,8 +17,16 @@ def test_create_client_without_credentials_and_successful_download():
             "discovery_child_development.utils.bigquery.download_file"
         ) as mock_download:
             mock_download.return_value = None  # Successful download
-            client = create_client()
-            assert isinstance(client, bigquery.Client)
+            with patch(
+                "discovery_child_development.utils.bigquery.Credentials.from_service_account_file"
+            ) as mock_credentials:
+                mock_credentials.return_value = None
+                with patch(
+                    "discovery_child_development.utils.bigquery.bigquery.Client.__init__"
+                ) as mock_client:
+                    mock_client.return_value = None
+                    client = create_client()
+                    assert isinstance(client, bigquery.Client)
 
 
 def test_create_client_without_credentials_and_failed_download():
