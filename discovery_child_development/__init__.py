@@ -6,6 +6,9 @@ from typing import Optional
 
 import yaml
 
+# Bucket name
+BUCKET_NAME = "discovery-iss"
+
 
 def get_yaml_config(file_path: Path) -> Optional[dict]:
     """Fetch yaml config and return as dict if it exists."""

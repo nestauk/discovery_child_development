@@ -124,3 +124,5 @@ target/
 
 # NPM
 node_modules/
+
+.credentials
