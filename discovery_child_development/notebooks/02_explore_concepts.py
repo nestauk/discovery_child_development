@@ -2,9 +2,6 @@
 # This notebook explores the unique concepts that appear in the current extract of data. Note that the embedding and clustering is based purely on the unique concept names, not on the combinations of concepts that attach to particular abstracts.
 
 # %%
-print("hello world")
-
-# %%
 import pandas as pd
 import boto3
 from io import BytesIO
@@ -54,9 +51,12 @@ CONCEPT_IDS = [
 
 CONCEPTS = "|".join(CONCEPT_IDS)
 
+YEARS = [2019, 2020, 2021, 2022, 2023]
+years_list = [str(x) for x in YEARS]
+
 # %%
 # Load concepts metadata
-data_path = f"data/openAlex/concepts/concepts_metadata_{CONCEPTS}_year-2023.csv"
+data_path = f"data/openAlex/concepts/concepts_metadata_{CONCEPTS}_year-{'-'.join(years_list)}.csv"
 response = s3_client.get_object(Bucket=S3_BUCKET, Key=data_path)
 csv_data = response["Body"].read()
 concepts_df = pd.read_csv(BytesIO(csv_data), index_col=0)
@@ -71,6 +71,9 @@ concepts_cleaned_df = concepts_df[concepts_df["score"] > 0]
 len(concepts_df) - len(concepts_cleaned_df)
 
 # %%
+len(concepts_cleaned_df)
+
+# %%
 concepts_cleaned_df.head()
 
 # %% [markdown]
@@ -79,6 +82,9 @@ concepts_cleaned_df.head()
 # %%
 # Check out the most frequently occurring concepts
 concepts_cleaned_df["display_name"].value_counts().head(20)
+
+# %% [markdown]
+# The top few are predictable e.g. Psychology, Early childhood. However, it is surprising to see "Computer science" in the mix as well! It is possible that the OpenAlex classifier has a bias towards computing and related concepts and is quite generous in tagging papers with these concepts.
 
 # %% [markdown]
 # # Cluster just the concepts
@@ -182,7 +188,9 @@ unique_concepts_df = unique_concepts_df.assign(
 
 # %%
 fig_hdbscan = (
-    alt.Chart(unique_concepts_df)
+    alt.Chart(
+        unique_concepts_df[unique_concepts_df["probability"] > 0.1]
+    )  # filtering out some rows because altair has a limit on how many data points you can plot
     .mark_circle()
     .encode(
         x="x_hdbscan",
