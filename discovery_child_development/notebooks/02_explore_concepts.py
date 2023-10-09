@@ -1,5 +1,7 @@
-# This notebook explores the unique concepts that appear in the current extract of data. Note that the embedding and clustering is based purely on the unique concept names, not on the combinations of concepts that attach to particular abstracts (that will be the next notebook.)
+# %% [markdown]
+# This notebook explores the unique concepts that appear in the current extract of data. Note that the embedding and clustering is based purely on the unique concept names, not on the combinations of concepts that attach to particular abstracts.
 
+# %%
 import pandas as pd
 import boto3
 from io import BytesIO
@@ -11,164 +13,291 @@ import hdbscan
 import altair as alt
 import numpy as np
 
+# project-specific imports
+from discovery_child_development.utils.cluster_analysis_utils import (
+    hdbscan_param_grid_search,
+    kmeans_param_grid_search,
+    highest_silhouette_model_params,
+)
+import discovery_child_development.utils.cluster_analysis_utils as cau
+
+# embeddings stuff
+import sentence_transformers
+from sentence_transformers import SentenceTransformer
+
+model = SentenceTransformer("all-MiniLM-L6-v2")
+
+# %%
+# Set variables
+
+SEED = 42
+
 load_dotenv()
 S3_BUCKET = os.environ["S3_BUCKET"]
 s3_client = boto3.client("s3")
 
-CONCEPTS = "C109260823|C2993937534|C2777082460|C2911196330|C2993037610|C2779415726|C2781192327|C15471489|C178229462"
+CONCEPT_IDS = [
+    "C109260823",  # child development
+    "C2993937534",  # childhood development
+    "C2777082460",  # early childhood
+    "C2911196330",  # child rearing
+    "C2993037610",  # child care
+    "C2779415726",  # child protection
+    "C2781192327",  # child behavior checklist
+    "C15471489",  # child psychotherapy
+    "C178229462",  # early childhood education
+    # "C138496976",  # developmental psychology (level 1).
+]
 
-data_path = f"inputs/data/openAlex/concepts/concepts_metadata_{CONCEPTS}_year-2023.csv"
+CONCEPTS = "|".join(CONCEPT_IDS)
+
+# %%
+# Load concepts metadata
+data_path = f"data/openAlex/concepts/concepts_metadata_{CONCEPTS}_year-2023.csv"
 response = s3_client.get_object(Bucket=S3_BUCKET, Key=data_path)
 csv_data = response["Body"].read()
 concepts_df = pd.read_csv(BytesIO(csv_data), index_col=0)
 concepts_df.head()
 
+# %%
+# Include only concepts that have been scored with at least some relevance to the work (ie get rid of parent concepts)
 concepts_cleaned_df = concepts_df[concepts_df["score"] > 0]
 
+# %%
 # Filtering out non-relevant concepts makes quite a big difference
 len(concepts_df) - len(concepts_cleaned_df)
 
+# %%
+concepts_cleaned_df.head()
+
+# %% [markdown]
 # # Unique concepts
 
-concepts_df["display_name"].value_counts()
+# %%
+# Check out the most frequently occurring concepts
+concepts_cleaned_df["display_name"].value_counts().head(20)
 
+# %% [markdown]
 # # Cluster just the concepts
 
-# +
-import sentence_transformers
-from sentence_transformers import SentenceTransformer
+# %%
+# At this point we create a column 'n_works' that may be useful later. If a concept only attached to 1 work in our corpus, do we still care about it?
+unique_concepts_df = (
+    concepts_cleaned_df.groupby("display_name").size().reset_index(name="n_works")
+)
+unique_concepts_df.head()
 
-model = SentenceTransformer("all-MiniLM-L6-v2")
-# -
-
-unique_concepts = concepts_df["display_name"].unique().tolist()
-
+# %%
+# Create embeddings for the unique concepts
 t0 = time()
-unique_concepts_384 = model.encode(unique_concepts, show_progress_bar=True)
+unique_concepts_384 = model.encode(
+    unique_concepts_df["display_name"].tolist(), show_progress_bar=True
+)
 print(f"vectorization done in {time() - t0:.3f} s")
 
-umap_vectors = umap.UMAP(
-    n_neighbors=15, n_components=50, random_state=42
-).fit_transform(unique_concepts_384)
+# %%
+# Define HDBSCAN search parameters
+hdbscan_search_params = {
+    "min_cluster_size": [10, 20, 50],
+    "min_samples": [1, 10, 15],
+    "cluster_selection_method": ["leaf"],
+    "prediction_data": [True],
+}
 
-concept_clusters = hdbscan.HDBSCAN(
-    min_cluster_size=10,  # min_samples=15,
-    metric="euclidean",
-    cluster_selection_method="eom",
-    prediction_data=True,
-).fit(umap_vectors)
+umap_params = {
+    "n_components": 50,  # apparently hdbscan does not work very well with more than 50 components
+    "n_neighbors": 10,
+    "min_dist": 0.5,
+    "spread": 0.5,
+}
 
-
-umap_2d = umap.UMAP(n_neighbors=15, n_components=2, random_state=42).fit_transform(
-    unique_concepts_384
+# %%
+# reduce dimensionality of the embeddings
+unique_concepts_50 = cau.umap_reducer(
+    unique_concepts_384, umap_params, random_umap_state=SEED
 )
 
-# +
-unique_concepts_df = pd.DataFrame(concepts_df["display_name"].unique())
-unique_concepts_df.columns = ["concept"]
+# %%
+# %%time
+# Parameter grid search using HDBSCAN
+hdbscan_search_results = hdbscan_param_grid_search(
+    vectors=unique_concepts_50,
+    search_params=hdbscan_search_params,
+    have_noise_labels=False,  # we want everything to be forced into a cluster
+)
+
+# %%
+hdbscan_search_results
+
+# %%
+# Find HDBSCAN model params with highest silhouette score
+optimal_hdbscan_params = highest_silhouette_model_params(hdbscan_search_results)
+optimal_hdbscan_params
+
+# %% [markdown]
+# We will check Kmeans results as well in case this method performs better than HDBSCAN.
+
+# %%
+# Define K-Means search parameters
+kmeans_search_params = {
+    "n_clusters": [5, 10, 15, 20, 25, 30, 35],
+    "init": ["k-means++"],
+}
+
+# %%
+# %%time
+# Parameter grid search using K-Means
+kmeans_search_results = kmeans_param_grid_search(
+    vectors=unique_concepts_50, search_params=kmeans_search_params, random_seeds=[SEED]
+)
+
+# %%
+# The silhouette scores for HDBSCAN turn out to be better
+kmeans_search_results
+
+# %%
+# proceed with HDBSCAN clustering, seeing as that leads to a better silhouette score
+hdbscan_labels = cau.hdbscan_clustering(
+    unique_concepts_50, hdbscan_params=optimal_hdbscan_params, have_noise_labels=False
+)
+
+# %%
+hdbscan_labels.head()
+
+# %%
+# Reduce original vectors to 2D for plotting
+unique_concepts_2d = cau.reduce_to_2D(unique_concepts_384, random_state=SEED)
+
+# %%
+# Add 2D vectors into the dataframe for the sake of plotting. Add probability to the dataframe as well for later use
 unique_concepts_df = unique_concepts_df.assign(
-    cluster=concept_clusters.labels_, x=umap_2d[:, 0], y=umap_2d[:, 1]
+    cluster=hdbscan_labels["labels"],
+    probability=hdbscan_labels["probability"],
+    x_hdbscan=unique_concepts_2d[:, 0],
+    y_hdbscan=unique_concepts_2d[:, 1],
 )
 
-unique_concepts_df["opacity"] = unique_concepts_df["cluster"].apply(
-    lambda x: 0.3 if x == -1 else 1.0
-)
-unique_concepts_df["color"] = unique_concepts_df["cluster"].apply(
-    lambda x: "noise" if x == -1 else x
-)
-
-# -
-
-# In the plot below:
-# * cluster 28 covers computing-related things
-# * cluster 20 is statistics! These concepts probably come up in any paper that has a vagiely quant angle
-# * 5 is cohort and longitudinal studies (very relevant when studying children's development)
-# * Artificial intelligence ends up in the noise cluster
-
-# +
-fig1 = (
+# %%
+fig_hdbscan = (
     alt.Chart(unique_concepts_df)
     .mark_circle()
     .encode(
-        x="x",
-        y="y",
-        color=alt.Color("color:N", legend=alt.Legend(title="cluster")),
-        opacity="opacity:Q",
-        tooltip=["concept", "cluster"],
+        x="x_hdbscan",
+        y="y_hdbscan",
+        color=alt.Color("cluster:N", legend=alt.Legend(title="cluster")),
+        tooltip=["display_name", "cluster"],
     )
     .properties(width=800, height=600)
     .interactive()
 )
 
-fig1
-# -
+fig_hdbscan
 
-fig1.save("outputs/figures/02_unique_clusters.html")
-
-# Artificial intelligence always gets assigned to the noise cluster
-unique_concepts_df[unique_concepts_df["concept"] == "Artificial intelligence"]
-
-# ... but its parent concept, computer science, gets assigned to cluster 8
-unique_concepts_df[unique_concepts_df["concept"] == "Computer science"]
-
-unique_concepts_df
-
-# +
-# Group the data by 'cluster_minilm' and aggregate the text for each cluster
-grouped_text = (
-    unique_concepts_df.groupby("cluster")
-    .agg(
-        {
-            "concept": ", ".join,
-            #'cluster': 'size'
-        }
-    )
-    .reset_index()
-)  # .rename(columns={'cluster': 'count'})
-# openalex_clusters.groupby('cluster_minilm')['text'].apply(' '.join).reset_index()
-
-grouped_text.head()
-
-# +
-from sklearn.feature_extraction.text import TfidfVectorizer
-
-# Initialize the TF-IDF vectorizer
-vectorizer = TfidfVectorizer(max_df=0.5, stop_words="english")
-
-# Fit and transform the aggregated text for each cluster
-tfidf_matrix = vectorizer.fit_transform(grouped_text["concept"])
-
-# Extract the top terms for each cluster
-top_terms = {}
-feature_names = vectorizer.get_feature_names_out()
-for i, row in enumerate(tfidf_matrix.toarray()):
-    top_terms[grouped_text.iloc[i]["cluster"]] = [
-        feature_names[index] for index in row.argsort()[-10:][::-1]
-    ]
-
-top_terms_df = pd.DataFrame(top_terms).T.reset_index()
-top_terms_df.columns = ["cluster"] + [f"term_{i+1}" for i in range(10)]
-# -
-
-top_terms_df
-
-top_terms_df.to_csv("top_terms_per_concept_cluster.csv", index=False)
-
-# Observations:
-# * cluster 10 seems to be about assessment -> relevant to this ISS3 project
-
-unique_concepts_df = unique_concepts_df.merge(
-    concepts_df, left_on="concept", right_on="display_name", how="left"
-)
-unique_concepts_df
-
-# assessment
-unique_concepts_df[unique_concepts_df["cluster"] == 10][["concept", "title"]]
-
-# optics and vision
-unique_concepts_df[unique_concepts_df["cluster"] == 16][["concept", "title"]]
-
-# computing
-unique_concepts_df[unique_concepts_df["cluster"] == 28]["title"].tolist()
-
+# %% [markdown]
+# # Check which concepts were assigned to which cluster
 #
+# In this section, we check the probability with which concepts were assigned to their clusters. It turns out there is a bimodal distribution of probabilities (probably because we forced everything to be assigned to a cluster instead of allowing a noise cluster?). We divide concepts into "core" and "peripheral", where "core" ones are ones that were assigned to their clusters with a high probability, and "peripheral" are the ones that were assigned with a low probability.
+
+# %%
+# The distribution of probabilities is bimodal
+unique_concepts_df["probability"].hist()
+
+# %%
+# Separate out high probability and low probability concepts for each cluster
+hdbscan_highest_prob_docs = unique_concepts_df[unique_concepts_df["probability"] > 0.5]
+len(unique_concepts_df) - len(hdbscan_highest_prob_docs)
+
+# %%
+hdbscan_docs_grouped = (
+    hdbscan_highest_prob_docs.groupby("cluster")
+    .agg({"display_name": ";".join})
+    .reset_index()
+)
+
+hdbscan_docs_grouped
+
+# %%
+hdbscan_low_prob_docs = unique_concepts_df[unique_concepts_df["probability"] <= 0.5]
+
+hdbscan_low_prob_docs_grouped = (
+    hdbscan_low_prob_docs.groupby("cluster")
+    .agg({"display_name": ";".join})
+    .reset_index()
+)
+
+hdbscan_low_prob_docs_grouped
+
+# %%
+hdbscan_docs_grouped = hdbscan_docs_grouped.rename(
+    columns={"display_name": "high_prob_concepts"}
+)
+hdbscan_low_prob_docs_grouped = hdbscan_low_prob_docs_grouped.rename(
+    columns={"display_name": "low_prob_concepts"}
+)
+
+# %%
+hdbscan_docs_grouped = hdbscan_docs_grouped.merge(
+    hdbscan_low_prob_docs_grouped, on="cluster", how="left"
+)
+hdbscan_docs_grouped.head()
+
+# %%
+hdbscan_docs_grouped.to_csv("hdbscan_highest_prob_concept_groups.csv")
+
+# %% [markdown]
+# # Most representative publication per concept
+#
+# It might be useful to know for each concept, which work got the highest score for that cluster.
+
+# %%
+most_relevant_work_per_concept = concepts_cleaned_df.loc[
+    concepts_cleaned_df.groupby("display_name")["score"].idxmax()
+][["concept_id", "display_name", "level", "openalex_id", "title", "score"]]
+
+most_relevant_work_per_concept.head()
+
+# %%
+most_relevant_work_per_concept[
+    most_relevant_work_per_concept["display_name"] == "Emerging technologies"
+]
+
+# %%
+most_relevant_work_per_concept[
+    most_relevant_work_per_concept["display_name"] == "Assistive technology"
+]
+
+# %%
+unique_concepts_df["core_peripheral"] = np.where(
+    unique_concepts_df["probability"] > 0.5, "core", "peripheral"
+)
+
+unique_concepts_df = unique_concepts_df.rename(
+    columns={"probability": "cluster_probability"}
+)
+
+unique_concepts_df = unique_concepts_df[
+    ["display_name", "cluster", "cluster_probability", "core_peripheral", "n_works"]
+]
+
+unique_concepts_df.head()
+
+# %%
+# This should be 0
+len(most_relevant_work_per_concept) - len(unique_concepts_df)
+
+# %%
+concept_clusters_df = unique_concepts_df.merge(
+    most_relevant_work_per_concept, on="display_name", how="left"
+)
+
+# %%
+concept_clusters_df = concept_clusters_df.sort_values(
+    by=["cluster", "cluster_probability"], ascending=False
+)
+
+concept_clusters_df.head(20)
+
+# %%
+concept_clusters_df.to_csv("concept_clusters.csv")
+
+# %%
