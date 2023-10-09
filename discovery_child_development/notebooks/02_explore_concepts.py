@@ -2,6 +2,9 @@
 # This notebook explores the unique concepts that appear in the current extract of data. Note that the embedding and clustering is based purely on the unique concept names, not on the combinations of concepts that attach to particular abstracts.
 
 # %%
+print("hello world")
+
+# %%
 import pandas as pd
 import boto3
 from io import BytesIO
