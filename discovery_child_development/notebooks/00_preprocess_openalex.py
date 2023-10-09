@@ -1,3 +1,19 @@
+# ---
+# jupyter:
+#   jupytext:
+#     cell_metadata_filter: -all
+#     comment_magics: true
+#     text_representation:
+#       extension: .py
+#       format_name: percent
+#       format_version: '1.3'
+#       jupytext_version: 1.15.2
+#   kernelspec:
+#     display_name: discovery_child_development
+#     language: python
+#     name: python3
+# ---
+
 # %% [markdown]
 # This notebook is for preprocessing the Openlex data we have extracted and turning it into a format that can be the input to some text clustering.
 #
@@ -10,6 +26,7 @@
 # * the larger of the two is a table that includes in long format every concept that is associated with each OpenAlex ID and their scores
 # * the smaller is a table with one row per work, containing the OpenAlex ID, title, abstract (deinverted) and "text" which is simply title + ' ' + abstract.
 
+# %%
 import json
 import os
 import boto3
@@ -36,42 +53,67 @@ CONCEPT_IDS = [
 
 CONCEPT_IDS = "|".join(CONCEPT_IDS)
 
+YEARS = [2019, 2020, 2021, 2022, 2023]
+years_list = [str(x) for x in YEARS]
+
 load_dotenv()
 # Bucket where the file is saved
 S3_BUCKET = os.environ["S3_BUCKET"]
 # subfolder within the bucket
 S3_PATH = "metaflow"
 
-input_filename = f"openalex-works_production-True_concept-{CONCEPT_IDS}_year-2023.json"
-input_filepath = f"{S3_PATH}/{input_filename}"
-output_filename_concepts = f"concepts_metadata_{CONCEPT_IDS}_year-2023.csv"
+output_filename_concepts = (
+    f"concepts_metadata_{CONCEPT_IDS}_year-{'-'.join(years_list)}.csv"
+)
 output_filepath_concepts = "data/openAlex/concepts/"
-output_filename_works = f"openalex_abstracts_{CONCEPT_IDS}_year-2023.csv"
+output_filename_works = (
+    f"openalex_abstracts_{CONCEPT_IDS}_year-{'-'.join(years_list)}.csv"
+)
 output_filepath_works = "data/openAlex/"
 
-# read raw data from s3
-s3_client = boto3.client("s3")
-response = s3_client.get_object(Bucket=S3_BUCKET, Key=input_filepath)
-openalex_raw_data = response["Body"].read().decode("utf-8")  # Convert bytes to string
+# %%
+input_files = [
+    f"openalex-works_production-True_concept-{CONCEPT_IDS}_year-{year}.json"
+    for year in YEARS
+]
+input_files
 
-# Convert it to a list format
-openalex_data = json.loads(openalex_raw_data)
-len(openalex_data)
+# %%
+openalex_df = pd.DataFrame()
 
+for file in input_files:
+    # read raw data from s3
+    s3_client = boto3.client("s3")
+    response = s3_client.get_object(Bucket=S3_BUCKET, Key=f"{S3_PATH}/{file}")
+    openalex_raw_data = (
+        response["Body"].read().decode("utf-8")
+    )  # Convert bytes to string
+
+    # Convert it to a list format
+    openalex_data = json.loads(openalex_raw_data)
+
+    print(len(openalex_data))
+
+    year_df = pd.DataFrame(openalex_data)
+
+    openalex_df = pd.concat([openalex_df, year_df])
+
+# %%
+openalex_df["publication_year"].value_counts()
+
+# %% [markdown]
 # # Filter the data
 #
 # * Works in English only (for now at least)
 
-openalex_df = pd.DataFrame(openalex_data)
-
-openalex_df.head()
-
+# %%
 openalex_en = openalex_df[openalex_df["language"] == "en"]
 
 logging.info(
     f"Number of works lost because they were not in English: {len(openalex_df)-len(openalex_en)}"
 )
 
+# %%
 # Retain only works where abstract and title are not null
 
 logging.info(
@@ -90,18 +132,23 @@ logging.info(
 logging.info(f"Number of NAs in 'title': {openalex_en['title'].isna().sum()}")
 logging.info(f"Remaining number of works: {len(openalex_en)}")
 
+# %% [markdown]
 # # Concepts
 #
 # Create a dataframe that records all the concepts (concept IDs and names, concept level, wikidata, relevance score) for each work ID.
 
+# %%
 data_list = []
 
-for index, row in openalex_en[["id", "title", "concepts"]].iterrows():
+for index, row in openalex_en[
+    ["id", "title", "publication_year", "concepts"]
+].iterrows():
     for concept in row["concepts"]:
         data_list.append(
             {
                 "openalex_id": row["id"],
                 "title": row["title"],
+                "year": row["publication_year"],
                 "concept_id": concept["id"],
                 "wikidata": concept["wikidata"],
                 "display_name": concept["display_name"],
@@ -112,15 +159,10 @@ for index, row in openalex_en[["id", "title", "concepts"]].iterrows():
 
 df = pd.DataFrame(data_list)
 
-# The code below groups by concept name and sums up the relevance score across all works within each concept. When OpenAlex tags a work with a concept, parent concepts also get tagged (eg "developmental psychology" is the child of "psychology"). While we did not directly search for works tagged with Psychology or Developmental Psychology, the concepts that we did use are children of these higher-level concepts, which is why Psychology and Developmental Psychology get such high aggregate scores.
+df.head()
 
-grouped_df = (
-    df.groupby("display_name")
-    .agg({"score": "sum"})
-    .reset_index()
-    .sort_values(by="score", ascending=False)
-)
-
+# %%
+# Write the concepts metadata to s3
 csv_buffer = StringIO()
 df.to_csv(csv_buffer)
 s3_resource = boto3.resource("s3")
@@ -129,8 +171,10 @@ s3_resource.Object(
     f"{output_filepath_concepts}{output_filename_concepts}",
 ).put(Body=csv_buffer.getvalue())
 
+# %% [markdown]
 # # OpenAlex abstracts
 
+# %%
 # Reduce the number of columns that we are processing
 openalex_en_abstracts = openalex_en[["id", "title", "abstract_inverted_index"]]
 
@@ -155,3 +199,5 @@ s3_resource.Object(
     S3_BUCKET,
     f"{output_filepath_works}{output_filename_works}",
 ).put(Body=csv_buffer.getvalue())
+
+# %%
