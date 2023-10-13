@@ -43,7 +43,7 @@ CONCEPT_IDS = [
     # "C138496976",  # developmental psychology (level 1).
 ]
 
-YEARS = [2023]
+YEARS = [2019, 2020, 2021, 2022, 2023]
 
 API_ROOT = "https://api.openalex.org/works?filter="
 

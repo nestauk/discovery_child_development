@@ -126,3 +126,7 @@ target/
 node_modules/
 
 .credentials
+
+# Data and figures
+*.csv
+*.html
