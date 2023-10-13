@@ -15,6 +15,8 @@
 #     name: python3
 # ---
 
+# # Testing Logic Mill database with a simple example
+
 # +
 import requests
 import json
@@ -31,8 +33,8 @@ url = "https://api.logic-mill.net/api/v1/graphql/"
 
 # build graphql query
 query = """
-query searchDocuments($index: String!, $keyword: String!) {
-  searchDocuments(index: $index, keyword: $keyword) {
+query searchDocuments($index: String!, $keyword: String!, $searchFields: [String!]) {
+  searchDocuments(index: $index, keyword: $keyword, searchFields: $searchFields) {
     id
     documentParts {
       title
@@ -48,8 +50,13 @@ query searchDocuments($index: String!, $keyword: String!) {
 }
 """
 
+
 # build variables
-variables = {"keyword": "EP16745618A1", "index": "epo_cos"}
+variables = {
+    "keyword": "child development",
+    "index": "uspto_cos",
+    "searchFields": ["documentParts.title", "documentParts.abstract"],
+}
 
 headers = {
     "content-type": "application/json",
@@ -60,10 +67,17 @@ headers = {
 # send request
 r = requests.post(url, headers=headers, json={"query": query, "variables": variables})
 
-# handle response
-if r.status_code != 200:
-    print(f"Error executing\n{query}\non {url}")
-else:
-    response = r.json()
-    print(response)
+# data
+data = r.json()["data"]["searchDocuments"]
 # -
+
+# Individual elements for each document
+data[0].keys()
+
+for d in data:
+    print(d["documentParts"]["title"])
+
+for d in data:
+    print(d["documentParts"]["abstract"])
+
+#
