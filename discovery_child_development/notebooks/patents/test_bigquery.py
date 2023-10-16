@@ -24,9 +24,7 @@ client = bigquery.create_client()
 
 # Define the SQL query
 sql = """
-SELECT *
-FROM `patents-public-data.patents.publications`
-LIMIT 10;
+< add your query here >
 """
 
 # Execute the query
