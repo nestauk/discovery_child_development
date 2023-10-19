@@ -1,5 +1,4 @@
 altair
-boto3
 hdbscan==0.8.33
 metaflow==2.9.14
 numpy==1.23.4

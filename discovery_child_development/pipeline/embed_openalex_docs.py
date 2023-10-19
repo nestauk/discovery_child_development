@@ -12,8 +12,6 @@ python discovery_child_development/pipeline/embed_openalex_docs.py
 
 """
 
-import boto3
-from io import BytesIO
 import os
 from dotenv import load_dotenv
 from time import time
@@ -21,17 +19,14 @@ import pandas as pd
 import numpy as np
 import sentence_transformers
 from sentence_transformers import SentenceTransformer
-import s3fs
+
+from nesta_ds_utils.loading_saving import S3
 
 model = SentenceTransformer("all-MiniLM-L6-v2")
-
-s3_client = boto3.client("s3")
 
 load_dotenv()
 
 S3_BUCKET = os.environ["S3_BUCKET"]
-AWS_ACCESS_KEY_ID = os.environ["AWS_ACCESS_KEY_ID"]
-AWS_SECRET_ACCESS_KEY = os.environ["AWS_SECRET_ACCESS_KEY"]
 
 CONCEPT_IDS = [
     "C109260823",  # child development
@@ -49,37 +44,16 @@ CONCEPT_IDS = [
 CONCEPT_IDS = "|".join(CONCEPT_IDS)
 
 WORKS_PATH = "data/openAlex/"
-WORKS_FILE = f"openalex_abstracts_{CONCEPT_IDS}_year-2023.csv"
+WORKS_FILE = f"openalex_abstracts_{CONCEPT_IDS}_year-2019-2020-2021-2022-2023.csv"
 VECTORS_PATH = "data/openAlex/vectors/"
-
-
-def read_openalex_works(works_data_path: str, s3_client, s3_bucket: str):
-    """Read in the concepts metadata for all abstracts in the current OpenAlex dataset.
-
-    Args:
-        s3_client (_type_): boto3 client
-        s3_bucket (str): name of the bucket
-        works_data_path (str): Complete filepath within the bucket e.g. "path/to/your/data.csv"
-
-    Returns:
-        pd.DataFrame: A dataframe with the concepts metadata
-    """
-    response = s3_client.get_object(Bucket=s3_bucket, Key=works_data_path)
-    csv_data = response["Body"].read()
-    openalex_text_df = pd.read_csv(BytesIO(csv_data), index_col=0)
-
-    return openalex_text_df
-
+VECTORS_FILE = "sentence_vectors_384.parquet"
 
 if __name__ == "__main__":
-    fs = s3fs.S3FileSystem(
-        anon=False, key=AWS_ACCESS_KEY_ID, secret=AWS_SECRET_ACCESS_KEY
-    )
-
-    openalex_text_df = read_openalex_works(
-        works_data_path=f"{WORKS_PATH}{WORKS_FILE}",
-        s3_bucket=S3_BUCKET,
-        s3_client=s3_client,
+    openalex_text_df = S3.download_obj(
+        S3_BUCKET,
+        path_from=f"{WORKS_PATH}{WORKS_FILE}",
+        download_as="dataframe",
+        kwargs_reading={"index_col": 0},
     )
 
     openalex_docs = openalex_text_df["text"].tolist()
@@ -96,8 +70,4 @@ if __name__ == "__main__":
         {"openalex_id": openalex_ids, "miniLM_384_vector": vectors_as_list}
     )
 
-    filename = f"sentence_vectors_384.parquet"
-    out_path = f"s3://{S3_BUCKET}/{VECTORS_PATH}{filename}"
-
-    with fs.open(out_path, "wb") as f:
-        vector_df.to_parquet(f)
+    S3.upload_obj(vector_df, S3_BUCKET, f"{VECTORS_PATH}{VECTORS_FILE}")
