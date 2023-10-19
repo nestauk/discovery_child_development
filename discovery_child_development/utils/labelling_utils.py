@@ -3,7 +3,7 @@ from sklearn.preprocessing import MultiLabelBinarizer
 
 
 def add_binarise_labels(
-    df: pd.DataFrame, label_column: str, not_valid_label: str
+    df: pd.DataFrame, label_column: str, not_valid_label: str = None
 ) -> pd.DataFrame:
     """Add label dummy columns to dataframe.
 
@@ -23,7 +23,12 @@ def add_binarise_labels(
     dummy_cols = pd.DataFrame(
         mlb.fit_transform(df[label_column]), columns=mlb.classes_, index=df.index
     )
-    valid_cols = [col for col in dummy_cols.columns if col != not_valid_label]
-    # Set all other labels to 0 if row has not valid label
-    dummy_cols = dummy_cols[valid_cols].mask(dummy_cols[not_valid_label] == 1, 0)
-    return pd.concat([df, dummy_cols], axis=1)
+
+    if not_valid_label is not None:
+        valid_cols = [col for col in dummy_cols.columns if col != not_valid_label]
+        # Set all other labels to 0 if row has not valid label
+        dummy_cols = dummy_cols[valid_cols].mask(dummy_cols[not_valid_label] == 1, 0)
+    else:
+        valid_cols = dummy_cols.columns
+
+    return pd.concat([df, dummy_cols[valid_cols]], axis=1)
