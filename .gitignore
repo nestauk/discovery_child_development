@@ -130,3 +130,6 @@ node_modules/
 # Data and figures
 *.csv
 *.html
+
+# wandb
+discovery_child_development/notebooks/wandb/

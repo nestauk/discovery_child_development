@@ -31,4 +31,4 @@ def add_binarise_labels(
     else:
         valid_cols = dummy_cols.columns
 
-    return pd.concat([df, dummy_cols[valid_cols]], axis=1)
+    return dummy_cols[valid_cols]
