@@ -4,8 +4,12 @@
 # %%
 # Load libraries
 import pandas as pd
+import numpy as np
 import os
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, cross_val_score, KFold
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score, f1_score, hamming_loss
+from sklearn.preprocessing import MultiLabelBinarizer
 
 ## plotting libraries
 import seaborn as sns
@@ -29,19 +33,24 @@ S3_BUCKET = os.environ["S3_BUCKET"]
 PARAMS = import_config("config.yaml")
 CONCEPT_IDS = "|".join(PARAMS["openalex_concepts"])
 INPUT_PATH = "data/openAlex/processed/"
+DATA_PATH_LOCAL = os.path.join(PROJECT_DIR, "inputs", "data")
+FIG_PATH = os.path.join(PROJECT_DIR, "outputs", "figures")
 SEED = 42
 
 ## variables
 SCORE_THRESHOLD = 0.3  # we will remove any concepts (and corresponding subcategories) assigned with less than 0.3 confidence by the OpenAlex algorithm
 
 # %%
-# Initialize a run
+# Initialize a run and log score threshold with wandb
 run = wandb.init(
-    project="ISS supervised ML", job_type="Baseline modeling", save_code=True
+    project="ISS supervised ML",
+    job_type="Baseline modeling",
+    save_code=True,
+    config={"score_threshold": SCORE_THRESHOLD},
 )
 
 # %%
-# Load data
+# Load data from s3
 training_data_filename = (
     f"openalex_data_{CONCEPT_IDS}_year-2019-2020-2021-2022-2023_train.csv"
 )
@@ -56,9 +65,8 @@ openalex_data = S3.download_obj(
 openalex_data.head()
 
 # %%
-original_data = os.path.join(
-    PROJECT_DIR, "inputs", "data", "openalex_training_data.csv"
-)
+# Log the data as a wandb artifact
+original_data = os.path.join(DATA_PATH_LOCAL, "openalex_training_data.csv")
 
 openalex_data.to_csv(original_data)
 # Create an Artifact
@@ -69,9 +77,6 @@ data_artifact = wandb.Artifact(
 data_artifact.add_file(original_data)
 # Log the Artifact as part of the run
 run.log_artifact(data_artifact)
-
-# %%
-openalex_data.head()
 
 # %%
 # Check distribution of scores
@@ -90,6 +95,8 @@ def hist_with_line(data, color):
     plt.axvline(0.3, color="red", linestyle="--")  # Adding a vertical line at x=0.3
 
 
+fig = plt.figure()
+
 # Create a grid of histograms
 g = sns.FacetGrid(
     openalex_data[openalex_data["level"] == 1], col="display_name", col_wrap=4, height=5
@@ -101,30 +108,38 @@ x_min = 0  # define your own min value
 x_max = 1  # define your own max value
 g.set(xlim=(x_min, x_max))
 
+plt.savefig(os.path.join(FIG_PATH, "level1_concept_score_distributions.png"))
 plt.show()
 
-# %%
+# Log the plot as a wandb artifact
+wandb.log({"level1_concept_score_distributions": wandb.Image(fig)})
 
 # %%
+openalex_data.head()
 
 # %%
+# Filter the data using a score threshold (0.3 is the threshold used by OpenAlex)
+openalex_data_wide = (
+    openalex_data[openalex_data["score"] >= SCORE_THRESHOLD]
+    # Squash sub-categories into one tuple per work (rather than one row per sub-category per work)
+    .groupby(["openalex_id", "text"])["sub_category"]
+    .agg(tuple)
+    .reset_index()
+)
 
-# %%
-# Filter the data using a score threshold
-
-# # Subset the data using the 0.3 threshold
-# openalex_concepts_subset = openalex_concepts[openalex_concepts['score']>=0.3].copy()
-# logging.info(f"Prop of concepts tagged with a score less than 0.3: {(len(openalex_concepts) - len(openalex_concepts_subset))/len(openalex_concepts)}")
-# logging.info(f"N rows: {len(openalex_concepts_subset)}")
-
-# %%
-# Squash sub-categories into one tuple per work (rather than one row per sub-category per work)
-# openalex_data = openalex_data.groupby(['openalex_id', 'text'])['sub_category'].agg(tuple).reset_index()
-
+# logging information
+prop_less_than_threshold = (
+    len(openalex_data)
+    - openalex_data[openalex_data["score"] >= SCORE_THRESHOLD].shape[0]
+) / len(openalex_data)
+logging.info(
+    f"Prop of OpenAlex data/concepts tagged with a score less than {SCORE_THRESHOLD}: {prop_less_than_threshold}"
+)
+logging.info(f"N rows: {openalex_data_wide.shape[0]}")
 
 # %%
 Y = labelling_utils.add_binarise_labels(
-    openalex_data, label_column="sub_category", not_valid_label="?"
+    openalex_data_wide, label_column="sub_category", not_valid_label=None
 )
 Y.head()
 
@@ -137,31 +152,52 @@ embeddings = S3.download_obj(
 )
 
 # %%
-openalex_data = pd.merge(openalex_data, embeddings, on="openalex_id", how="left")
-openalex_data.head()
+openalex_data_wide = pd.merge(
+    openalex_data_wide, embeddings, on="openalex_id", how="left"
+)
+openalex_data_wide.head()
 
 # %%
-X = openalex_data["miniLM_384_vector"].apply(pd.Series).values
+# Save and log the new version of the data
+preprocessed_data = os.path.join(DATA_PATH_LOCAL, "openalex_training_data_wide.csv")
+openalex_data_wide.to_csv(preprocessed_data, index=False)
+
+# Create an Artifact
+preprocessed_data_artifact = wandb.Artifact(
+    name="openalex_training_data_wide",
+    type="data",
+    description="OpenAlex data with squashed sub-categories and embeddings",
+)
+# Add the file to the Artifact
+preprocessed_data_artifact.add_file(preprocessed_data)
+# Log the Artifact as part of the run
+run.log_artifact(preprocessed_data_artifact)
+
+
+# %%
+X = openalex_data_wide["miniLM_384_vector"].apply(pd.Series).values
 
 # %%
 Y = Y.to_numpy()
 
 # %%
-# Split the dataset into training and testing sets
-X_train, X_test, Y_train, Y_test = train_test_split(
-    X, Y, test_size=0.3, random_state=42
-)
-
 # Initialize the RandomForestClassifier
 classifier = RandomForestClassifier(random_state=42)
-classifier.fit(X_train, Y_train)
 
-# Make predictions
-Y_pred = classifier.predict(X_test)
+# Define the cross-validation iterator
+kf = KFold(n_splits=5, random_state=SEED, shuffle=True)  # 5-fold cross-validation
 
-# Evaluate the predictions
-print("Accuracy: ", accuracy_score(Y_test, Y_pred))
-print(
-    "F1 Score: ", f1_score(Y_test, Y_pred, average="micro")
-)  # using 'micro' average for multilabel classification
-print("Hamming Loss: ", hamming_loss(Y_test, Y_pred))
+# Evaluate the model using cross-validation
+f1_scores = cross_val_score(classifier, X, Y, scoring="f1_micro", cv=kf)
+
+print("F1 Scores for each fold:", f1_scores)
+print("Average F1 Score: ", np.mean(f1_scores))
+
+# %%
+# log the scores with wandb
+wandb.log({"average_f1_score": np.mean(f1_scores)})
+
+# %%
+wandb.finish()
+
+# %%
