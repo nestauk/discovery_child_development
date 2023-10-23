@@ -107,6 +107,8 @@ target/
 /inputs/*
 !/inputs/*.md
 /outputs/data/*
+/outputs/figures/*
+!/outputs/figures/*.md
 !/outputs/data/*.md
 /outputs/models/*
 !/outputs/models/*.md
