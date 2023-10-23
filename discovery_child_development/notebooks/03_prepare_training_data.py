@@ -1,5 +1,7 @@
 # %% [markdown]
-# # Access the taxonomy from Google Sheets
+# # Prepare labelled data
+#
+# The steps are:
 
 # %%
 import pandas as pd
@@ -34,6 +36,9 @@ SEED = 42
 
 # %%
 # Helpful functions!
+
+
+# For cleaning sub-category labels
 def clean_string(s):
     s = s.replace(
         "?", ""
@@ -44,6 +49,7 @@ def clean_string(s):
     return s
 
 
+# For accessing data from Google Sheets
 def access_google_sheet(google_credentials_json, sheet_id, sheet_name):
     # Define the scope for the Google Sheets API (we only want Google sheets)
     scope = ["https://spreadsheets.google.com/feeds"]
@@ -69,43 +75,37 @@ taxonomy_data = access_google_sheet(
 )
 
 # %%
+# convert this column so that we can filter on it more easily
 taxonomy_data["n_works"] = taxonomy_data["n_works"].astype("int64")
 
-# %%
-# keep only concepts/categories that have been marked relevant
-taxonomy_df = taxonomy_data[taxonomy_data["Relevant?"].isin(["Y"])].copy()
-# only concepts with 10 or more publications
-taxonomy_df = taxonomy_df[taxonomy_df["n_works"] >= 10]
-
-# clean the sub-category column
-taxonomy_df["Sub category"] = taxonomy_df["Sub category"].apply(clean_string)
-
-# %%
-taxonomy_df["Relevant?"].value_counts()
-
-# %%
-taxonomy_df["Sub category"].unique()
+taxonomy_data = (
+    taxonomy_data
+    # keep only concepts/categories that have been marked relevant
+    # and only concepts with at least 10 works
+    .query("`Relevant?` == 'Y' and `n_works` >= 10")
+    # Remove noise and typos in the "Sub category" column
+    .assign(**{"Sub category": lambda df: df["Sub category"].apply(clean_string)})
+    # The string cleaning function leaves behind some empty strings (previously "?") so we can now get rid of these
+    .query("`Sub category` != ''").rename(columns={"Sub category": "sub_category"})
+)
 
 # %%
-# Get rid of unnecessary valeus of sub-category
-taxonomy_df = taxonomy_df[~taxonomy_df["Sub category"].isin([""])]
-
-sorted(taxonomy_df["Sub category"].unique())
+sorted(taxonomy_data["sub_category"].unique())
 
 # %%
-# check that there are no duplicate concepts
-len(taxonomy_df) - len(taxonomy_df["display_name"].unique())
+# check that there are no duplicate concepts - this should return 0
+len(taxonomy_data) - len(taxonomy_data["display_name"].unique())
 
 # %%
 # check that the number of unique names and the number of unique ids are the same
-len(taxonomy_df["display_name"].unique()) == len(taxonomy_df["concept_id"].unique())
+len(taxonomy_data["display_name"].unique()) == len(taxonomy_data["concept_id"].unique())
 
 # %%
 # Get the IDs of concepts that we will use to filter the OpenAlex data
-taxonomy_concept_ids = taxonomy_df["concept_id"].unique()
+taxonomy_concept_ids = taxonomy_data["concept_id"].unique()
 
 # %% [markdown]
-# # Load abstracts
+# ## Load abstracts
 
 # %%
 abstracts_filename = (
@@ -123,7 +123,7 @@ openalex_data = S3.download_obj(
 openalex_data.head()
 
 # %% [markdown]
-# # Load concepts metadata
+# ## Load concepts metadata
 
 # %%
 concepts_file = f"concepts_metadata_{CONCEPT_IDS}_year-2019-2020-2021-2022-2023.csv"
@@ -154,12 +154,9 @@ openalex_concepts_subset.head()
 # merge taxonomy
 openalex_concepts_subset = pd.merge(
     openalex_concepts_subset,
-    taxonomy_df[["Sub category", "concept_id"]],
+    taxonomy_data[["sub_category", "concept_id"]],
     how="left",
     on="concept_id",
-)
-openalex_concepts_subset = openalex_concepts_subset.rename(
-    columns={"Sub category": "sub_category"}
 )
 openalex_concepts_subset.head()
 
@@ -200,3 +197,5 @@ S3.upload_obj(
     S3_BUCKET,
     f"{OUT_PATH}openalex_data_{CONCEPT_IDS}_year-2019-2020-2021-2022-2023_test.csv",
 )
+
+# %%
