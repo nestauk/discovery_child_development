@@ -31,4 +31,4 @@ def add_binarise_labels(
     else:
         valid_cols = dummy_cols.columns
 
-    return dummy_cols[valid_cols]
+    return dummy_cols[valid_cols], mlb

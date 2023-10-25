@@ -2,6 +2,11 @@
 # # Prepare labelled data
 #
 # The steps are:
+# * Load the taxonomy from Google sheets; concepts metadata; abstracts
+# * Filter the taxonomy to just records that were marked relevant ("Y")
+# * Filter the concepts metadata to just concepts that were marked "Y" in the taxonomy
+# * Attach the filtered concepts metadata (and sub-categories) to the abstracts. If any abstracts were tagged with NO relevant concepts/subcategories, these will now be lost.
+# * Split and put aside a test dataset based on OpenAlex IDs
 
 # %%
 import pandas as pd
