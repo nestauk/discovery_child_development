@@ -135,3 +135,4 @@ node_modules/
 
 # wandb
 discovery_child_development/notebooks/wandb/
+wandb/
