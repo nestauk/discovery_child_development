@@ -14,3 +14,5 @@ en_core_web_sm @ https://github.com/explosion/spacy-models/releases/download/en_
 umap-learn==0.5.4
 google-cloud-bigquery==3.11
 nesta_ds_utils[s3,viz] @ git+https://github.com/nestauk/nesta_ds_utils.git
+db-dtypes==1.1
+seaborn==0.13
