@@ -25,6 +25,7 @@ S3_BUCKET = os.environ.get("S3_BUCKET")
 PARAMS = import_config("config.yaml")
 CONCEPT_IDS = "|".join(PARAMS["openalex_concepts"])
 INPUT_PATH = "data/openAlex/processed/"
+VECTORS_FILEPATH = "data/openAlex/vectors/sentence_vectors_384.parquet"
 DATA_PATH_LOCAL = os.path.join(PROJECT_DIR, "inputs", "data")
 FIG_PATH = os.path.join(PROJECT_DIR, "outputs", "figures")
 MODEL_PATH = os.path.join(PROJECT_DIR, "outputs", "models")
@@ -32,8 +33,8 @@ SEED = 42
 # Set the seed
 np.random.seed(SEED)
 
-WANDB = True
-MODEL_TYPE = "majority_combination"
+WANDB = False
+MODEL_TYPE = "most_probable"
 SCORE_THRESHOLD = 0.3  # we will remove any concepts (and corresponding subcategories) assigned with less than 0.3 confidence by the OpenAlex algorithm
 
 
@@ -47,10 +48,20 @@ class MostCommonClassifier(BaseEstimator, ClassifierMixin):
 
     def predict(self, X):
         # Returns the most common label combination for all input
-        return [self.labels for _ in range(len(X))]
+        return np.tile(self.labels, (len(X), 1))
 
 
 def generate_predictions(labels, label_probabilities):
+    """When you pass in a set of labels and the probabilities of those labels, this function will use the probabilities
+    to randomly generate a prediction for a single datapoint.
+
+    Args:
+        labels (_type_): _description_
+        label_probabilities (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """
     sample_predictions = []
     for label in labels:
         sample_predictions.append(
@@ -116,9 +127,17 @@ def find_most_common_row(df: pd.DataFrame) -> tuple[str, int]:
 
 
 def get_label_probabilities(
-    df: pd.DataFrame, label_col: str = "sub_category", targets=None
+    df: pd.DataFrame, label_col: str = "sub_category", n=1000, targets=None
 ) -> pd.Series:
-    label_probabilities = df[label_col].value_counts(normalize=True)
+    df_cleaned = df.drop_duplicates(subset=["openalex_id", "sub_category"])
+    label_probabilities = pd.DataFrame(df_cleaned["sub_category"].value_counts())
+    label_probabilities["prob"] = (
+        label_probabilities["sub_category"] / n
+    )  # len(train_df['openalex_id'].unique())
+    label_probabilities = label_probabilities[
+        ["prob"]
+    ]  # drop the count column, so it is just index and probability
+    label_probabilities = label_probabilities.squeeze()  # convert to a series
 
     if targets is not None:
         missing_labels = pd.Series([], index=[])
@@ -134,6 +153,11 @@ def run_baseline_model(
     model_type: str = "majority_combination",
     wandb_run: bool = True,
     score_threshold=0.3,
+    s3_bucket: str = S3_BUCKET,
+    input_path: str = INPUT_PATH,
+    concept_ids: str = CONCEPT_IDS,
+    vectors_filepath: str = VECTORS_FILEPATH,
+    model_path: str = MODEL_PATH,
 ):
     valid_inputs = ["majority_combination", "most_probable"]  # "majority_label",
 
@@ -142,15 +166,14 @@ def run_baseline_model(
             f"Invalid input. Expected one of {valid_inputs}, got '{model_type}'"
         )
 
-    ##### Load data from s3 ####
-    CONCEPT_IDS.replace("|", "_")
+    # Load the data
     training_data_filename = (
-        f"openalex_data_{CONCEPT_IDS}_year-2019-2020-2021-2022-2023_train.csv"
+        f"openalex_data_{concept_ids}_year-2019-2020-2021-2022-2023_train.csv"
     )
 
     openalex_data = S3.download_obj(
-        S3_BUCKET,
-        path_from=f"{INPUT_PATH}{training_data_filename}",
+        s3_bucket,
+        path_from=f"{input_path}{training_data_filename}",
         download_as="dataframe",
         kwargs_reading={"index_col": 0},
     )
@@ -172,8 +195,8 @@ def run_baseline_model(
 
     # Load embeddings
     embeddings = S3.download_obj(
-        "discovery-iss",
-        path_from=f"data/openAlex/vectors/sentence_vectors_384.parquet",
+        s3_bucket,
+        path_from=vectors_filepath,
         download_as="dataframe",
     )
 
@@ -199,18 +222,8 @@ def run_baseline_model(
         .apply(pd.Series)
         .values
     )
-    X_val = (
-        openalex_data_wide[openalex_data_wide.index.isin(val_ids)]["miniLM_384_vector"]
-        .apply(pd.Series)
-        .values
-    )
 
     Y_train = Y[Y.index.isin(train_ids)]
-    Y_val = Y[Y.index.isin(val_ids)]
-
-    # Check that both train and validation sets have the same most frequent label combination
-    Y_train_labels, Y_train_count = find_most_common_row(Y_train)
-    Y_val_labels, Y_val_count = find_most_common_row(Y_val)
 
     if model_type == "majority_combination":
         most_common_combination_one_hot = mlb.transform([top_combinations.index[0]])
@@ -222,24 +235,22 @@ def run_baseline_model(
             (openalex_data["score"] >= score_threshold)
             & (openalex_data["openalex_id"].isin(train_ids))
         ]
-        label_probabilities = get_label_probabilities(train_df, targets=Y_train.columns)
+        label_probabilities = get_label_probabilities(
+            train_df,
+            "sub_category",
+            len(train_df["openalex_id"].unique()),
+            targets=Y_train.columns,
+        )
         # sort the index of label_probabilities so that it matches the order of columns in Y_train and Y_val
         label_probabilities.sort_index(inplace=True)
         classifier = MostProbableClassifier(label_probabilities=label_probabilities)
 
     baseline_predictions = classifier.predict(X_train)
 
-    if model_type == "majority_combination":
-        # The formats of Y_train and the predictions need to be tweaked a bit so that we can compare them
-        Y_train = Y_train.values.tolist()
-        baseline_predictions = [pred[0].tolist() for pred in baseline_predictions]
-
     metrics = classification_utils.create_average_metrics(
         Y_train, baseline_predictions, average="samples"
     )
     logging.info(metrics)
-
-    model_path = f"{MODEL_PATH}/baseline_most_probable.pkl"
 
     if wandb_run:
         # Initialize a wandb run and log score threshold with wandb
@@ -268,10 +279,20 @@ def run_baseline_model(
         for key, value in metrics.items():
             wandb.log({f"{key}": value})
         # Save and log the model and metrics
-        wb.log_model(run, "baseline_most_probable", classifier, model_path)
+        model_path = f"{model_path}/baseline_most_probable.pkl"
+        wb.log_model(run, f"baseline_{model_type}", classifier, model_path)
         # End the weights and biases run
         wandb.finish()
 
 
 if __name__ == "__main__":
-    run_baseline_model(model_type=MODEL_TYPE, wandb_run=WANDB)
+    run_baseline_model(
+        model_type=MODEL_TYPE,
+        wandb_run=WANDB,
+        score_threshold=SCORE_THRESHOLD,
+        s3_bucket=S3_BUCKET,
+        input_path=INPUT_PATH,
+        concept_ids=CONCEPT_IDS,
+        vectors_filepath=VECTORS_FILEPATH,
+        model_path=MODEL_PATH,
+    )
