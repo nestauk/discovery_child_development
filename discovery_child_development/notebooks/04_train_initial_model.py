@@ -109,7 +109,9 @@ def create_average_metrics(Y_test, Y_pred, average="samples"):
     return results
 
 
-def find_most_frequent_labels(df: pd.DataFrame, label_col: str="sub_category", head: int=20) -> Tuple[pd.DataFrame, str]:
+def find_most_frequent_labels(
+    df: pd.DataFrame, label_col: str = "sub_category", head: int = 20
+) -> Tuple[pd.DataFrame, str]:
     """Find the most frequent combination of labels - for a dataframe where one column contains a list of labels"""
     sub_category_combinations = df[label_col].value_counts()
 
@@ -160,8 +162,6 @@ run = wandb.init(
     config={"score_threshold": SCORE_THRESHOLD},
 )
 
-# %%
-CONCEPT_IDS.replace("|", "_")
 
 # %%
 # Load data from s3
