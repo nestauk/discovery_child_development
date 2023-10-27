@@ -53,6 +53,12 @@ FIG_PATH = os.path.join(PROJECT_DIR, "outputs", "figures")
 MODEL_PATH = os.path.join(PROJECT_DIR, "outputs", "models")
 SEED = 42
 
+# List of paths to ensure they exist
+paths_to_create = [DATA_PATH_LOCAL, FIG_PATH, MODEL_PATH]
+
+for path in paths_to_create:
+    os.makedirs(path, exist_ok=True, parents=True)
+
 ## variables
 SCORE_THRESHOLD = 0.3  # we will remove any concepts (and corresponding subcategories) assigned with less than 0.3 confidence by the OpenAlex algorithm
 
