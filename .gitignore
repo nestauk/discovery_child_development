@@ -126,3 +126,4 @@ target/
 node_modules/
 
 .credentials
+discovery_child_development/notebooks/wandb/*
