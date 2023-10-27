@@ -127,17 +127,19 @@ def find_most_common_row(df: pd.DataFrame) -> tuple[str, int]:
 
 
 def get_label_probabilities(
-    df: pd.DataFrame, label_col: str = "sub_category", n=1000, targets=None
+    df: pd.DataFrame, label_col: str = "sub_category", n: int = 1000, targets=None
 ) -> pd.Series:
-    df_cleaned = df.drop_duplicates(subset=["openalex_id", "sub_category"])
-    label_probabilities = pd.DataFrame(df_cleaned["sub_category"].value_counts())
-    label_probabilities["prob"] = (
-        label_probabilities["sub_category"] / n
-    )  # len(train_df['openalex_id'].unique())
+    # Some OpenAlex IDs get tagged with the same sub-category multiple times (because one sub-category maps to multiple concepts)
+    # So drop_duplicates ensures that each sub-category is only counted once per OpenAlex ID
+    df_cleaned = df.drop_duplicates(subset=["openalex_id", label_col])
+    label_probabilities = pd.DataFrame(df_cleaned[label_col].value_counts())
+    # Normalise using the number of unique documents as the denominator (each label can appear at most once per document because of
+    # how we cleaned the data above, so we have made sure that the max "prob" possible is 1)
+    label_probabilities["prob"] = label_probabilities[label_col] / n
     label_probabilities = label_probabilities[
         ["prob"]
     ]  # drop the count column, so it is just index and probability
-    label_probabilities = label_probabilities.squeeze()  # convert to a series
+    label_probabilities = label_probabilities.squeeze()  # convert to a Series
 
     if targets is not None:
         missing_labels = pd.Series([], index=[])
