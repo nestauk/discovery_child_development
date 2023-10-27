@@ -8,6 +8,7 @@ client = create_client()
 """
 from google.oauth2.service_account import Credentials
 from google.cloud import bigquery
+from pathlib import PosixPath
 
 from discovery_child_development import PROJECT_DIR, BUCKET_NAME, logging
 from nesta_ds_utils.loading_saving.S3 import download_file
@@ -18,7 +19,23 @@ import dotenv
 dotenv.load_dotenv()
 
 
-def find_credentials(credentials_env_var: str):
+def find_credentials(credentials_env_var: str) -> PosixPath:
+    """Find credentials file
+
+    For accessing some Google resources, we need credentials stored in a JSON file in `.credentials/`.
+    This function takes the name of an environment variable as input and checks whether the corresponding
+    credentials file exists. If not, it downloads the file from S3.
+
+    Args:
+        credentials_env_var (str): Name of the env var eg "GOOGLE_APPLICATION_CREDENTIALS". Your .env file should have paths to Google credentials files stored like "GOOGLE_APPLICATION_CREDENTIALS=<path-to-credentials-file>".
+
+    Raises:
+        EnvironmentError: If this env var is not recorded in `.env`
+        Exception: If the function can neither find the credentials file nor download it from S3
+
+    Returns:
+        PosixPath: Path to the credentials file
+    """
     # Check if the environment variable is set
     if credentials_env_var not in environ:
         raise EnvironmentError("The environment variable is not set.")
