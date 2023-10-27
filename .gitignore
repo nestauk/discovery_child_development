@@ -107,6 +107,8 @@ target/
 /inputs/*
 !/inputs/*.md
 /outputs/data/*
+/outputs/figures/*
+!/outputs/figures/*.md
 !/outputs/data/*.md
 /outputs/models/*
 !/outputs/models/*.md
@@ -130,3 +132,6 @@ node_modules/
 # Data and figures
 *.csv
 *.html
+
+# wandb
+discovery_child_development/notebooks/wandb/

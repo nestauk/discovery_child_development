@@ -1,7 +1,7 @@
 import pytest
 from unittest.mock import patch, mock_open
 from google.cloud import bigquery
-from discovery_child_development.utils.bigquery import create_client
+from discovery_child_development.utils.google_utils import create_client
 
 
 def test_create_client_without_credentials_and_successful_download():
