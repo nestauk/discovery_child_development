@@ -120,7 +120,7 @@ def find_most_frequent_labels(df: pd.DataFrame, label_col: str="sub_category", h
     return top_combinations, labels
 
 
-def find_most_common_row(df):
+def find_most_common_row(df: pd.DataFrame):
     """Find the row pattern that occurs most frequently (for a one-hot-encoded dataframe)"""
     # make a copy, otherwise this will modify the original dataframe even though we are not returning it
     df_copy = df.copy()
