@@ -50,6 +50,22 @@ class MostCommonClassifier(BaseEstimator, ClassifierMixin):
         return [self.labels for _ in range(len(X))]
 
 
+def generate_predictions(labels, label_probabilities):
+    sample_predictions = []
+    for label in labels:
+        sample_predictions.append(
+            np.random.choice(
+                [0, 1],
+                1,
+                p=[
+                    1 - label_probabilities[label],
+                    label_probabilities[label],
+                ],
+            )[0]
+        )
+    return sample_predictions
+
+
 class MostProbableClassifier:
     def __init__(self, label_probabilities):
         self.labels = label_probabilities.index
@@ -60,23 +76,16 @@ class MostProbableClassifier:
         predictions = []
 
         for _ in range(num_samples):
-            sample_predictions = []
-            for label in self.labels:
-                sample_predictions.append(
-                    np.random.choice(
-                        [0, 1],
-                        1,
-                        p=[
-                            1 - self.label_probabilities[label],
-                            self.label_probabilities[label],
-                        ],
-                    )[0]
-                )
+            sample_predictions = generate_predictions(
+                self.labels, self.label_probabilities
+            )
             predictions.append(sample_predictions)
         return pd.DataFrame(predictions, columns=self.labels)
 
 
-def find_most_frequent_labels(df, label_col="sub_category", head=20):
+def find_most_frequent_labels(
+    df: pd.DataFrame, label_col: str = "sub_category", head: int = 20
+):
     """Find the most frequent combination of labels - for a dataframe where one column contains a list of labels"""
     sub_category_combinations = df[label_col].value_counts()
 
@@ -87,8 +96,9 @@ def find_most_frequent_labels(df, label_col="sub_category", head=20):
     return top_combinations, labels
 
 
-def find_most_common_row(df):
+def find_most_common_row(df: pd.DataFrame) -> tuple[str, int]:
     """Find the row pattern that occurs most frequently (for a one-hot-encoded dataframe)"""
+
     # make a copy, otherwise this will modify the original dataframe even though we are not returning it
     df_copy = df.copy()
 
@@ -99,6 +109,7 @@ def find_most_common_row(df):
 
     # Find the most common set of binary labels
     most_common_set = df_copy["combined"].value_counts().idxmax()
+    # Find out how many times this combination occurs
     count = df_copy["combined"].value_counts().max()
 
     return most_common_set, count
