@@ -19,10 +19,10 @@ from sklearn.model_selection import train_test_split
 from nesta_ds_utils.loading_saving import S3
 
 from discovery_child_development import PROJECT_DIR, logging
-from discovery_child_development.utils import bigquery, labelling_utils
+from discovery_child_development.utils import google_utils, labelling_utils
 from discovery_child_development.utils.io import import_config
 
-bigquery.find_credentials("GOOGLE_SHEETS_CREDENTIALS")
+google_utils.find_credentials("GOOGLE_SHEETS_CREDENTIALS")
 
 GOOGLE_SHEETS_CREDENTIALS = os.path.join(
     PROJECT_DIR, os.environ["GOOGLE_SHEETS_CREDENTIALS"]
