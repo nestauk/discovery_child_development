@@ -3,18 +3,12 @@ Various input output utilities
 """
 from discovery_child_development import PROJECT_DIR, logging
 from yaml import safe_load
-from typing import TypeVar, Iterator
+from typing import TypeVar
 import pathlib
-import pickle
-import json
-import os
-import pandas as pd
-from zipfile import ZipFile
 
 PathLike = TypeVar("PathLike", str, pathlib.Path, None)
 
 DEF_CONFIG_PATH = PROJECT_DIR / "discovery_child_development/config"
-VERBOSE = True
 
 
 def import_config(filename: str, path=DEF_CONFIG_PATH) -> dict:
