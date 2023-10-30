@@ -17,3 +17,4 @@ db-dtypes==1.1
 seaborn==0.13
 wandb
 df2gspread
+openai

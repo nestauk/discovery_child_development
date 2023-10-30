@@ -112,6 +112,19 @@ print(query)
 
 # ### Get the data
 
+# +
+job_config = bigquery.bigquery.QueryJobConfig(dry_run=True, use_query_cache=False)
+
+query_job = client.query(
+    create_query(search_terms_ey),
+    job_config=job_config,
+)
+
+print("This query will process {} bytes.".format(query_job.total_bytes_processed))
+# -
+
+query_job.total_bytes_processed / 1e9
+
 query_df = client.query(create_query(search_terms_ey)).to_dataframe()
 
 # +

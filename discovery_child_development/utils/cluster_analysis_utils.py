@@ -292,7 +292,7 @@ def cluster_keywords(
         max_df=max_df,
         min_df=min_df,
         max_features=10000,
-        stop_words=my_stop_words,
+        stop_words=list(my_stop_words),
     )
 
     # Create cluster text documents
