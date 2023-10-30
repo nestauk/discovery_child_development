@@ -12,8 +12,6 @@
 import pandas as pd
 import numpy as np
 import os
-
-# import pickle
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import (
     accuracy_score,
@@ -24,8 +22,6 @@ from sklearn.metrics import (
     jaccard_score,
     classification_report,
 )
-
-# from sklearn.base import BaseEstimator, ClassifierMixin
 
 ## plotting libraries
 import seaborn as sns
