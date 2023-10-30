@@ -1,13 +1,24 @@
 """
 Get predictions from a baseline model
-"""
 
+Usage:
+
+python discovery_child_development/analysis/baseline_model.py --model_type most_probable --wandb True
+
+model_type can either be 'most_probable' or 'majority_combination' and determines the type of baseline classifier used.
+
+wandb determines whether a run gets logged on wandb when the script is run.
+
+Further variables can be amended in the script (these are in the script because we anticipate they won't need to be changed often)
+"""
+import argparse
 from dotenv import load_dotenv
 import numpy as np
 import os
 import pandas as pd
 from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.model_selection import train_test_split
+from typing import List, Tuple, Union
 import wandb
 
 ## nesta ds
@@ -33,13 +44,25 @@ SEED = 42
 # Set the seed
 np.random.seed(SEED)
 
-WANDB = False
-MODEL_TYPE = "most_probable"
 SCORE_THRESHOLD = 0.3  # we will remove any concepts (and corresponding subcategories) assigned with less than 0.3 confidence by the OpenAlex algorithm
 
 
 class MostCommonClassifier(BaseEstimator, ClassifierMixin):
+    """
+    This class implements a classifier that predicts the same combination of labels for every single new datapoint.
+    The combination of labels provided during initialization is used as the prediction for all input samples.
+
+    Attributes:
+        labels (Iterable): The combination of labels that will be predicted for each new datapoint.
+    """
+
     def __init__(self, labels):
+        """
+        Initializes the MostCommonClassifier with the provided combination of labels.
+
+        Args:
+            labels (Iterable): The combination of labels that will be predicted for each new datapoint.
+        """
         self.labels = labels
 
     def fit(self, X, y=None):
@@ -47,20 +70,32 @@ class MostCommonClassifier(BaseEstimator, ClassifierMixin):
         return self
 
     def predict(self, X):
+        """
+        Predicts the same combination of labels for all input samples.
+
+        Args:
+            X (Iterable): The input data. The length of X determines the number of predictions to be generated.
+
+        Returns:
+            np.ndarray: A numpy array containing the predictions. Each row corresponds to a sample in X,
+                        and the values are the provided combination of labels.
+        """
         # Returns the most common label combination for all input
         return np.tile(self.labels, (len(X), 1))
 
 
-def generate_predictions(labels, label_probabilities):
+def generate_predictions(labels, label_probabilities) -> List[np.int64]:
     """When you pass in a set of labels and the probabilities of those labels, this function will use the probabilities
     to randomly generate a prediction for a single datapoint.
 
     Args:
-        labels (_type_): _description_
-        label_probabilities (_type_): _description_
+        labels (Union[List[str], pd.Index]): An iterable which can be a list of strings or the index of a pd.Series,
+                                             containing the labels for which predictions are to be made.
+        label_probabilities (pd.Series): Series where the index is the labels, and the values are the probabilities of those labels.
+        Can be generated with get_label_probabilities().
 
     Returns:
-        _type_: _description_
+        List[int]: A list of integer predictions (0 or 1) for each label, generated based on the given probabilities.
     """
     sample_predictions = []
     for label in labels:
@@ -78,11 +113,38 @@ def generate_predictions(labels, label_probabilities):
 
 
 class MostProbableClassifier:
+    """
+    This class implements a classifier that generates predictions based on the most probable outcomes for each label.
+
+    Attributes:
+        labels (pd.Index): The index of the label probabilities, representing the labels for which predictions are to be made.
+        label_probabilities (pd.Series): A pandas Series where the index corresponds to the labels and the values are
+                                         the probabilities of each label being 1.
+    """
+
     def __init__(self, label_probabilities):
+        """
+        Initializes the MostProbableClassifier with the provided label probabilities.
+
+        Args:
+            label_probabilities (pd.Series): A pandas Series where the index corresponds to the labels and the values are
+                                             the probabilities of each label being 1.
+        """
         self.labels = label_probabilities.index
         self.label_probabilities = label_probabilities
 
     def predict(self, X):
+        """
+        Generates predictions for each sample in the input based on the most probable outcomes for each label.
+
+        Args:
+            X (Iterable): An iterable containing the samples for which predictions are to be made. The length of X determines
+                          the number of predictions to be generated.
+
+        Returns:
+            pd.DataFrame: A pandas DataFrame containing the predictions. Each row corresponds to a sample in X, and each column
+                          corresponds to a label. The values are the predicted outcomes (0 or 1) for each label.
+        """
         num_samples = len(X)
         predictions = []
 
@@ -96,8 +158,25 @@ class MostProbableClassifier:
 
 def find_most_frequent_labels(
     df: pd.DataFrame, label_col: str = "sub_category", head: int = 20
-):
-    """Find the most frequent combination of labels - for a dataframe where one column contains a list of labels"""
+) -> Tuple[pd.Series, Union[Tuple, List]]:
+    """
+    Finds the most frequent combinations of labels in a specified column of a dataframe, where each entry in the column
+    contains a list or tuple of labels. The function returns the top combinations and the most frequent combination of labels.
+
+    Args:
+        df (pd.DataFrame): The dataframe containing the label data.
+        label_col (str, optional): The name of the column in the dataframe that contains the lists or tuples of labels.
+                                   Defaults to "sub_category".
+        head (int, optional): The number of top combinations to return. Defaults to 20.
+
+    Returns:
+        Tuple[pd.Series, Union[Tuple, List]]: A tuple containing two elements:
+                                              1. A pandas Series containing the counts of the top combinations of labels.
+                                              2. The most frequent combination of labels, which can be a tuple or a list.
+
+    Note:
+        The type of the most frequent labels (tuple or list) returned depends on the form of the entries in df[label_col].
+    """
     sub_category_combinations = df[label_col].value_counts()
 
     top_combinations = sub_category_combinations.head(head)
@@ -107,8 +186,19 @@ def find_most_frequent_labels(
     return top_combinations, labels
 
 
-def find_most_common_row(df: pd.DataFrame) -> tuple[str, int]:
-    """Find the row pattern that occurs most frequently (for a one-hot-encoded dataframe)"""
+def find_most_common_row(df: pd.DataFrame) -> Tuple[str, int]:
+    """
+    Finds the most common row pattern in a one-hot-encoded dataframe. Each row is converted into a string representation,
+    and the function identifies the pattern that occurs most frequently, along with the count of its occurrences.
+
+    Args:
+        df (pd.DataFrame): The one-hot-encoded dataframe to analyze.
+
+    Returns:
+        Tuple[str, int]: A tuple containing two elements:
+                         1. A string representing the most common row pattern (eg '00000010000001').
+                         2. An integer indicating the number of times this pattern occurs in the dataframe.
+    """
 
     # make a copy, otherwise this will modify the original dataframe even though we are not returning it
     df_copy = df.copy()
@@ -129,6 +219,17 @@ def find_most_common_row(df: pd.DataFrame) -> tuple[str, int]:
 def get_label_probabilities(
     df: pd.DataFrame, label_col: str = "sub_category", n: int = 1000, targets=None
 ) -> pd.Series:
+    """Get label probabilities from long-form data
+
+    Args:
+        df (pd.DataFrame): a long-form dataframe with an ID column and a label column (where each ID can have multiple labels)
+        label_col (str, optional): The column that contains the label. Defaults to "sub_category".
+        n (int, optional): Denominator used when calculating the prevalence of labels. Should be the number of unique IDs. Defaults to 1000.
+        targets (_type_, optional): This should be used if you're calculating probabilities on the training set, but the training set does not contain all possible labels. Defaults to None.
+
+    Returns:
+        pd.Series: A series where the index is the labels, and the values are the corresponding probabilities.
+    """
     # Some OpenAlex IDs get tagged with the same sub-category multiple times (because one sub-category maps to multiple concepts)
     # So drop_duplicates ensures that each sub-category is only counted once per OpenAlex ID
     df_cleaned = df.drop_duplicates(subset=["openalex_id", label_col])
@@ -179,6 +280,30 @@ def run_baseline_model(
         download_as="dataframe",
         kwargs_reading={"index_col": 0},
     )
+
+    if wandb_run:
+        # Initialize a wandb run and log score threshold with wandb
+        run = wandb.init(
+            project="ISS supervised ML",
+            job_type="Baseline modeling",
+            save_code=True,
+            config={
+                "baseline_model_type": model_type,
+                "score_threshold": score_threshold,
+            },
+        )
+        # We will use set the wandb description to be the dataset name (which includes details of concepts and years)
+        # - we set the description, and not the name, as there is a limit on the length of artifact names.
+        # wandb artifact names also cannot include "|" so we replace this.
+        wandb_name = training_data_filename.replace("|", "_")
+        # add reference to this data in wandb
+        wb.add_ref_to_data(
+            run,
+            "openalex_train_data_raw",
+            wandb_name,
+            S3_BUCKET,
+            training_data_filename,
+        )
 
     # Filter the data using a score threshold (0.3 is the threshold used by OpenAlex)
     openalex_data_wide = (
@@ -255,28 +380,6 @@ def run_baseline_model(
     logging.info(metrics)
 
     if wandb_run:
-        # Initialize a wandb run and log score threshold with wandb
-        run = wandb.init(
-            project="ISS supervised ML",
-            job_type="Baseline modeling",
-            save_code=True,
-            config={
-                "baseline_model_type": model_type,
-                "score_threshold": score_threshold,
-            },
-        )
-        # We will use set the wandb description to be the dataset name (which includes details of concepts and years)
-        # - we set the description, and not the name, as there is a limit on the length of artifact names.
-        # wandb artifact names also cannot include "|" so we replace this.
-        wandb_name = training_data_filename.replace("|", "_")
-        # add reference to this data in wandb
-        wb.add_ref_to_data(
-            run,
-            "openalex_train_data_raw",
-            wandb_name,
-            S3_BUCKET,
-            training_data_filename,
-        )
         # Log metrics
         for key, value in metrics.items():
             wandb.log({f"{key}": value})
@@ -288,9 +391,29 @@ def run_baseline_model(
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+        description="Script to run with command line arguments."
+    )
+
+    parser.add_argument(
+        "--wandb",
+        type=lambda x: (str(x).lower() == "true"),
+        default=False,
+        help="Do you want to log this as a run on wandb? (default: False)",
+    )
+    parser.add_argument(
+        "--model_type",
+        type=str,
+        default="most_probable",
+        choices=["majority_combination", "most_probable"],
+        help='Specify the model type (default: "most_probable")',
+    )
+
+    args = parser.parse_args()
+
     run_baseline_model(
-        model_type=MODEL_TYPE,
-        wandb_run=WANDB,
+        model_type=args.model_type,
+        wandb_run=args.wandb,
         score_threshold=SCORE_THRESHOLD,
         s3_bucket=S3_BUCKET,
         input_path=INPUT_PATH,

@@ -12,7 +12,8 @@
 import pandas as pd
 import numpy as np
 import os
-import pickle
+
+# import pickle
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import (
     accuracy_score,
@@ -23,13 +24,12 @@ from sklearn.metrics import (
     jaccard_score,
     classification_report,
 )
-from sklearn.base import BaseEstimator, ClassifierMixin
+
+# from sklearn.base import BaseEstimator, ClassifierMixin
 
 ## plotting libraries
 import seaborn as sns
 import matplotlib.pyplot as plt
-
-import wandb
 
 ## nesta ds
 from nesta_ds_utils.loading_saving import S3
@@ -38,7 +38,6 @@ from nesta_ds_utils.loading_saving import S3
 from discovery_child_development import PROJECT_DIR, logging
 from discovery_child_development.analysis import baseline_model as bm
 from discovery_child_development.utils import classification_utils
-from discovery_child_development.utils import wandb as wb
 from discovery_child_development.utils.io import import_config
 
 ## constants
@@ -267,22 +266,10 @@ most_common_combination_one_hot = mlb.transform([top_combinations.index[0]])
 # We'll create predictions using `MostCommonClassifier` for both the training and validation sets and use the metrics from the training set as the baseline. The reason for this is the "stupid" classifier should make equally good (bad) predictions for both the training and validation sets, but there are more observations in the training set so the statistics should be most robust (?)
 
 # %%
-most_common_combination_one_hot.shape
-
-# %%
 classifier = bm.MostCommonClassifier(labels=most_common_combination_one_hot)
 
 baseline_predictions_val = classifier.predict(X_val)
 baseline_predictions_train = classifier.predict(X_train)
-
-# %%
-X_train.shape
-
-# %%
-baseline_predictions_train.shape
-
-# %%
-accuracy_score(Y_train, baseline_predictions_train)
 
 # %%
 metrics = classification_utils.create_average_metrics(
