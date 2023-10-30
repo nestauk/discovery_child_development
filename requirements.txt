@@ -1,5 +1,4 @@
 altair
-boto3
 hdbscan==0.8.33
 metaflow==2.9.14
 numpy==1.23.4
@@ -16,3 +15,5 @@ google-cloud-bigquery==3.11
 nesta_ds_utils[s3,viz] @ git+https://github.com/nestauk/nesta_ds_utils.git
 db-dtypes==1.1
 seaborn==0.13
+wandb
+df2gspread

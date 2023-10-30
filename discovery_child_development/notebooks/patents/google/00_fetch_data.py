@@ -40,8 +40,16 @@ def get_keywords(file: str) -> List[str]:
     return keywords
 
 
-def create_query(search_terms: List[str]):
-    """Create a query to fetch data from BigQuery"""
+def create_query(search_terms: List[str]) -> str:
+    """Create a query to fetch data from BigQuery using search terms:
+    the query checks search terms in the title and abstract
+
+    Args:
+      search_terms (List[str]): list of search terms
+
+    Returns
+      str: query to fetch data from BigQuery
+    """
 
     # Create a list of 'LIKE' conditions for each search term
     like_conditions = {}
