@@ -1,7 +1,10 @@
+from dotenv import load_dotenv
 from nesta_ds_utils.loading_saving import S3
 import os
 
 from discovery_child_development.utils.io import import_config
+
+load_dotenv()
 
 S3_BUCKET = os.environ["S3_BUCKET"]
 
