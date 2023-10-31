@@ -7,6 +7,8 @@ client = create_client()
 
 """
 from google.oauth2.service_account import Credentials
+from df2gspread import gspread2df as g2d
+from oauth2client.service_account import ServiceAccountCredentials
 from google.cloud import bigquery
 from pathlib import PosixPath
 
@@ -79,3 +81,20 @@ def create_client() -> bigquery.Client:
     # Initialize a client with the provided credentials
     client = bigquery.Client(credentials=credentials)
     return client
+
+
+def access_google_sheet(google_credentials_json, sheet_id, sheet_name):
+    # Define the scope for the Google Sheets API (we only want Google sheets)
+    scope = ["https://spreadsheets.google.com/feeds"]
+
+    # Authenticate using the credentials JSON file
+    credentials = ServiceAccountCredentials.from_json_keyfile_name(
+        google_credentials_json, scope
+    )
+
+    # Load the data into a pandas DataFrame
+    data = g2d.download(
+        sheet_id, sheet_name, credentials=credentials, col_names=True, row_names=True
+    )
+
+    return data

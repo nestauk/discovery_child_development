@@ -10,8 +10,6 @@
 
 # %%
 import pandas as pd
-from df2gspread import gspread2df as g2d
-from oauth2client.service_account import ServiceAccountCredentials
 import os
 import logging
 from sklearn.model_selection import train_test_split
@@ -19,89 +17,29 @@ from sklearn.model_selection import train_test_split
 from nesta_ds_utils.loading_saving import S3
 
 from discovery_child_development import PROJECT_DIR, logging
-from discovery_child_development.utils import google_utils, labelling_utils
+from discovery_child_development.getters import taxonomy, openalex
 from discovery_child_development.utils.io import import_config
-
-google_utils.find_credentials("GOOGLE_SHEETS_CREDENTIALS")
-
-GOOGLE_SHEETS_CREDENTIALS = os.path.join(
-    PROJECT_DIR, os.environ["GOOGLE_SHEETS_CREDENTIALS"]
-)
 
 S3_BUCKET = os.environ["S3_BUCKET"]
 
 PARAMS = import_config("config.yaml")
 
 CONCEPT_IDS = "|".join(PARAMS["openalex_concepts"])
+YEARS = [str(y) for y in PARAMS["openalex_years"]]
+YEARS = "-".join(YEARS)
 
 OUT_PATH = "data/openAlex/processed/"
 
-SEED = 42
-
-
-# %%
-# Helpful functions!
-
-
-# For cleaning sub-category labels
-def clean_string(s):
-    s = s.replace(
-        "?", ""
-    )  # Remove question marks (do this *before* removing trailing spaces)
-    s = s.strip()  # Remove leading/trailing whitespace
-    s = " ".join(s.split())  # Remove duplicate spaces
-    s = s.lower()  # Convert to lowercase
-    return s
-
-
-# For accessing data from Google Sheets
-def access_google_sheet(google_credentials_json, sheet_id, sheet_name):
-    # Define the scope for the Google Sheets API (we only want Google sheets)
-    scope = ["https://spreadsheets.google.com/feeds"]
-
-    # Authenticate using the credentials JSON file
-    credentials = ServiceAccountCredentials.from_json_keyfile_name(
-        google_credentials_json, scope
-    )
-
-    # Load the data into a pandas DataFrame
-    data = g2d.download(
-        sheet_id, sheet_name, credentials=credentials, col_names=True, row_names=True
-    )
-
-    return data
-
+# needed for train-test split
+SEED = PARAMS["seed"]
 
 # %%
-taxonomy_data = access_google_sheet(
-    GOOGLE_SHEETS_CREDENTIALS,
-    sheet_id="1KIXSjS2MktbUKuyM-lprSK56kOh14u_gmHyGdHce87w",
-    sheet_name="initial_taxonomy",
-)
-
-# %%
-# convert this column so that we can filter on it more easily
-taxonomy_data["n_works"] = taxonomy_data["n_works"].astype("int64")
-
-taxonomy_data = (
-    taxonomy_data
-    # keep only concepts/categories that have been marked relevant
-    # and only concepts with at least 10 works
-    .query("`Relevant?` == 'Y' and `n_works` >= 10")
-    # Remove noise and typos in the "Sub category" column
-    .assign(**{"Sub category": lambda df: df["Sub category"].apply(clean_string)})
-    # The string cleaning function leaves behind some empty strings (previously "?") so we can now get rid of these
-    .query("`Sub category` != ''").rename(columns={"Sub category": "sub_category"})
-)
-
-# %%
-sorted(taxonomy_data["sub_category"].unique())
+taxonomy_data = taxonomy.get_taxonomy()
 
 # %%
 # check that there are no duplicate concepts - this should return 0
 len(taxonomy_data) - len(taxonomy_data["display_name"].unique())
 
-# %%
 # check that the number of unique names and the number of unique ids are the same
 len(taxonomy_data["display_name"].unique()) == len(taxonomy_data["concept_id"].unique())
 
@@ -113,34 +51,13 @@ taxonomy_concept_ids = taxonomy_data["concept_id"].unique()
 # ## Load abstracts
 
 # %%
-abstracts_filename = (
-    f"openalex_abstracts_{CONCEPT_IDS}_year-2019-2020-2021-2022-2023.csv"
-)
-
-# %%
-openalex_data = S3.download_obj(
-    S3_BUCKET,
-    path_from=f"data/openAlex/{abstracts_filename}",
-    download_as="dataframe",
-    kwargs_reading={"index_col": 0},
-)
-
-openalex_data.head()
+openalex_data = openalex.get_abstracts()
 
 # %% [markdown]
 # ## Load concepts metadata
 
 # %%
-concepts_file = f"concepts_metadata_{CONCEPT_IDS}_year-2019-2020-2021-2022-2023.csv"
-
-openalex_concepts = S3.download_obj(
-    "discovery-iss",
-    path_from=f"data/openAlex/concepts/{concepts_file}",
-    download_as="dataframe",
-    kwargs_reading={"index_col": 0},
-)
-
-openalex_concepts.head()
+openalex_concepts = openalex.get_concepts_metadata()
 
 # %% [markdown]
 # Next steps:
@@ -193,14 +110,10 @@ test_df = openalex_data[openalex_data["openalex_id"].isin(test_ids)]
 # %%
 # write to s3
 S3.upload_obj(
-    train_df,
-    S3_BUCKET,
-    f"{OUT_PATH}openalex_data_{CONCEPT_IDS}_year-2019-2020-2021-2022-2023_train.csv",
+    train_df, S3_BUCKET, f"{OUT_PATH}openalex_data_{CONCEPT_IDS}_year-{YEARS}_train.csv"
 )
 S3.upload_obj(
-    test_df,
-    S3_BUCKET,
-    f"{OUT_PATH}openalex_data_{CONCEPT_IDS}_year-2019-2020-2021-2022-2023_test.csv",
+    test_df, S3_BUCKET, f"{OUT_PATH}openalex_data_{CONCEPT_IDS}_year-{YEARS}_test.csv"
 )
 
 # %%
