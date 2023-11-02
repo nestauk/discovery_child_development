@@ -18,7 +18,7 @@ import os
 import pandas as pd
 from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.model_selection import train_test_split
-from typing import List, Tuple, Union
+from typing import Any, Iterable, List, Tuple, Union
 import wandb
 
 ## nesta ds
@@ -35,11 +35,11 @@ load_dotenv()
 S3_BUCKET = os.environ.get("S3_BUCKET")
 PARAMS = import_config("config.yaml")
 CONCEPT_IDS = "|".join(PARAMS["openalex_concepts"])
-INPUT_PATH = "data/openAlex/processed/"
+INPUT_PATH = f"data/openAlex/processed/openalex_data_{CONCEPT_IDS}_year-2019-2020-2021-2022-2023_train.csv"
 VECTORS_FILEPATH = "data/openAlex/vectors/sentence_vectors_384.parquet"
-DATA_PATH_LOCAL = os.path.join(PROJECT_DIR, "inputs", "data")
-FIG_PATH = os.path.join(PROJECT_DIR, "outputs", "figures")
-MODEL_PATH = os.path.join(PROJECT_DIR, "outputs", "models")
+DATA_PATH_LOCAL = PROJECT_DIR / "inputs/data/"
+FIG_PATH = PROJECT_DIR / "outputs/figures/"
+MODEL_PATH = PROJECT_DIR / "outputs/models/"
 SEED = 42
 # Set the seed
 np.random.seed(SEED)
@@ -56,7 +56,7 @@ class MostCommonClassifier(BaseEstimator, ClassifierMixin):
         labels (Iterable): The combination of labels that will be predicted for each new datapoint.
     """
 
-    def __init__(self, labels):
+    def __init__(self, labels: List[int]) -> None:
         """
         Initializes the MostCommonClassifier with the provided combination of labels.
 
@@ -69,7 +69,7 @@ class MostCommonClassifier(BaseEstimator, ClassifierMixin):
         # Nothing happens here because it doesn't learn from the data
         return self
 
-    def predict(self, X):
+    def predict(self, X: Iterable[Any]) -> np.ndarray:
         """
         Predicts the same combination of labels for all input samples.
 
@@ -84,7 +84,9 @@ class MostCommonClassifier(BaseEstimator, ClassifierMixin):
         return np.tile(self.labels, (len(X), 1))
 
 
-def generate_predictions(labels, label_probabilities) -> List[np.int64]:
+def generate_predictions(
+    labels: Union[List[str], pd.Index], label_probabilities: pd.Series
+) -> List[np.int64]:
     """When you pass in a set of labels and the probabilities of those labels, this function will use the probabilities
     to randomly generate a prediction for a single datapoint.
 
@@ -95,7 +97,7 @@ def generate_predictions(labels, label_probabilities) -> List[np.int64]:
         Can be generated with get_label_probabilities().
 
     Returns:
-        List[int]: A list of integer predictions (0 or 1) for each label, generated based on the given probabilities.
+        List[np.int64]: A list of integer predictions (0 or 1) for each label, generated based on the given probabilities.
     """
     sample_predictions = []
     for label in labels:
@@ -122,7 +124,7 @@ class MostProbableClassifier:
                                          the probabilities of each label being 1.
     """
 
-    def __init__(self, label_probabilities):
+    def __init__(self, label_probabilities: pd.Series) -> None:
         """
         Initializes the MostProbableClassifier with the provided label probabilities.
 
@@ -133,7 +135,7 @@ class MostProbableClassifier:
         self.labels = label_probabilities.index
         self.label_probabilities = label_probabilities
 
-    def predict(self, X):
+    def predict(self, X: Iterable[Any]) -> pd.DataFrame:
         """
         Generates predictions for each sample in the input based on the most probable outcomes for each label.
 
@@ -164,7 +166,18 @@ def find_most_frequent_labels(
     contains a list or tuple of labels. The function returns the top combinations and the most frequent combination of labels.
 
     Args:
-        df (pd.DataFrame): The dataframe containing the label data.
+        df (pd.DataFrame): A dataframe with the following required columns:
+        - id (int or str): A unique identifier for each text. It can be either an integer or a string.
+        - text (str): The document text. This column contains the actual text of the documents.
+        - sub_category (tuple): A tuple (or list) of labels for the documents. Each tuple contains the labels
+                                that are assigned to the corresponding document. There is no set length to the tuple/list.
+
+            Example of dataframe structure:
+            |   id   |         text         |    sub_category     |
+            |--------|----------------------|---------------------|
+            |   1    | "Document text 1..." | ("label1", "label2")|
+            |   2    | "Document text 2..." | ("label3", "label4")|
+            |  ...   |         ...          |         ...         |
         label_col (str, optional): The name of the column in the dataframe that contains the lists or tuples of labels.
                                    Defaults to "sub_category".
         head (int, optional): The number of top combinations to return. Defaults to 20.
@@ -217,7 +230,10 @@ def find_most_common_row(df: pd.DataFrame) -> Tuple[str, int]:
 
 
 def get_label_probabilities(
-    df: pd.DataFrame, label_col: str = "sub_category", n: int = 1000, targets=None
+    df: pd.DataFrame,
+    label_col: str = "sub_category",
+    n: int = 1000,
+    targets: Union[List[Any], pd.Index] = None,
 ) -> pd.Series:
     """Get label probabilities from long-form data
 
@@ -225,7 +241,8 @@ def get_label_probabilities(
         df (pd.DataFrame): a long-form dataframe with an ID column and a label column (where each ID can have multiple labels)
         label_col (str, optional): The column that contains the label. Defaults to "sub_category".
         n (int, optional): Denominator used when calculating the prevalence of labels. Should be the number of unique IDs. Defaults to 1000.
-        targets (_type_, optional): This should be used if you're calculating probabilities on the training set, but the training set does not contain all possible labels. Defaults to None.
+        targets (Union[List[Any], pd.Index], optional): Supply a list or the column names if you have a one-hot-encoded dataset of the set of possible labels.
+                                                This should be used if you're calculating probabilities on the training set, but the training set does not contain all possible labels. Defaults to None.
 
     Returns:
         pd.Series: A series where the index is the labels, and the values are the corresponding probabilities.
@@ -233,14 +250,17 @@ def get_label_probabilities(
     # Some OpenAlex IDs get tagged with the same sub-category multiple times (because one sub-category maps to multiple concepts)
     # So drop_duplicates ensures that each sub-category is only counted once per OpenAlex ID
     df_cleaned = df.drop_duplicates(subset=["openalex_id", label_col])
-    label_probabilities = pd.DataFrame(df_cleaned[label_col].value_counts())
-    # Normalise using the number of unique documents as the denominator (each label can appear at most once per document because of
-    # how we cleaned the data above, so we have made sure that the max "prob" possible is 1)
-    label_probabilities["prob"] = label_probabilities[label_col] / n
-    label_probabilities = label_probabilities[
-        ["prob"]
-    ]  # drop the count column, so it is just index and probability
-    label_probabilities = label_probabilities.squeeze()  # convert to a Series
+
+    label_probabilities = (
+        pd.DataFrame(df_cleaned[label_col].value_counts())
+        # Normalise using the number of unique documents as the denominator (each label can appear at most once per document because of
+        # how we cleaned the data above, so we have made sure that the max "prob" possible is 1)
+        .assign(prob=lambda df: df[label_col] / n)
+        # drop the count column, so it is just index and probability
+        .drop(columns=label_col)
+        # convert to a Series
+        .squeeze()
+    )
 
     if targets is not None:
         missing_labels = pd.Series([], index=[])
@@ -258,10 +278,9 @@ def run_baseline_model(
     score_threshold=0.3,
     s3_bucket: str = S3_BUCKET,
     input_path: str = INPUT_PATH,
-    concept_ids: str = CONCEPT_IDS,
     vectors_filepath: str = VECTORS_FILEPATH,
     model_path: str = MODEL_PATH,
-):
+) -> None:
     valid_inputs = ["majority_combination", "most_probable"]  # "majority_label",
 
     if model_type not in valid_inputs:
@@ -269,14 +288,9 @@ def run_baseline_model(
             f"Invalid input. Expected one of {valid_inputs}, got '{model_type}'"
         )
 
-    # Load the data
-    training_data_filename = (
-        f"openalex_data_{concept_ids}_year-2019-2020-2021-2022-2023_train.csv"
-    )
-
     openalex_data = S3.download_obj(
         s3_bucket,
-        path_from=f"{input_path}{training_data_filename}",
+        path_from=input_path,
         download_as="dataframe",
         kwargs_reading={"index_col": 0},
     )
@@ -316,10 +330,6 @@ def run_baseline_model(
     # Set the index - useful later for creating training/validation split
     openalex_data_wide = openalex_data_wide.set_index("openalex_id")
 
-    top_combinations, most_common_combination = find_most_frequent_labels(
-        openalex_data_wide, label_col="sub_category", head=20
-    )
-
     # Load embeddings
     embeddings = S3.download_obj(
         s3_bucket,
@@ -340,7 +350,7 @@ def run_baseline_model(
     # Split IDs into random train and test subsets
     unique_ids = openalex_data_wide.index.unique()
 
-    train_ids, val_ids = train_test_split(unique_ids, test_size=0.1, random_state=SEED)
+    train_ids, _ = train_test_split(unique_ids, test_size=0.1, random_state=SEED)
 
     X_train = (
         openalex_data_wide[openalex_data_wide.index.isin(train_ids)][
@@ -353,6 +363,10 @@ def run_baseline_model(
     Y_train = Y[Y.index.isin(train_ids)]
 
     if model_type == "majority_combination":
+        top_combinations, _ = find_most_frequent_labels(
+            openalex_data_wide, label_col="sub_category", head=20
+        )
+
         most_common_combination_one_hot = mlb.transform([top_combinations.index[0]])
         classifier = MostCommonClassifier(labels=most_common_combination_one_hot)
 
@@ -417,7 +431,6 @@ if __name__ == "__main__":
         score_threshold=SCORE_THRESHOLD,
         s3_bucket=S3_BUCKET,
         input_path=INPUT_PATH,
-        concept_ids=CONCEPT_IDS,
         vectors_filepath=VECTORS_FILEPATH,
         model_path=MODEL_PATH,
     )
