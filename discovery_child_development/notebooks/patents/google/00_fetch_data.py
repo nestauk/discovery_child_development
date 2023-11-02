@@ -8,7 +8,7 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.15.2
+#       jupytext_version: 1.15.0
 #   kernelspec:
 #     display_name: discovery_child_development
 #     language: python
@@ -20,7 +20,7 @@
 # Develop a sensible query to fetch relevant Google Patents queries (without incurring too much cost)
 
 # +
-from discovery_child_development.utils import bigquery, keywords as kw
+from discovery_child_development.utils import google_utils, keywords as kw
 from discovery_child_development import PROJECT_DIR
 
 KEYWORD_FILE = PROJECT_DIR / "discovery_child_development/config/patents/keywords.txt"
@@ -37,17 +37,17 @@ keywords = kw.deduplicate_keywords(
 query_keywords_path = KEYWORD_FILE.parent / "keywords_query.txt"
 kw.save_keywords(keywords, query_keywords_path)
 
-client = bigquery.create_client()
+client = google_utils.create_client()
 
-query = bigquery.create_patents_query(keywords)
+query = google_utils.create_patents_query(keywords)
 print(query)
 
-bigquery.dry_run(client, query)
+google_utils.dry_run(client, query)
 
 query_df = client.query(query).to_dataframe()
 len(query_df)
 
-bigquery.upload_query_to_s3(
+google_utils.upload_query_to_s3(
     query_name="GooglePatents",
     path=PATENT_PATH,
     query_df=query_df,

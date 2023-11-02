@@ -9,7 +9,7 @@ Usage:
 
 python discovery_child_development/pipeline/patents/fetch_patents.py
 """
-from discovery_child_development.utils import bigquery, keywords as kw
+from discovery_child_development.utils import google_utils, keywords as kw
 from discovery_child_development import PROJECT_DIR
 
 KEYWORD_FILE = PROJECT_DIR / "discovery_child_development/config/patents/keywords.txt"
@@ -22,17 +22,18 @@ if __name__ == "__main__":
         keywords
         + kw.replace_word(keywords, "child", "infant")
         + kw.replace_word(keywords, "child", "baby")
+        + kw.replace_word(keywords, "child", "toddler")
     )
     # Save the final list of keywords
     query_keywords_path = KEYWORD_FILE.parent / "keywords_query.txt"
     kw.save_keywords(keywords, query_keywords_path)
-    query = bigquery.create_patents_query(keywords)
+    query = google_utils.create_patents_query(keywords)
     # Run the query
-    client = bigquery.create_client()
-    bigquery.dry_run(client, query)
+    client = google_utils.create_client()
+    google_utils.dry_run(client, query)
     query_df = client.query(query).to_dataframe()
     # Upload query results and log the query itself to S3
-    bigquery.upload_query_to_s3(
+    google_utils.upload_query_to_s3(
         query_name="GooglePatents",
         path=PATENT_PATH,
         query_df=query_df,
