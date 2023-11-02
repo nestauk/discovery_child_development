@@ -12,4 +12,3 @@ LOGIC_MILL_TOKEN=
 # Credentials for Google products
 GOOGLE_APPLICATION_CREDENTIALS=<path-to-credentials-file>
 GOOGLE_SHEETS_CREDENTIALS=<path-to-credentials-file>
-OPENAI_API_KEY=

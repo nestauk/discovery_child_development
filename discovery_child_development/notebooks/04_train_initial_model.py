@@ -12,7 +12,6 @@
 import pandas as pd
 import numpy as np
 import os
-import pickle
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import (
     accuracy_score,
@@ -23,24 +22,19 @@ from sklearn.metrics import (
     jaccard_score,
     classification_report,
 )
-from sklearn.base import BaseEstimator, ClassifierMixin
 
 ## plotting libraries
 import seaborn as sns
 import matplotlib.pyplot as plt
-
-import wandb
 
 ## nesta ds
 from nesta_ds_utils.loading_saving import S3
 
 ## project code
 from discovery_child_development import PROJECT_DIR, logging
-from discovery_child_development.utils import bigquery, labelling_utils
-from discovery_child_development.utils import wandb as wb
+from discovery_child_development.analysis import baseline_model as bm
+from discovery_child_development.utils import classification_utils
 from discovery_child_development.utils.io import import_config
-
-bigquery.find_credentials("GOOGLE_SHEETS_CREDENTIALS")
 
 ## constants
 
@@ -53,125 +47,20 @@ FIG_PATH = os.path.join(PROJECT_DIR, "outputs", "figures")
 MODEL_PATH = os.path.join(PROJECT_DIR, "outputs", "models")
 SEED = 42
 
+# List of paths to ensure they exist
+paths_to_create = [DATA_PATH_LOCAL, FIG_PATH, MODEL_PATH]
+
+for path in paths_to_create:
+    os.makedirs(path, exist_ok=True)
+
 ## variables
 SCORE_THRESHOLD = 0.3  # we will remove any concepts (and corresponding subcategories) assigned with less than 0.3 confidence by the OpenAlex algorithm
-
-
-# %%
-# helpful functions
-class MostCommonClassifier(BaseEstimator, ClassifierMixin):
-    def __init__(self, labels):
-        self.labels = labels
-
-    def fit(self, X, y=None):
-        # Nothing happens here because it doesn't learn from the data
-        return self
-
-    def predict(self, X):
-        # Returns the most common label combination for all input
-        return [self.labels for _ in range(len(X))]
-
-
-def create_average_metrics(Y_test, Y_pred, average="samples"):
-    # Accuracy
-    accuracy = accuracy_score(Y_test, Y_pred)
-
-    # Precision
-    precision = precision_score(
-        Y_test, Y_pred, average=average
-    )  # Use 'samples' for multi-label
-
-    # Recall
-    recall = recall_score(
-        Y_test, Y_pred, average=average
-    )  # Use 'samples' for multi-label
-
-    # F1-Score
-    f1 = f1_score(Y_test, Y_pred, average=average)  # Use 'samples' for multi-label
-
-    # Hamming Loss
-    hamming = hamming_loss(Y_test, Y_pred)
-
-    # Jaccard Score
-    jaccard = jaccard_score(
-        Y_test, Y_pred, average=average
-    )  # Use 'samples' for multi-label
-
-    results = {
-        "accuracy": accuracy,
-        "precision": precision,
-        "recall": recall,
-        "f1": f1,
-        "hamming": hamming,
-        "jaccard": jaccard,
-    }
-
-    return results
-
-
-def find_most_frequent_labels(df, label_col="sub_category", head=20):
-    """Find the most frequent combination of labels - for a dataframe where one column contains a list of labels"""
-    sub_category_combinations = df[label_col].value_counts()
-
-    top_combinations = sub_category_combinations.head(head)
-
-    labels = top_combinations.index[0]
-
-    return top_combinations, labels
-
-
-def find_most_common_row(df):
-    """Find the row pattern that occurs most frequently (for a one-hot-encoded dataframe)"""
-    # make a copy, otherwise this will modify the original dataframe even though we are not returning it
-    df_copy = df.copy()
-
-    # Convert each row into a string representation
-    df_copy["combined"] = df_copy.apply(
-        lambda row: "".join(row.astype(str).values), axis=1, result_type="reduce"
-    )
-
-    # Find the most common set of binary labels
-    most_common_set = df_copy["combined"].value_counts().idxmax()
-    count = df_copy["combined"].value_counts().max()
-
-    return most_common_set, count
-
-
-def flatten_classification_report(report):
-    """
-    Flatten a scikit learn classification report into a format that can be stored on wandb
-    """
-    flat_report = {}
-    for class_label, metrics in report.items():
-        if class_label not in ["micro avg", "macro avg", "weighted avg", "samples avg"]:
-            for metric, value in metrics.items():
-                flat_report[f"class_{class_label}_{metric}"] = value
-        else:
-            flat_report[class_label] = report[class_label]
-    return flat_report
-
-
-# %%
-# Initialize a run and log score threshold with wandb
-run = wandb.init(
-    project="ISS supervised ML",
-    job_type="Baseline modeling",
-    save_code=True,
-    config={"score_threshold": SCORE_THRESHOLD},
-)
-
-# %%
-CONCEPT_IDS.replace("|", "_")
 
 # %%
 # Load data from s3
 training_data_filename = (
     f"openalex_data_{CONCEPT_IDS}_year-2019-2020-2021-2022-2023_train.csv"
 )
-# We will use set the wandb description to be the dataset name (which includes details of concepts and years)
-# - we set the description, and not the name, as there is a limit on the length of artifact names.
-# wandb artifact names also cannot include "|" so we replace this.
-wandb_name = training_data_filename.replace("|", "_")
 
 openalex_data = S3.download_obj(
     S3_BUCKET,
@@ -179,13 +68,6 @@ openalex_data = S3.download_obj(
     download_as="dataframe",
     kwargs_reading={"index_col": 0},
 )
-
-# add reference to this data in wandb
-wb.add_ref_to_data(
-    run, "openalex_train_data_raw", wandb_name, S3_BUCKET, training_data_filename
-)
-
-openalex_data.head()
 
 # %% [markdown]
 # ## EDA
@@ -251,8 +133,6 @@ openalex_data[["score"]].hist()
 
 # %%
 # Check the score distribution for each of the top-level concepts in the data to see if most observations in each bucket are above or below the 0.3 threshold
-
-
 def hist_with_line(data, color):
     n, bins, patches = plt.hist(
         data, color=color, edgecolor="k"
@@ -277,9 +157,6 @@ plt.savefig(os.path.join(FIG_PATH, "level1_concept_score_distributions.png"))
 plt.show()
 
 # %%
-openalex_data.head()
-
-# %%
 # Filter the data using a score threshold (0.3 is the threshold used by OpenAlex)
 openalex_data_wide = (
     openalex_data[openalex_data["score"] >= SCORE_THRESHOLD]
@@ -299,13 +176,14 @@ logging.info(
 logging.info(f"N rows: {openalex_data_wide.shape[0]}")
 
 # %%
+# Set the index to be the OpenAlex ID - useful when we do train/test split
 openalex_data_wide = openalex_data_wide.set_index("openalex_id")
 
 # %% [markdown]
 # Checking the distribution of combinations of sub category also shows us that there is a clear majority class: (general development / personal, social, emotional)
 
 # %%
-top_combinations, most_common_combination = find_most_frequent_labels(
+top_combinations, most_common_combination = bm.find_most_frequent_labels(
     openalex_data_wide, label_col="sub_category", head=20
 )
 
@@ -323,14 +201,6 @@ plt.show()
 
 top_combinations
 
-# %%
-data = pd.DataFrame(top_combinations)
-# Create a wandb.Table object
-table = wandb.Table(columns=["sub_category", "Quantity"], data=data)
-
-# Log the table to W&B
-wandb.log({"top_combinations": table})
-
 # %% [markdown]
 # ## Prepare data for training a model
 
@@ -347,10 +217,9 @@ embeddings = embeddings.set_index("openalex_id")
 
 # %%
 openalex_data_wide = openalex_data_wide.join(embeddings, on="openalex_id", how="left")
-openalex_data_wide.head()
 
 # %%
-Y, mlb = labelling_utils.add_binarise_labels(
+Y, mlb = classification_utils.add_binarise_labels(
     openalex_data_wide, label_column="sub_category", not_valid_label=None
 )
 
@@ -376,9 +245,10 @@ Y_train = Y[Y.index.isin(train_ids)]
 Y_val = Y[Y.index.isin(val_ids)]
 
 # %%
-# Check that both train and validation sets have the same most frequent label combination
-Y_train_labels, Y_train_count = find_most_common_row(Y_train)
-Y_val_labels, Y_val_count = find_most_common_row(Y_val)
+# Check that both train and validation sets have the same most frequent label combination.
+# It's not a problem if not, but just helpful to know. If they are different, it means that the train and validation sets have different distributions of labels.
+Y_train_labels, Y_train_count = bm.find_most_common_row(Y_train)
+Y_val_labels, Y_val_count = bm.find_most_common_row(Y_val)
 
 Y_train_labels == Y_val_labels
 
@@ -392,30 +262,21 @@ most_common_combination_one_hot = mlb.transform([top_combinations.index[0]])
 # We'll create predictions using `MostCommonClassifier` for both the training and validation sets and use the metrics from the training set as the baseline. The reason for this is the "stupid" classifier should make equally good (bad) predictions for both the training and validation sets, but there are more observations in the training set so the statistics should be most robust (?)
 
 # %%
-classifier = MostCommonClassifier(labels=most_common_combination_one_hot)
+classifier = bm.MostCommonClassifier(labels=most_common_combination_one_hot)
 
 baseline_predictions_val = classifier.predict(X_val)
 baseline_predictions_train = classifier.predict(X_train)
 
 # %%
-# The formats of Y_train and the predictions need to be tweaked a bit so that we can compare them
-Y_train_correct = Y_train.values.tolist()
-predictions_correct = [pred[0].tolist() for pred in baseline_predictions_train]
-
-# %%
-metrics = create_average_metrics(
-    Y_train_correct, predictions_correct, average="samples"
+metrics = classification_utils.create_average_metrics(
+    Y_train, baseline_predictions_train, average="samples"
 )
 metrics
 
 # %%
-for key, value in metrics.items():
-    wandb.log({f"{key}": value})
-
-# %%
 report = classification_report(
-    Y_train_correct,
-    predictions_correct,
+    Y_train,
+    baseline_predictions_train,
     target_names=mlb.classes_,
     zero_division=0,
     output_dict=True,
@@ -424,21 +285,60 @@ report = classification_report(
 report
 
 # %%
-flat_report = flatten_classification_report(report)
-flat_report
+# Check if these stats are the same on the validation set - does this baseline model generalise?
+metrics_val = classification_utils.create_average_metrics(
+    Y_val, baseline_predictions_val, average="samples"
+)
+metrics_val
+
+# %% [markdown]
+# ## Predict using probability
 
 # %%
-# Save and log the model and metrics
-model_path = f"{MODEL_PATH}/baseline_majority_classifier.pkl"
-pickle.dump(classifier, open(model_path, "wb"))
-baseline_model = wandb.Artifact("baseline_classifier", type="model")
-baseline_model.add_file(model_path)
-run.log_artifact(baseline_model)
+# Assign probabilities using the training set. It is data leakage if we get the probabilities from the whole dataset, so we get the probabilities just from the training set.
 
-wandb.log({"classification_report": flat_report})
+# subset the original dataframe so that we get just the training set
+train_df = openalex_data[
+    (openalex_data["score"] >= SCORE_THRESHOLD)
+    & (openalex_data["openalex_id"].isin(train_ids))
+]
+label_probabilities = bm.get_label_probabilities(
+    train_df,
+    "sub_category",
+    len(train_df["openalex_id"].unique()),
+    targets=Y_train.columns,
+)
+# sort the index of label_probabilities so that it matches the order of columns in Y_train and Y_val
+label_probabilities.sort_index(inplace=True)
+# instantiate the classifier
+probability_classifier = bm.MostProbableClassifier(
+    label_probabilities=label_probabilities
+)
+
+# create predictions
+random_choice_predictions_val = probability_classifier.predict(X_val)
+random_choice_predictions_train = probability_classifier.predict(X_train)
 
 # %%
-# End the weights and biases run
-wandb.finish()
+rc_metrics_train = classification_utils.create_average_metrics(
+    Y_train, random_choice_predictions_train, average="samples"
+)
+rc_metrics_train
+
+# %%
+rc_metrics_val = classification_utils.create_average_metrics(
+    Y_val, random_choice_predictions_val, average="samples"
+)
+rc_metrics_val
+
+# %% [markdown]
+# Some observations:
+# * The accuracy is similar whether you are using the majority-combination-classifier, or the probability-based random choice classifier.
+# * The average precision is somewhat worse for the random choice classifier compared to the majority combination classifier. Same for recall and F1.
+# * The Hamming loss is higher for the random choice classifier compared to majority combination
+# * The jaccard score is lower for the random choice classifier compared to majority combination
+#
+# Additionally:
+# * Although the probabilities for the random choice classifier came from the training set, there is similar performance on the training and validation sets (it does not perform worse on the validation set, as we might have expected). Presumably the distribution of labels is similar in the validation set compared to the training set.
 
 # %%
