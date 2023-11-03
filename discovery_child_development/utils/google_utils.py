@@ -83,7 +83,32 @@ def create_client() -> bigquery.Client:
     return client
 
 
-def access_google_sheet(sheet_id, sheet_name):
+def access_google_sheet(sheet_id: str, sheet_name: str):
+    """
+    Accesses a specified Google Sheet and returns its contents as a pandas DataFrame.
+
+    This function authenticates using service account credentials, defines the scope
+    for the Google Sheets API, and downloads the sheet contents. The sheet is accessed
+    by its unique identifier and a specific sheet name within the spreadsheet.
+
+    Args:
+        sheet_id (str): The unique identifier for the Google Sheets file.
+        sheet_name (str): The name of the individual sheet within the Google Sheets file.
+
+    Returns:
+        pandas.DataFrame: A DataFrame containing the data from the specified Google Sheet.
+
+    Raises:
+        GoogleAuthError: If authentication with Google Sheets API fails.
+        DownloadError: If there is an issue downloading the sheet contents.
+
+    Notes:
+    - The GOOGLE_SHEETS_CREDENTIALS environment variable must be set with the path to
+      the credentials JSON file ie `.credentials/xxxxx.json`.
+    - The service account must have the necessary permissions to access the Google Sheet.
+    - The function assumes the first row and column of the sheet contain the header and
+      index names, respectively.
+    """
     # Load the credentials for use with Google Sheets
     google_credentials_json = find_credentials("GOOGLE_SHEETS_CREDENTIALS")
 
