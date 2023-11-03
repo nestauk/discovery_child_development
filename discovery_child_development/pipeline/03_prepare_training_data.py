@@ -72,13 +72,25 @@ if __name__ == "__main__":
     )
 
     # Merge the abstracts, concepts metadata and taxonomy sub-categories
-    openalex_data = openalex_concepts_subset[
-        ["openalex_id", "concept_id", "sub_category", "display_name", "level", "score"]
-    ].merge(
-        openalex_data[["id", "text"]], left_on="openalex_id", right_on="id", how="left"
+    openalex_data = (
+        openalex_concepts_subset[
+            [
+                "openalex_id",
+                "concept_id",
+                "sub_category",
+                "display_name",
+                "level",
+                "score",
+            ]
+        ]
+        .merge(
+            openalex_data[["id", "text"]],
+            left_on="openalex_id",
+            right_on="id",
+            how="left",
+        )
+        .drop(columns=["id"], axis=1)
     )
-
-    openalex_data = openalex_data.drop(columns=["id"], axis=1)
 
     # Split IDs into random train and test subsets
     unique_ids = openalex_data["openalex_id"].unique()
