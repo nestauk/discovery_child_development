@@ -434,31 +434,3 @@ def generate_cluster_names_with_gpt(
     cluster_names_ = cluster_names["choices"][0]["message"]["content"].split("\n")
     # Map cluster index to cluster name
     return {i: cluster_name for i, cluster_name in enumerate(cluster_names_)}
-
-
-def generate_cluster_summaries_with_gpt(
-    cluster_df: pd.DataFrame,
-    embeddings: np.ndarray,
-    n_central: int = 15,
-    gpt_message_for_descriptions: str = None,
-    gpt_message_for_names: str = None,
-) -> pd.DataFrame:
-    cluster_descriptions = describe_clusters_with_gpt(
-        cluster_df=cluster_df,
-        embeddings=embeddings,
-        n_central=n_central,
-        gpt_message=gpt_message_for_descriptions,
-    )
-
-    cluster_names_dict = generate_cluster_names_with_gpt(
-        cluster_descriptions=cluster_descriptions,
-        gpt_message=gpt_message_for_names,
-    )
-
-    return pd.DataFrame(
-        data={
-            "cluster": cluster_names_dict.keys(),
-            "cluster_name": cluster_names_dict.values(),
-            "cluster_desciption": cluster_descriptions,
-        }
-    )
