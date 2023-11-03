@@ -246,6 +246,10 @@ def get_label_probabilities(
 
     Returns:
         pd.Series: A series where the index is the labels, and the values are the corresponding probabilities.
+
+    Note:
+        Be careful to make sure that the output of this function is in the same order as the columns as your Y
+        dataframe! You may need to sort the index of the output of this function.
     """
     # Some OpenAlex IDs get tagged with the same sub-category multiple times (because one sub-category maps to multiple concepts)
     # So drop_duplicates ensures that each sub-category is only counted once per OpenAlex ID
@@ -322,7 +326,8 @@ def run_baseline_model(
     # Filter the data using a score threshold (0.3 is the threshold used by OpenAlex)
     openalex_data_wide = (
         openalex_data[openalex_data["score"] >= score_threshold]
-        # Squash sub-categories into one tuple per work (rather than one row per sub-category per work)
+        # Squash sub-categories into one tuple per work (rather than one row per sub-category per work).
+        # This is the required input to the sklearn MultiLabelBinarizer.
         .groupby(["openalex_id", "text"])["sub_category"]
         .agg(lambda x: tuple(set(x)))
         .reset_index()
@@ -331,6 +336,8 @@ def run_baseline_model(
     openalex_data_wide = openalex_data_wide.set_index("openalex_id")
 
     # Load embeddings
+    # These are not actually used for prediction, but this is the form our input data will take
+    # in future when we're using an actual classifier instead of a dummy one.
     embeddings = S3.download_obj(
         s3_bucket,
         path_from=vectors_filepath,
@@ -343,13 +350,18 @@ def run_baseline_model(
         embeddings, on="openalex_id", how="left"
     )
 
+    # The multilabel binarizer splits the sub-category tuple into binary labels.
+    # Y has a column for each unique sub-category in the data, and one row per OpenAlex ID.
     Y, mlb = classification_utils.add_binarise_labels(
         openalex_data_wide, label_column="sub_category", not_valid_label=None
     )
 
-    # Split IDs into random train and test subsets
+    # Split IDs into random train and validation subsets
     unique_ids = openalex_data_wide.index.unique()
 
+    # We will only get metrics on the training set for now, because the baseline should be
+    # the best possible score we can get from a probability/majority-based dummy classifier,
+    # and we assume the metrics will be slightly better on the training set.
     train_ids, _ = train_test_split(unique_ids, test_size=0.1, random_state=SEED)
 
     X_train = (
@@ -371,7 +383,9 @@ def run_baseline_model(
         classifier = MostCommonClassifier(labels=most_common_combination_one_hot)
 
     elif model_type == "most_probable":
-        # Assign probabilities using the training set
+        # Assign probabilities using the training set.
+        # This bit looks convoluted because we need a long-form dataframe to calculate
+        # the label probabilities, so we can't use openalex_data_wide.
         train_df = openalex_data[
             (openalex_data["score"] >= score_threshold)
             & (openalex_data["openalex_id"].isin(train_ids))
