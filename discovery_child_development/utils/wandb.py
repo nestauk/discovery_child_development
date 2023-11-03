@@ -4,6 +4,7 @@ Utils functions for working with weights and biases
 
 import wandb
 import pandas as pd
+import pickle
 
 
 def log_dataset(
@@ -52,3 +53,10 @@ def add_ref_to_data(
     artifact = wandb.Artifact(name=name, type="data", description=description)
     artifact.add_reference(f"s3://{bucket}/{filepath}")
     run.log_artifact(artifact)
+
+
+def log_model(run: wandb.sdk.wandb_run.Run, name: str, model, model_path: str) -> None:
+    pickle.dump(model, open(model_path, "wb"))
+    baseline_model = wandb.Artifact(name, type="model")
+    baseline_model.add_file(model_path)
+    run.log_artifact(baseline_model)
