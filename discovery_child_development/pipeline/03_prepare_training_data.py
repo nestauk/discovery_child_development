@@ -5,6 +5,7 @@ Prepare labelled data for training a classifier
 import pandas as pd
 import os
 from sklearn.model_selection import train_test_split
+from typing import Tuple
 
 from nesta_ds_utils.loading_saving import S3
 
@@ -25,15 +26,37 @@ OUT_PATH = "data/openAlex/processed/"
 # needed for train-test split
 SEED = PARAMS["seed"]
 
+
+def identify_multiple_sub_categories(df: pd.DataFrame) -> Tuple[pd.DataFrame, int]:
+    """Check which title/concept combinations map to multiple subcategories.
+
+    One concept can be mapped to multiple subcategories. In order to check that the taxonomy
+    and the concept metadata have been merged correctly, we implement this check to make sure
+    that some OpenAlex title-concept combinations map to multiple subcategories from the taxonomy.
+
+    Args:
+        df (pd.DataFrame): Concepts metadata dataframe.
+
+    Returns:
+        Tuple[pd.DataFrame, int]: A dataframe with the title-concept combinations and the number of sub-categories they map to;
+                and the number of rows in that dataframe (number of unique title-concept combinations that map to multiple sub-categories)
+    """
+    # Count the number of subcategories for each title/concept_id pair
+    grouped = df.groupby(["concept_id", "openalex_id", "title"])[
+        "sub_category"
+    ].nunique()
+
+    # Find the rows where there are multiple subcategories
+    multiple_subcats = grouped[grouped > 1].reset_index()
+
+    # Count how many works are mapped to multiple subcategories now
+    count = multiple_subcats.shape[0]
+
+    return multiple_subcats, count
+
+
 if __name__ == "__main__":
     taxonomy_data = taxonomy.get_taxonomy()
-
-    # check that there are no duplicate concepts - this should return 0
-    duplicates = len(taxonomy_data) - len(taxonomy_data["display_name"].unique())
-    if duplicates > 0:
-        raise ValueError(
-            f"There are {duplicates} duplicate concepts in the taxonomy data."
-        )
 
     # check that the number of unique names and the number of unique ids are the same
     if len(taxonomy_data["display_name"].unique()) != len(
@@ -63,6 +86,13 @@ if __name__ == "__main__":
         on="concept_id",
     )
 
+    _, rows_with_multiple_subcats = identify_multiple_sub_categories(
+        openalex_concepts_subset
+    )
+    logging.info(
+        f"{rows_with_multiple_subcats} title/concept combinations are mapped to multiple subcategories"
+    )
+
     # Check whether any works have been lost because they were not tagged with any concepts from the taxonomy
     n_works_lost = len(openalex_concepts["openalex_id"].unique()) - len(
         openalex_concepts_subset["openalex_id"].unique()
@@ -72,6 +102,7 @@ if __name__ == "__main__":
     )
 
     # Merge the abstracts, concepts metadata and taxonomy sub-categories
+    logging.info("Merging concepts metadata with text data...")
     openalex_data = (
         openalex_concepts_subset[
             [
@@ -93,6 +124,7 @@ if __name__ == "__main__":
     )
 
     # Split IDs into random train and test subsets
+    logging.info("Beginning train-test split...")
     unique_ids = openalex_data["openalex_id"].unique()
 
     train_ids, test_ids = train_test_split(unique_ids, test_size=0.1, random_state=SEED)
@@ -101,6 +133,7 @@ if __name__ == "__main__":
     test_df = openalex_data[openalex_data["openalex_id"].isin(test_ids)]
 
     # write to s3
+    logging.info("Uploading to S3...")
     S3.upload_obj(
         train_df,
         S3_BUCKET,
@@ -111,3 +144,4 @@ if __name__ == "__main__":
         S3_BUCKET,
         f"{OUT_PATH}openalex_data_{CONCEPT_IDS}_year-{YEARS}_test.csv",
     )
+    logging.info("Complete!")
