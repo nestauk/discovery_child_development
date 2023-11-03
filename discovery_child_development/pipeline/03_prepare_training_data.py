@@ -29,12 +29,19 @@ if __name__ == "__main__":
     taxonomy_data = taxonomy.get_taxonomy()
 
     # check that there are no duplicate concepts - this should return 0
-    len(taxonomy_data) - len(taxonomy_data["display_name"].unique())
+    duplicates = len(taxonomy_data) - len(taxonomy_data["display_name"].unique())
+    if duplicates > 0:
+        raise ValueError(
+            f"There are {duplicates} duplicate concepts in the taxonomy data."
+        )
 
     # check that the number of unique names and the number of unique ids are the same
-    len(taxonomy_data["display_name"].unique()) == len(
+    if len(taxonomy_data["display_name"].unique()) != len(
         taxonomy_data["concept_id"].unique()
-    )
+    ):
+        raise ValueError(
+            "The number of unique names does not match the number of unique IDs."
+        )
 
     # Get the IDs of concepts that we will use to filter the OpenAlex data
     taxonomy_concept_ids = taxonomy_data["concept_id"].unique()
@@ -57,8 +64,11 @@ if __name__ == "__main__":
     )
 
     # Check whether any works have been lost because they were not tagged with any concepts from the taxonomy
-    len(openalex_concepts["openalex_id"].unique()) - len(
+    n_works_lost = len(openalex_concepts["openalex_id"].unique()) - len(
         openalex_concepts_subset["openalex_id"].unique()
+    )
+    logging.info(
+        f"{n_works_lost} works lost because they were not tagged with any concepts from the taxonomy"
     )
 
     # Merge the abstracts, concepts metadata and taxonomy sub-categories
