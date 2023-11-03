@@ -83,7 +83,10 @@ def create_client() -> bigquery.Client:
     return client
 
 
-def access_google_sheet(google_credentials_json, sheet_id, sheet_name):
+def access_google_sheet(sheet_id, sheet_name):
+    # Load the credentials for use with Google Sheets
+    google_credentials_json = find_credentials("GOOGLE_SHEETS_CREDENTIALS")
+
     # Define the scope for the Google Sheets API (we only want Google sheets)
     scope = ["https://spreadsheets.google.com/feeds"]
 
