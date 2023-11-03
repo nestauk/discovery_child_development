@@ -74,13 +74,6 @@ def deduplicate_keywords(lst: List[List[str]]) -> List[List[str]]:
     return deduplicated_lst
 
 
-# def check_articles_for_comma_terms(text: str, terms: str):
-#     """Return True if text contains comma terms"""
-#     terms = [term.strip() for term in terms.split(",")]
-#     sentences_with_terms = find_sentences_with_terms(text, terms, all_terms=True)
-#     return len(sentences_with_terms) >= 1
-
-
 def find_sentences_with_terms(
     text: str, terms: List[str], all_terms: bool = True
 ) -> List[str]:
