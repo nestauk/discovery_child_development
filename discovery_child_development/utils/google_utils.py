@@ -1,9 +1,23 @@
 """
-This module contains functions for establishing a Google BigQuery client
+This module contains functions for accessing Google Sheets and Google BigQuery resources.
 
 Usage:
-from discovery_child_development.utils.bigquery import create_client
-client = create_client()
+import discovery_child_development.utils.google_utils as google_utils
+
+# access data from Google Sheets
+data = google_utils.access_google_sheet(<sheet_id>, <sheet_name>)
+
+# access data from Google BigQuery
+client = google_utils.create_client()
+
+## Define the SQL query
+sql = "< add your query here >"
+
+## Execute the query
+query_job = client.query(sql)
+
+## Fetch the results
+results = query_job.result()
 
 """
 from google.oauth2.service_account import Credentials
