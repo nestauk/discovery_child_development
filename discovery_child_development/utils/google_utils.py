@@ -96,8 +96,12 @@ def write_like_condition(term: Union[str, List[str]], table: str, field: str) ->
 
 
 def create_patents_query(search_terms: List[str]) -> str:
-    """Create a query to fetch data from BigQuery using search terms:
-    the query checks search terms in the title and abstract
+    """Create a query to fetch patent data from BigQuery using search terms:
+    the query checks search terms in the title and abstract.
+
+    We access both google_patents_research.publications and google_patents.publications as
+    the google_patents_research has abstracts translated into English, plus embeddings (if needed),
+    while patents.publication has the grant date and other metadata
 
     Args:
     search_terms (List[str]): list of search terms
@@ -126,21 +130,29 @@ def create_patents_query(search_terms: List[str]) -> str:
             INNER JOIN `patents-public-data.google_patents_research.publications` gpr ON
             pub.publication_number = gpr.publication_number
         WHERE
-            ({combined_conditions_title})
-            OR ({combined_conditions_abstract})
-            AND pub.grant_date BETWEEN 20190101 AND 20231231
+            (({combined_conditions_title})
+            OR ({combined_conditions_abstract}))
+            AND ((pub.grant_date BETWEEN 20190101 AND 20231231) OR (pub.filing_date BETWEEN 20190101 AND 20231231))
     )
 
     SELECT
         gpr.publication_number,
+        pub.application_number,
+        pub.family_id,
         url,
+        pub.filing_date,
         pub.grant_date,
+        pub.publication_date,
+        pub.priority_date,
         title,
         title_translated,
         abstract,
         abstract_translated,
         top_terms,
-        embedding_v1,
+        pub.country_code,
+        pub.inventor_harmonized,
+        pub.assignee_harmonized,
+        pub.cpc,
     FROM `patents-public-data.patents.publications` pub
         INNER JOIN `patents-public-data.google_patents_research.publications` gpr ON
         pub.publication_number = gpr.publication_number
