@@ -24,7 +24,7 @@ if __name__ == "__main__":
         + kw.replace_word(keywords, "child", "baby")
         + kw.replace_word(keywords, "child", "toddler")
     )
-    # Save the final list of keywords
+    # Save a reference copy on local/GitHub for the most up date query
     query_keywords_path = KEYWORD_FILE.parent / "keywords_query.txt"
     kw.save_keywords(keywords, query_keywords_path)
     query = google_utils.create_patents_query(keywords)
@@ -33,6 +33,7 @@ if __name__ == "__main__":
     google_utils.dry_run(client, query)
     query_df = client.query(query).to_dataframe()
     # Upload query results and log the query itself to S3
+    # Note that we're also saving the keywords used in the query together with the data
     google_utils.upload_query_to_s3(
         query_name="GooglePatents",
         path=PATENT_PATH,
