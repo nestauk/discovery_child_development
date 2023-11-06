@@ -13,7 +13,7 @@ from sklearn.metrics import silhouette_score
 from sklearn.metrics.pairwise import euclidean_distances
 from sklearn.model_selection import ParameterGrid
 from sklearn.feature_extraction import text
-from typing import Iterator, Dict
+from typing import Iterator, Dict, Tuple
 from collections import defaultdict
 from tqdm import tqdm
 
@@ -267,6 +267,7 @@ def cluster_keywords(
     max_df: float = 0.90,
     min_df: float = 0.01,
     Vectorizer=TfidfVectorizer,
+    ngram_range: Tuple[int, int] = (1, 1),
 ) -> Dict:
     """
     Generates keywords that characterise the cluster, using the specified Vectorizer
@@ -292,7 +293,8 @@ def cluster_keywords(
         max_df=max_df,
         min_df=min_df,
         max_features=10000,
-        stop_words=my_stop_words,
+        stop_words=list(my_stop_words),
+        ngram_range=ngram_range,
     )
 
     # Create cluster text documents
