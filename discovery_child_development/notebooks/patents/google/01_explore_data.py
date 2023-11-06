@@ -109,7 +109,7 @@ Describe what kind of innovations is this cluster capturing, in 2 sentences. \
 \n\n##Abstracts\n\n {} \n\n##Description (2 short sentences)"
 
 cluster_descriptions = cau.describe_clusters_with_gpt(
-    cluster_df=cluster_df,
+    cluster_df=clusters_df,
     embeddings=embeddings,
     n_central=10,
     gpt_message=CLUSTER_SUMMARY_MESSAGE,
