@@ -1,3 +1,5 @@
+seed: 42
+
 # OpenAlex starter concepts
 openalex_concepts:
   - "C109260823" # child development
@@ -9,5 +11,17 @@ openalex_concepts:
   - "C2781192327" # child behavior checklist
   - "C15471489" # child psychotherapy
   - "C178229462" # early childhood education
+openalex_years:
+  - 2019
+  - 2020
+  - 2021
+  - 2022
+  - 2023
+
+taxonomy:
+  n_works: 20
+  sheet_id: "1KIXSjS2MktbUKuyM-lprSK56kOh14u_gmHyGdHce87w"
+  sheet_name: "initial_taxonomy"
 patents_data_path: "data/patents/"
+
 patents_data_version: "GooglePatents_20231106_175151"

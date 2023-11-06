@@ -1,12 +1,28 @@
 """
-This module contains functions for establishing a Google BigQuery client
+This module contains functions for accessing Google Sheets and Google BigQuery resources.
 
 Usage:
-from discovery_child_development.utils.bigquery import create_client
-client = create_client()
+import discovery_child_development.utils.google_utils as google_utils
+
+# access data from Google Sheets
+data = google_utils.access_google_sheet(<sheet_id>, <sheet_name>)
+
+# access data from Google BigQuery
+client = google_utils.create_client()
+
+## Define the SQL query
+sql = "< add your query here >"
+
+## Execute the query
+query_job = client.query(sql)
+
+## Fetch the results
+results = query_job.result()
 
 """
 from google.oauth2.service_account import Credentials
+from df2gspread import gspread2df as g2d
+from oauth2client.service_account import ServiceAccountCredentials
 from google.cloud import bigquery
 from pathlib import PosixPath
 
@@ -218,3 +234,48 @@ def upload_query_to_s3(
                 f"{path}{query_name}/{filename}",
             )
     logging.info(f"Query results uploaded to {path}{query_name}/")
+
+
+def access_google_sheet(sheet_id: str, sheet_name: str):
+    """
+    Accesses a specified Google Sheet and returns its contents as a pandas DataFrame.
+
+    This function authenticates using service account credentials, defines the scope
+    for the Google Sheets API, and downloads the sheet contents. The sheet is accessed
+    by its unique identifier and a specific sheet name within the spreadsheet.
+
+    Args:
+        sheet_id (str): The unique identifier for the Google Sheets file.
+        sheet_name (str): The name of the individual sheet within the Google Sheets file.
+
+    Returns:
+        pandas.DataFrame: A DataFrame containing the data from the specified Google Sheet.
+
+    Raises:
+        GoogleAuthError: If authentication with Google Sheets API fails.
+        DownloadError: If there is an issue downloading the sheet contents.
+
+    Notes:
+    - The GOOGLE_SHEETS_CREDENTIALS environment variable must be set with the path to
+      the credentials JSON file ie `.credentials/xxxxx.json`.
+    - The service account must have the necessary permissions to access the Google Sheet.
+    - The function assumes the first row and column of the sheet contain the header and
+      index names, respectively.
+    """
+    # Load the credentials for use with Google Sheets
+    google_credentials_json = find_credentials("GOOGLE_SHEETS_CREDENTIALS")
+
+    # Define the scope for the Google Sheets API (we only want Google sheets)
+    scope = ["https://spreadsheets.google.com/feeds"]
+
+    # Authenticate using the credentials JSON file
+    credentials = ServiceAccountCredentials.from_json_keyfile_name(
+        google_credentials_json, scope
+    )
+
+    # Load the data into a pandas DataFrame
+    data = g2d.download(
+        sheet_id, sheet_name, credentials=credentials, col_names=True, row_names=True
+    )
+
+    return data

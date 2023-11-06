@@ -18,9 +18,9 @@
 # # Testing connection with BigQuery
 
 # +
-from discovery_child_development.utils import bigquery
+from discovery_child_development.utils import google_utils
 
-client = bigquery.create_client()
+client = google_utils.create_client()
 
 # Define the SQL query
 sql = """
