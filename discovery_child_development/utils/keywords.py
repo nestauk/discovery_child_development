@@ -114,6 +114,10 @@ def check_keyword_hits(texts: pd.Series, keywords: list) -> List[bool]:
     Args:
         texts (pd.Series): Series of texts to search
         keywords (list): list of keywords or keyword combinations
+
+    Returns:
+        List[bool]: list of boolean values (True/False) indicating whether
+            the text contains any of the keywords or keyword combinations
     """
     hits = [
         texts.apply(lambda x: find_sentences_with_terms(x.lower(), keyword))
