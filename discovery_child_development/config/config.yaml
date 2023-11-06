@@ -22,3 +22,6 @@ taxonomy:
   n_works: 20
   sheet_id: "1KIXSjS2MktbUKuyM-lprSK56kOh14u_gmHyGdHce87w"
   sheet_name: "initial_taxonomy"
+patents_data_path: "data/patents/"
+
+patents_data_version: "GooglePatents_20231106_175151"
