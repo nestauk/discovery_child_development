@@ -26,6 +26,7 @@
 from discovery_child_development.getters import patents
 from discovery_child_development.utils import keywords as kw
 import discovery_child_development.utils.cluster_analysis_utils as cau
+from discovery_child_development import logger
 import pandas as pd
 import numpy as np
 
@@ -53,6 +54,7 @@ UMAP_PARAMS = {
 
 # +
 # Load keywords
+logger.info(f"Fetching {patents.PATENTS_DATA_VERSION}")
 keywords = patents.get_keywords_from_s3()
 
 # Load patent data
@@ -71,6 +73,9 @@ data_df = (
 
 # Check proportion of patents that have the keyword hits in the same sentence
 len(data_df.query("has_hits == True")) / len(data_df)
+
+# Check how many have an empty or null abstract
+len(data_df[data_df["abstract"].isna() | data_df["abstract"].str.strip().eq("")])
 
 # Create embeddings for the unique concepts
 embeddings = model.encode(data_df["text"].tolist(), show_progress_bar=True)
@@ -137,7 +142,19 @@ clusters_df_final = clusters_df.copy().merge(
 )
 
 fig = (
-    alt.Chart(clusters_df_final)
+    alt.Chart(
+        clusters_df_final[
+            [
+                "x",
+                "y",
+                "cluster",
+                "cluster_name",
+                "cluster_description",
+                "title",
+                "abstract",
+            ]
+        ]
+    )
     .mark_circle()
     .encode(
         x="x",
