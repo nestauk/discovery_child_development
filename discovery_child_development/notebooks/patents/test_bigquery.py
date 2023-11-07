@@ -8,7 +8,7 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.15.2
+#       jupytext_version: 1.15.0
 #   kernelspec:
 #     display_name: discovery_child_development
 #     language: python
@@ -18,9 +18,9 @@
 # # Testing connection with BigQuery
 
 # +
-from discovery_child_development.utils import bigquery
+from discovery_child_development.utils import google_utils
 
-client = bigquery.create_client()
+client = google_utils.create_client()
 
 # Define the SQL query
 sql = """

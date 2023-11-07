@@ -13,13 +13,14 @@ from sklearn.metrics import silhouette_score
 from sklearn.metrics.pairwise import euclidean_distances
 from sklearn.model_selection import ParameterGrid
 from sklearn.feature_extraction import text
-from typing import Iterator, Dict
+from typing import Iterator, Dict, Tuple, List
 from collections import defaultdict
 from tqdm import tqdm
-
 import hdbscan
 import umap
 from discovery_child_development import logging
+from discovery_child_development.utils.openai_utils import openai
+import copy
 
 
 def reduce_to_2D(vectors, random_state=1):
@@ -267,6 +268,7 @@ def cluster_keywords(
     max_df: float = 0.90,
     min_df: float = 0.01,
     Vectorizer=TfidfVectorizer,
+    ngram_range: Tuple[int, int] = (1, 1),
 ) -> Dict:
     """
     Generates keywords that characterise the cluster, using the specified Vectorizer
@@ -292,7 +294,8 @@ def cluster_keywords(
         max_df=max_df,
         min_df=min_df,
         max_features=10000,
-        stop_words=my_stop_words,
+        stop_words=list(my_stop_words),
+        ngram_range=ngram_range,
     )
 
     # Create cluster text documents
@@ -318,3 +321,116 @@ def cluster_keywords(
         top_cluster_tokens[unique_cluster_labels[i]] = [id_to_token[j] for j in x]
 
     return top_cluster_tokens
+
+
+def get_cluster_centroids(df: pd.DataFrame, embeddings: np.ndarray) -> List[np.ndarray]:
+    """Get the centroids of each cluster
+
+    Args:
+        data_df: Dataframe with integer index [0, 1, 2...] and a column 'cluster' with cluster labels
+        embeddings: Embeddings for each data point
+
+    Returns:
+        List of cluster centroid vectors
+    """
+    centroids = []
+    for i in range(len(df["cluster"].unique())):
+        cluster = df[df["cluster"] == i]
+        centroid = np.mean(embeddings[cluster.index], axis=0)
+        centroids.append(centroid)
+    return centroids
+
+
+def get_n_most_central_vectors(
+    embeddings: np.ndarray, centroid: np.ndarray, n: int = 10
+) -> np.ndarray:
+    """Get the n most similar data points to a centroid"""
+    distances = np.linalg.norm(embeddings - centroid, axis=1)
+    return np.argsort(distances)[:n]
+
+
+def describe_clusters_with_gpt(
+    cluster_df: pd.DataFrame,
+    embeddings: np.ndarray,
+    n_central: int = 15,
+    gpt_message: str = None,
+) -> List[str]:
+    """
+    Generate cluster descriptions from cluster centroids using GPT
+
+    Args:
+        cluster_df (pd.DataFrame): Dataframe with integer index [0, 1, 2...] and columns
+            'cluster' with cluster labels, and 'text' with text data for each data point
+        gpt_message (str): Message to send to GPT to generate cluster description
+        embeddings (np.ndarray): Embeddings for each data point used for determining cluster centroids
+        n_central (int, optional): Number of most central data points to use for cluster description. Defaults to 15.
+
+    Returns:
+        List[str]: List of cluster descriptions
+    """
+    if gpt_message is None:
+        gpt_message = "Here are the most central documents of a document cluster. \
+            Describe what kind of information is this cluster capturing, in 2 sentences. \
+            \n\n##Abstracts\n\n {} \n\n##Description (2 short sentences)"
+
+    # Get cluster centroid indices
+    centroids = get_cluster_centroids(cluster_df, embeddings)
+    most_central = []
+    for i in range(len(centroids)):
+        most_central.append(
+            get_n_most_central_vectors(embeddings, centroids[i], n=n_central)
+        )
+
+    # Generate cluster descriptions
+    cluster_descriptions = []
+    for i in range(len(centroids)):
+        abstracts = cluster_df.iloc[most_central[i]].text.to_list()
+        messages = [
+            {
+                "role": "user",
+                "content": copy.deepcopy(gpt_message).format("\n".join(abstracts)),
+            }
+        ]
+        chatgpt_output = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=messages,
+            temperature=0.6,
+            max_tokens=1000,
+        ).to_dict()
+        cluster_descriptions.append(chatgpt_output["choices"][0]["message"]["content"])
+
+    return cluster_descriptions
+
+
+def generate_cluster_names_with_gpt(
+    cluster_descriptions: List[str], gpt_message: str = None
+) -> Dict[int, str]:
+    """Generate cluster names from cluster descriptions using GPT
+
+    Args:
+        cluster_descriptions (List[str]): List of cluster descriptions
+        gpt_message (str): Message to send to GPT to generate cluster names
+
+    Returns:
+        Dict[int, str]: Dictionary mapping cluster index to cluster name
+    """
+    # Prepare the GPT message
+    cluster_descriptions_with_numbers = [
+        f"{i}: {x}" for i, x in enumerate(cluster_descriptions)
+    ]
+    if gpt_message is None:
+        gpt_message = "Summarise these cluster descriptions in 2-3 words.\n\n##Descriptions\n\n {}"
+    messages = [
+        {"role": "user", "content": gpt_message.format("\n".join(cluster_descriptions))}
+    ]
+    # Generate cluster names
+    cluster_names = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=messages,
+        temperature=0.6,
+        max_tokens=1000,
+    ).to_dict()
+    # Get cluster names from the GPT response
+    cluster_names_ = cluster_names["choices"][0]["message"]["content"].split("\n")
+    # Map cluster index to cluster name
+    return {i: cluster_name for i, cluster_name in enumerate(cluster_names_)}

@@ -14,10 +14,10 @@ First, amend these variables:
 * YEARS: list of years you want to retrieve publications from
 
 To test the flow with just the first concept in the list:
-python discovery_child_development/pipeline/openalex_metaflow.py run --production False
+python discovery_child_development/pipeline/00_openalex_metaflow.py run --production False
 
 To fetch the full dataset:
-python discovery_child_development/pipeline/openalex_metaflow.py run --production True
+python discovery_child_development/pipeline/00_openalex_metaflow.py run --production True
 """
 import itertools
 import json
@@ -28,22 +28,12 @@ import boto3
 from dotenv import load_dotenv
 from typing import NoReturn, List, Any
 
-# Amend this to your desired concepts/years. OpenAlex allows up to 50 parameters
-# per query, so code is included by default to chunk up the concepts into 40s.
-CONCEPT_IDS = [
-    "C109260823",  # child development
-    "C2993937534",  # childhood development
-    "C2777082460",  # early childhood
-    "C2911196330",  # child rearing
-    "C2993037610",  # child care
-    "C2779415726",  # child protection
-    "C2781192327",  # child behavior checklist
-    "C15471489",  # child psychotherapy
-    "C178229462",  # early childhood education
-    # "C138496976",  # developmental psychology (level 1).
-]
+from discovery_child_development.utils.io import import_config
 
-YEARS = [2019, 2020, 2021, 2022, 2023]
+PARAMS = import_config("config.yaml")
+
+CONCEPT_IDS = PARAMS["openalex_concepts"]
+YEARS = PARAMS["openalex_years"]
 
 API_ROOT = "https://api.openalex.org/works?filter="
 
