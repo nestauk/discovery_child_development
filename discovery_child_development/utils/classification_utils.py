@@ -46,30 +46,56 @@ def add_binarise_labels(
     return dummy_cols[valid_cols], mlb
 
 
-def create_average_metrics(Y_test, Y_pred, average="samples"):
+def create_average_metrics(Y_test, Y_pred, average="macro"):
+    """Calculate and return a dictionary of average performance metrics for
+    multilabel classification problems.
+
+    This function computes a series of evaluation metrics for assessing the
+    performance of a classification model on a multilabel task. It includes
+    accuracy, precision, recall, F1-score, Hamming loss, and Jaccard score.
+    The function allows specifying the averaging method to be used for
+    multi-class calculations.
+
+    Parameters:
+    - Y_test (array-like): True labels of the data. Must be of the same length as Y_pred.
+    - Y_pred (array-like): Predicted labels by the classification model. Must be of the
+      same length as Y_test.
+    - average (str, optional): A string specifying the averaging method to be applied for
+      precision, recall, and F1-score. Default is 'macro'. Other valid options are
+      'micro', 'weighted', and 'samples'.
+
+    Returns:
+    - dict: A dictionary with keys as metric names and values as the corresponding
+      metric scores. The dictionary contains the following keys:
+        - 'accuracy': The accuracy score of the model.
+        - 'precision': The precision score of the model using the specified averaging method.
+        - 'recall': The recall score of the model using the specified averaging method.
+        - 'f1': The F1 score of the model using the specified averaging method.
+        - 'hamming': The Hamming loss of the model.
+        - 'jaccard': The Jaccard score of the model using the specified averaging method.
+
+    Notes:
+    - The 'macro' average is preferred for this function as it does not favor larger
+      classes, which is particularly useful when the model's performance on
+      underrepresented classes is important.
+    """
     # Accuracy
     accuracy = accuracy_score(Y_test, Y_pred)
 
     # Precision
-    precision = precision_score(
-        Y_test, Y_pred, average=average
-    )  # Use 'samples' for multi-label
+    precision = precision_score(Y_test, Y_pred, average=average)
 
     # Recall
-    recall = recall_score(
-        Y_test, Y_pred, average=average
-    )  # Use 'samples' for multi-label
+    recall = recall_score(Y_test, Y_pred, average=average)
 
     # F1-Score
-    f1 = f1_score(Y_test, Y_pred, average=average)  # Use 'samples' for multi-label
+    f1 = f1_score(Y_test, Y_pred, average=average)
 
     # Hamming Loss
     hamming = hamming_loss(Y_test, Y_pred)
 
     # Jaccard Score
-    jaccard = jaccard_score(
-        Y_test, Y_pred, average=average
-    )  # Use 'samples' for multi-label
+    jaccard = jaccard_score(Y_test, Y_pred, average=average)
 
     results = {
         "accuracy": accuracy,
