@@ -35,7 +35,8 @@ load_dotenv()
 S3_BUCKET = os.environ.get("S3_BUCKET")
 PARAMS = import_config("config.yaml")
 CONCEPT_IDS = "|".join(PARAMS["openalex_concepts"])
-INPUT_PATH = f"data/openAlex/processed/openalex_data_{CONCEPT_IDS}_year-2019-2020-2021-2022-2023_train.csv"
+INPUT_PATH = "data/openAlex/processed/"
+INPUT_FILE = f"openalex_data_{CONCEPT_IDS}_year-2019-2020-2021-2022-2023_train.csv"
 VECTORS_FILEPATH = "data/openAlex/vectors/sentence_vectors_384.parquet"
 DATA_PATH_LOCAL = PROJECT_DIR / "inputs/data/"
 FIG_PATH = PROJECT_DIR / "outputs/figures/"
@@ -282,10 +283,11 @@ def run_baseline_model(
     score_threshold=0.3,
     s3_bucket: str = S3_BUCKET,
     input_path: str = INPUT_PATH,
+    input_file: str = INPUT_FILE,
     vectors_filepath: str = VECTORS_FILEPATH,
     model_path: str = MODEL_PATH,
 ) -> None:
-    valid_inputs = ["majority_combination", "most_probable"]  # "majority_label",
+    valid_inputs = ["majority_combination", "most_probable"]
 
     if model_type not in valid_inputs:
         raise ValueError(
@@ -294,7 +296,7 @@ def run_baseline_model(
 
     openalex_data = S3.download_obj(
         s3_bucket,
-        path_from=input_path,
+        path_from=f"{input_path}{input_file}",
         download_as="dataframe",
         kwargs_reading={"index_col": 0},
     )
@@ -313,14 +315,14 @@ def run_baseline_model(
         # We will use set the wandb description to be the dataset name (which includes details of concepts and years)
         # - we set the description, and not the name, as there is a limit on the length of artifact names.
         # wandb artifact names also cannot include "|" so we replace this.
-        wandb_name = training_data_filename.replace("|", "_")
+        wandb_name = input_file.replace("|", "_")
         # add reference to this data in wandb
         wb.add_ref_to_data(
             run,
             "openalex_train_data_raw",
             wandb_name,
             S3_BUCKET,
-            training_data_filename,
+            input_file,
         )
 
     # Filter the data using a score threshold (0.3 is the threshold used by OpenAlex)
@@ -456,6 +458,7 @@ if __name__ == "__main__":
         score_threshold=SCORE_THRESHOLD,
         s3_bucket=S3_BUCKET,
         input_path=INPUT_PATH,
+        input_file=INPUT_FILE,
         vectors_filepath=VECTORS_FILEPATH,
         model_path=MODEL_PATH,
     )
