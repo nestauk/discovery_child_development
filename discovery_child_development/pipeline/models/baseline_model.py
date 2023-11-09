@@ -407,13 +407,24 @@ def run_baseline_model(
     )
     logging.info(metrics)
 
+    confusion_matrix = classification_utils.create_heatmap_table(
+        Y_train, baseline_predictions, mlb.classes_, proportions=False
+    )
+
     if wandb_run:
         # Log metrics
-        for key, value in metrics.items():
-            wandb.log({f"{key}": value})
+        run.log({"macro_avg_f1": metrics["f1"]})
+        run.log({"accuracy": metrics["accuracy"]})
+        run.log({"macro_avg_precision": metrics["precision"]})
+        run.log({"macro_avg_recall": metrics["recall"]})
+
         # Save and log the model and metrics
         model_path = f"{model_path}/baseline_most_probable.pkl"
         wb.log_model(run, f"baseline_{model_type}", classifier, model_path)
+
+        # Log confusion matrix
+        run.log({"confusion_matrix": confusion_matrix})
+
         # End the weights and biases run
         wandb.finish()
 
