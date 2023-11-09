@@ -247,7 +247,7 @@ def create_heatmap_table(y_true, y_pred, label_names, proportions=False):
         else "Confusion Matrix Stats per Label"
     )
     plt.show()
-    return df
+    return df.reset_index()
 
 
 # Example usage:

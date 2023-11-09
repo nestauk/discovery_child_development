@@ -415,17 +415,20 @@ def run_baseline_model(
 
     if wandb_run:
         # Log metrics
-        run.log({"macro_avg_f1": metrics["f1"]})
-        run.log({"accuracy": metrics["accuracy"]})
-        run.log({"macro_avg_precision": metrics["precision"]})
-        run.log({"macro_avg_recall": metrics["recall"]})
+        wandb.run.summary["macro_avg_f1"] = metrics["f1"]
+        wandb.run.summary["accuracy"] = metrics["accuracy"]
+        wandb.run.summary["macro_avg_precision"] = metrics["precision"]
+        wandb.run.summary["macro_avg_recall"] = metrics["recall"]
 
         # Save and log the model and metrics
         model_path = f"{model_path}/baseline_most_probable.pkl"
         wb.log_model(run, f"baseline_{model_type}", classifier, model_path)
 
         # Log confusion matrix
-        run.log({"confusion_matrix": confusion_matrix})
+        wb_confusion_matrix = wandb.Table(
+            data=confusion_matrix, columns=confusion_matrix.columns
+        )
+        run.log({"confusion_matrix": wb_confusion_matrix})
 
         # End the weights and biases run
         wandb.finish()
