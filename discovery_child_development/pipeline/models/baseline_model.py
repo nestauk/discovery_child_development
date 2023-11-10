@@ -405,7 +405,7 @@ def run_baseline_model(
     baseline_predictions = classifier.predict(X_train)
 
     metrics = classification_utils.create_average_metrics(
-        Y_train, baseline_predictions, average="samples"
+        Y_train, baseline_predictions, average="macro"
     )
     logging.info(metrics)
 
