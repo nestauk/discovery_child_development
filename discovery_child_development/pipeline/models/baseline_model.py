@@ -3,7 +3,7 @@ Get predictions from a baseline model
 
 Usage:
 
-python discovery_child_development/analysis/baseline_model.py --model_type most_probable --wandb True
+python discovery_child_development/pipeline/models/baseline_model.py --model_type most_probable --wandb True
 
 model_type can either be 'most_probable' or 'majority_combination' and determines the type of baseline classifier used.
 
@@ -305,12 +305,9 @@ def run_baseline_model(
         # Initialize a wandb run and log score threshold with wandb
         run = wandb.init(
             project="ISS supervised ML",
-            job_type="Baseline modeling",
+            job_type="Taxonomy classifier",
             save_code=True,
-            config={
-                "baseline_model_type": model_type,
-                "score_threshold": score_threshold,
-            },
+            tags=[f"baseline_{model_type}"],
         )
         # We will use set the wandb description to be the dataset name (which includes details of concepts and years)
         # - we set the description, and not the name, as there is a limit on the length of artifact names.
@@ -421,7 +418,7 @@ def run_baseline_model(
         wandb.run.summary["macro_avg_recall"] = metrics["recall"]
 
         # Save and log the model and metrics
-        model_path = f"{model_path}/baseline_most_probable.pkl"
+        model_path = f"{model_path}/baseline_{model_type}.pkl"
         wb.log_model(run, f"baseline_{model_type}", classifier, model_path)
 
         # Log confusion matrix

@@ -105,4 +105,4 @@ def get_labelled_data(
 
     openalex_filtered = openalex_data[openalex_data["score"] >= score_threshold]
 
-    return openalex_filtered
+    return openalex_filtered, filepath

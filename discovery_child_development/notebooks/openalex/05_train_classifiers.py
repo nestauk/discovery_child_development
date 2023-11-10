@@ -61,224 +61,6 @@ SEED = 42
 # Set the seed
 np.random.seed(SEED)
 
-
-# %%
-# Functions
-
-
-def plot_confusion_matrix(y_true, y_pred, label_index, label_name):
-    """
-    Plot the confusion matrix for a single label.
-
-    Parameters:
-    y_true (array-like): True binary labels in binary indicator format for a single label.
-    y_pred (array-like): Binary labels predicted by the classifier for a single label.
-    label_index (int): Index of the label for which to plot the confusion matrix.
-    label_name (str): Name of the label.
-    """
-    # Ensure y_true and y_pred are numpy arrays
-    y_true = np.array(y_true)
-    y_pred = np.array(y_pred)
-
-    cm = confusion_matrix(y_true[:, label_index], y_pred[:, label_index])
-    plt.figure(figsize=(5, 4))
-    sns.heatmap(cm, annot=True, fmt="d", cmap="Blues")
-    plt.title(f"Confusion Matrix for {label_name}")
-    plt.xlabel("Predicted")
-    plt.ylabel("True")
-    plt.show()
-
-
-def plot_roc_curve(y_true, y_pred_proba, label_index, label_name):
-    """
-    Plot the ROC curve for a single label.
-
-    Parameters:
-    y_true (array-like): True binary labels in binary indicator format for a single label.
-    y_pred_proba (array-like): Probabilities of the positive class predicted by the classifier for a single label.
-    label_index (int): Index of the label for which to plot the ROC curve.
-    label_name (str): Name of the label.
-    """
-    fpr, tpr, _ = roc_curve(y_true[:, label_index], y_pred_proba[:, label_index])
-    roc_auc = auc(fpr, tpr)
-
-    plt.figure(figsize=(5, 4))
-    plt.plot(fpr, tpr, label=f"ROC curve (area = {roc_auc:.2f}) for {label_name}")
-    plt.plot([0, 1], [0, 1], "k--")
-    plt.xlim([0.0, 1.0])
-    plt.ylim([0.0, 1.05])
-    plt.xlabel("False Positive Rate")
-    plt.ylabel("True Positive Rate")
-    plt.title(f"Receiver Operating Characteristic for {label_name}")
-    plt.legend(loc="lower right")
-    plt.show()
-
-
-def evaluate_model_performance(y_true, y_pred, y_pred_proba, label_names):
-    """
-    Evaluate the model's performance for multi-label classification.
-
-    Parameters:
-    y_true (array-like): True binary labels in binary indicator format.
-    y_pred (array-like): Binary labels predicted by the classifier.
-    y_pred_proba (array-like): Probabilities of the positive class predicted by the classifier.
-    label_names (list): List of label names corresponding to the columns of y_true and y_pred.
-    """
-    # Ensure y_true and y_pred are numpy arrays
-    y_true = np.array(y_true)
-    y_pred = np.array(y_pred)
-
-    for i, label_name in enumerate(label_names):
-        plot_confusion_matrix(y_true, y_pred, i, label_name)
-        plot_roc_curve(y_true, y_pred_proba, i, label_name)
-
-
-# Example usage:
-# evaluate_model_performance(y_true, y_pred, y_pred_proba, label_names)
-
-
-def create_heatmap_table(y_true, y_pred, label_names, proportions=False):
-    # Calculate confusion matrices for each label
-    mcm = multilabel_confusion_matrix(y_true, y_pred)
-
-    # Initialize the dataframe that will hold true negatives, false positives, false negatives, true positives
-    data = []
-
-    # Populate the dataframe with values for each label
-    for i, label in enumerate(label_names):
-        tn, fp, fn, tp = mcm[i].ravel()
-        if proportions:
-            total = np.sum(mcm[i])
-            values = [tn / total, fp / total, fn / total, tp / total]
-        else:
-            values = [tn, fp, fn, tp]
-        data.append(values)
-
-    # Create a DataFrame with the data
-    df = pd.DataFrame(
-        data,
-        index=label_names,
-        columns=[
-            "True Negatives",
-            "False Positives",
-            "False Negatives",
-            "True Positives",
-        ],
-    )
-
-    # Create a mask for True Negatives
-    mask = np.zeros_like(df, dtype=bool)
-    mask[:, 0] = True  # Mask the True Negatives column
-
-    # Plotting
-    plt.figure(figsize=(10, len(label_names) * 0.5))  # Adjust as necessary
-    sns.heatmap(
-        df,
-        annot=True,
-        fmt=".2f" if proportions else "d",
-        cmap="coolwarm",
-        cbar=True,
-        linewidths=0.5,
-    )
-
-    plt.title(
-        "Confusion Matrix Stats per Label (Proportions)"
-        if proportions
-        else "Confusion Matrix Stats per Label"
-    )
-    plt.show()
-
-
-# Example usage:
-# create_heatmap_table(y_true, y_pred, label_names, proportions=True)
-
-# def get_false_negatives_indexes(y_true, y_pred, label_index):
-#     """
-#     Get the indexes of false negatives.
-
-#     Parameters:
-#     y_true (array-like or DataFrame): True binary labels in binary indicator format for a single label.
-#     y_pred (array-like or DataFrame): Binary labels predicted by the classifier for a single label.
-#     label_index (int): Index of the label for which to find false negatives.
-
-#     Returns:
-#     np.array: Indexes of the false negatives.
-#     """
-#     # If the inputs are DataFrames, convert them to numpy arrays
-#     if isinstance(y_true, pd.DataFrame):
-#         y_true = y_true.values
-#     if isinstance(y_pred, pd.DataFrame):
-#         y_pred = y_pred.values
-
-#     # Get the indexes where y_true is 1 (positive class) and y_pred is 0 (negative class)
-#     false_negatives = np.where((y_true[:, label_index] == 1) & (y_pred[:, label_index] == 0))
-#     return false_negatives
-
-
-def get_false_negatives_identifiers(y_true, y_pred, label_name):
-    """
-    Get the identifiers of false negatives from a DataFrame index.
-
-    Parameters:
-    y_true (DataFrame): True binary labels with unique identifiers as index.
-    y_pred (DataFrame or array-like): Binary labels predicted by the classifier.
-    label_name (str): Name of the label for which to find false negatives.
-
-    Returns:
-    Index: Identifiers of the false negatives.
-    """
-    # If y_pred is a numpy array, convert it to DataFrame with the same index as y_true
-    if not isinstance(y_pred, pd.DataFrame):
-        y_pred = pd.DataFrame(y_pred, index=y_true.index, columns=y_true.columns)
-
-    # Select the series for the label of interest
-    y_true_label = y_true[label_name]
-    y_pred_label = y_pred[label_name]
-
-    # Get the identifiers where y_true is 1 (positive class) and y_pred is 0 (negative class)
-    false_negatives_identifiers = y_true_label[
-        (y_true_label == 1) & (y_pred_label == 0)
-    ].index
-    return false_negatives_identifiers
-
-
-# Example usage:
-# label_name = 'ar / vr'
-# false_negatives_identifiers = get_false_negatives_identifiers(Y_val, predictions_val, label_name)
-# print(false_negatives_identifiers)
-
-
-def categorise_predictions(label="mobile", predictions=predictions_val, actual=Y_val):
-    predictions_val_df = pd.DataFrame(
-        predictions_val, index=Y_val.index, columns=Y_val.columns
-    )
-    merged_predictions = Y_val.merge(
-        predictions_val_df,
-        left_index=True,
-        right_index=True,
-        suffixes=("_actual", "_predicted"),
-    )
-
-    tp = merged_predictions[
-        (merged_predictions[f"{label}_actual"] == 1)
-        & (merged_predictions[f"{label}_predicted"] == 1)
-    ].index
-    tn = merged_predictions[
-        (merged_predictions[f"{label}_actual"] == 0)
-        & (merged_predictions[f"{label}_predicted"] == 0)
-    ].index
-    fp = merged_predictions[
-        (merged_predictions[f"{label}_actual"] == 0)
-        & (merged_predictions[f"{label}_predicted"] == 1)
-    ].index
-    fn = merged_predictions[
-        (merged_predictions[f"{label}_actual"] == 1)
-        & (merged_predictions[f"{label}_predicted"] == 0)
-    ].index
-
-    return tp, tn, fp, fn
-
-
 # %%
 # Load the data. Just the training set by default
 openalex_data = oa.get_labelled_data()
@@ -353,6 +135,58 @@ Y_val = Y[Y.index.isin(val_ids)]
 len(mlb.classes_)
 
 # %% [markdown]
+# # Baseline classifiers
+
+# %%
+# majority combination
+top_combinations, _ = bm.find_most_frequent_labels(
+    openalex_data_wide, label_col="sub_category", head=20
+)
+
+most_common_combination_one_hot = mlb.transform([top_combinations.index[0]])
+majority_classifier = bm.MostCommonClassifier(labels=most_common_combination_one_hot)
+
+baseline_majority_predictions = majority_classifier.predict(X_val)
+
+majority_metrics = classification_utils.create_average_metrics(
+    Y_val, baseline_majority_predictions, average="samples"
+)
+logging.info(majority_metrics)
+
+baseline_majority_confusion_matrix = classification_utils.create_heatmap_table(
+    Y_val, baseline_majority_predictions, mlb.classes_, proportions=False
+)
+
+# %%
+# probability-based
+# Assign probabilities using the training set.
+# This bit looks convoluted because we need a long-form dataframe to calculate
+# the label probabilities, so we can't use openalex_data_wide.
+train_df = openalex_data[openalex_data["openalex_id"].isin(train_ids)]
+label_probabilities = bm.get_label_probabilities(
+    train_df,
+    "sub_category",
+    len(train_df["openalex_id"].unique()),
+    targets=Y_train.columns,
+)
+# sort the index of label_probabilities so that it matches the order of columns in Y_train and Y_val
+label_probabilities.sort_index(inplace=True)
+baseline_probability_classifier = bm.MostProbableClassifier(
+    label_probabilities=label_probabilities
+)
+
+baseline_probability_predictions = baseline_probability_classifier.predict(X_val)
+
+baseline_probability_metrics = classification_utils.create_average_metrics(
+    Y_val, baseline_probability_predictions, average="macro"
+)
+logging.info(baseline_probability_metrics)
+
+baseline_probability_confusion_matrix = classification_utils.create_heatmap_table(
+    Y_val, baseline_probability_predictions, mlb.classes_, proportions=False
+)
+
+# %% [markdown]
 # # OneVsRest with Logistic Regression
 # One logistic regression model is fit per label. All labels are treated as independent of one another.
 
@@ -360,60 +194,56 @@ len(mlb.classes_)
 lg = LogisticRegression(penalty="l2", random_state=SEED)
 onevsrest_classifier = OneVsRestClassifier(lg, n_jobs=2)
 
-# %%
 onevsrest_classifier.fit(X_train, Y_train)
 
-# %%
-predictions_train = onevsrest_classifier.predict(X_train)
-predictions_val = onevsrest_classifier.predict(X_val)
+one_vs_rest_predictions = onevsrest_classifier.predict(X_val)
 
-# %%
 # Get accuracy. We expect this to be low, because it's difficult to get exactly the right combination of labels for every datapoint
-accuracy_score(Y_val, predictions_val)
+accuracy_score(Y_val, one_vs_rest_predictions)
 
-# %%
 # Micro = global. If classes are imbalanced, the classes with higher numbers of datapoints skew the score.
-classification_utils.create_average_metrics(Y_val, predictions_val, average="micro")
 
-# %%
-# Macro gives equal weight to all classes - this is better for us because we have some quite small classes.
-# Notice that precision and recall are much lower
-classification_utils.create_average_metrics(Y_val, predictions_val, average="macro")
-
-# %%
 # "samples" calculates metrics for each datapoint (which you can do with a multilabel dataset)
 # and averages the scores across all datapoints. Again, this will end up favouring larger
 # classes, because they have more datapoints.
-classification_utils.create_average_metrics(Y_val, predictions_val, average="samples")
 
-# %%
-create_heatmap_table(Y_val, predictions_val, mlb.classes_, proportions=False)
+# Macro gives equal weight to all classes - this is better for us because we have some quite small classes.
+# Notice that precision and recall are much lower
+one_vs_rest_metrics = classification_utils.create_average_metrics(
+    Y_val, one_vs_rest_predictions, average="macro"
+)
+logging.info(one_vs_rest_metrics)
+
+classification_utils.create_heatmap_table(
+    Y_val, one_vs_rest_predictions, mlb.classes_, proportions=False
+)
 
 # %% [markdown]
 # We can see that there are some classes where the model doesn't manage to get a single True Positive correct!
 
 # %%
-overall_classification_report = classification_report(
-    Y_val, predictions_val, target_names=mlb.classes_, output_dict=True
+one_vs_rest_classification_report = classification_report(
+    Y_val, one_vs_rest_predictions, target_names=mlb.classes_, output_dict=True
 )
 
-overall_classification_report["mobile"]
+one_vs_rest_classification_report["mobile"]
 
 # %%
 # This one has a lot of false negatives
-plot_confusion_matrix(
+classification_utils.plot_confusion_matrix(
     Y_val,
-    predictions_val,
+    one_vs_rest_predictions,
     Y_val.columns.get_loc("statistical methods"),
     "statistical methods",
 )
 
 # %%
-tp, tn, fp, fn = categorise_predictions(
-    label="technology (general)", predictions=predictions_val, actual=Y_val
+# We can investigate whether there is any trend in the errors being made by plotting the text embeddings for the true positives,
+# false positives and false negatives in 2D space.
+tp, tn, fp, fn = classification_utils.categorise_predictions(
+    label="technology (general)", predictions=one_vs_rest_predictions, actual=Y_val
 )
 
-# %%
 df = pd.DataFrame()
 
 mapping = {"tp": tp, "tn": tn, "fp": fp, "fn": fn}
@@ -423,22 +253,14 @@ for key, values in mapping.items():
     temp_df["outcome"] = key
     df = pd.concat([df, temp_df])
 
-# %%
-df.head()
-
-# %%
 embeddings = np.stack(df["miniLM_384_vector"].values)
 embeddings_2d = cau.reduce_to_2D(embeddings, random_state=SEED)
 
-# %%
 df["x"] = embeddings_2d[:, 0]
 df["y"] = embeddings_2d[:, 1]
 
-# %%
 fig_hdbscan = (
-    alt.Chart(
-        df[df["outcome"].isin(["tp", "fp", "fn"])]
-    )  # filtering out some rows because altair has a limit on how many data points you can plot
+    alt.Chart(df[df["outcome"].isin(["tp", "fp", "fn"])])
     .mark_circle()
     .encode(
         x="x",
@@ -451,3 +273,56 @@ fig_hdbscan = (
 )
 
 fig_hdbscan
+
+# %% [markdown]
+# ## KNN classifier
+
+# %%
+from sklearn.neighbors import KNeighborsClassifier
+
+# Initialize the KNeighborsClassifier
+knn = KNeighborsClassifier()
+
+# Train the classifier
+knn.fit(X_train, Y_train)
+
+# Predict on the test data
+knn_predictions = knn.predict(X_val)
+
+# better precision, better F1 compared to onevsrest logistic regression
+knn_metrics = classification_utils.create_average_metrics(
+    Y_val, knn_predictions, average="macro"
+)
+logging.info(knn_metrics)
+
+# Notice that this classifier does way better on some of the minority classes eg 'ar / vr'
+classification_utils.create_heatmap_table(
+    Y_val, knn_predictions, mlb.classes_, proportions=False
+)
+
+# %% [markdown]
+# ## Random Forest
+
+# %%
+from sklearn.ensemble import RandomForestClassifier
+
+# Initialize the RandomForestClassifier with a random state for reproducibility
+rf = RandomForestClassifier(random_state=SEED)
+
+# Train the classifier on the training data
+rf.fit(X_train, Y_train)
+
+# Predict on the test set
+rf_predictions = rf.predict(X_val)
+
+# high precision but terrible recall and F1
+rf_metrics = classification_utils.create_average_metrics(
+    Y_val, rf_predictions, average="macro"
+)
+logging.info(rf_metrics)
+
+classification_utils.create_heatmap_table(
+    Y_val, rf_predictions, mlb.classes_, proportions=False
+)
+
+# %%

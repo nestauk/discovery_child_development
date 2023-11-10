@@ -5,7 +5,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from sklearn.preprocessing import MultiLabelBinarizer
-from sklearn.metrics import multilabel_confusion_matrix
+from sklearn.metrics import (
+    multilabel_confusion_matrix,
+    confusion_matrix,
+    roc_curve,
+    auc,
+)
 from sklearn.metrics import (
     accuracy_score,
     precision_score,
@@ -256,11 +261,11 @@ def create_heatmap_table(y_true, y_pred, label_names, proportions=False):
 # print(false_negatives_identifiers)
 
 
-def categorise_predictions(label, predictions_val, Y_val):
+def categorise_predictions(label, predictions, actual):
     predictions_val_df = pd.DataFrame(
-        predictions_val, index=Y_val.index, columns=Y_val.columns
+        predictions, index=actual.index, columns=actual.columns
     )
-    merged_predictions = Y_val.merge(
+    merged_predictions = actual.merge(
         predictions_val_df,
         left_index=True,
         right_index=True,
