@@ -9,6 +9,7 @@ requests
 scikit-learn
 sentence-transformers
 datasets
+transformers[torch]
 umap-learn
 google-cloud-bigquery==3.11
 nesta_ds_utils[s3,viz] @ git+https://github.com/nestauk/nesta_ds_utils.git
