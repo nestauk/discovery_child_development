@@ -1,17 +1,25 @@
+"""
+Run three versions of the taxonomy classifier: knn, random forest or one-vs-rest logistic regression.
+
+Usage:
+
+python discovery_child_development/pipeline/models/classifiers.py --wandb True
+
+wandb determines whether a run gets logged on wandb when the script is run.
+
+"""
+
 import argparse
 from dotenv import load_dotenv
 import numpy as np
 import os
 import pandas as pd
 
-from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import multilabel_confusion_matrix
 from sklearn.model_selection import train_test_split
 from sklearn.multiclass import OneVsRestClassifier
 from sklearn.neighbors import KNeighborsClassifier
-from typing import Any, Iterable, List, Tuple, Union
 import wandb
 
 import numpy as np
