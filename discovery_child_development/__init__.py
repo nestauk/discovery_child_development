@@ -34,5 +34,5 @@ if _logging_config:
 logger = logging.getLogger(__name__)
 
 # base/global config
-_base_config_path = Path(__file__).parent.resolve() / "config/base.yaml"
+_base_config_path = Path(__file__).parent.resolve() / "config/config.yaml"
 config = get_yaml_config(_base_config_path)

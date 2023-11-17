@@ -204,7 +204,7 @@ def evaluate_model_performance(y_true, y_pred, y_pred_proba, label_names):
 # evaluate_model_performance(y_true, y_pred, y_pred_proba, label_names)
 
 
-def create_heatmap_table(y_true, y_pred, label_names, proportions=False):
+def create_confusion_matrix(y_true, y_pred, label_names, proportions=False):
     # Calculate confusion matrices for each label
     mcm = multilabel_confusion_matrix(y_true, y_pred)
 
@@ -232,6 +232,11 @@ def create_heatmap_table(y_true, y_pred, label_names, proportions=False):
             "True Positives",
         ],
     )
+    return df
+
+
+def create_heatmap_table(y_true, y_pred, label_names, proportions=False):
+    df = create_confusion_matrix(y_true, y_pred, label_names, proportions=False)
 
     # Create a mask for True Negatives
     mask = np.zeros_like(df, dtype=bool)
@@ -254,7 +259,6 @@ def create_heatmap_table(y_true, y_pred, label_names, proportions=False):
         else "Confusion Matrix Stats per Label"
     )
     plt.show()
-    return df.reset_index()
 
 
 # Example usage:

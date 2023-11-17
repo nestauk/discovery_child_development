@@ -31,19 +31,16 @@ import matplotlib.pyplot as plt
 from nesta_ds_utils.loading_saving import S3
 
 ## project code
-from discovery_child_development import PROJECT_DIR, logging
+from discovery_child_development import PROJECT_DIR, logging, config, S3_BUCKET
 from discovery_child_development.getters import openalex as oa
 from discovery_child_development.pipeline.models import baseline_model as bm
 from discovery_child_development.utils import classification_utils
 from discovery_child_development.utils import cluster_analysis_utils as cau
 from discovery_child_development.utils import wandb as wb
-from discovery_child_development.utils.io import import_config
 
 load_dotenv()
 
-S3_BUCKET = os.environ.get("S3_BUCKET")
-PARAMS = import_config("config.yaml")
-CONCEPT_IDS = "|".join(PARAMS["openalex_concepts"])
+CONCEPT_IDS = "|".join(config["openalex_concepts"])
 INPUT_PATH = f"data/openAlex/processed/openalex_data_{CONCEPT_IDS}_year-2019-2020-2021-2022-2023_train.csv"
 VECTORS_FILEPATH = "data/openAlex/vectors/sentence_vectors_384.parquet"
 DATA_PATH_LOCAL = PROJECT_DIR / "inputs/data/"
@@ -163,7 +160,7 @@ if __name__ == "__main__":
         )
         logging.info(metrics)
 
-        confusion_matrix = classification_utils.create_heatmap_table(
+        confusion_matrix = classification_utils.create_confusion_matrix(
             Y_val, predictions, mlb.classes_, proportions=False
         )
 

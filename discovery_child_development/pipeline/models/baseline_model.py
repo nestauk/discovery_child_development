@@ -5,7 +5,9 @@ Usage:
 
 python discovery_child_development/pipeline/models/baseline_model.py --model_type most_probable --wandb True
 
-model_type can either be 'most_probable' or 'majority_combination' and determines the type of baseline classifier used.
+model_type can either be 'most_probable' or 'majority_combination' and determines the type of baseline classifier used:
+* majority_combination = predicts the same combination of labels for every single new datapoint
+* most_probable = generates predictions based on the distribution of labels in the training set
 
 wandb determines whether a run gets logged on wandb when the script is run.
 
@@ -25,15 +27,12 @@ import wandb
 from nesta_ds_utils.loading_saving import S3
 
 ## project code
-from discovery_child_development import PROJECT_DIR, logging, S3_BUCKET
+from discovery_child_development import PROJECT_DIR, logging, S3_BUCKET, config
 from discovery_child_development.utils import classification_utils
 from discovery_child_development.utils import wandb as wb
-from discovery_child_development.utils.io import import_config
 
 load_dotenv()
-
-PARAMS = import_config("config.yaml")
-CONCEPT_IDS = "|".join(PARAMS["openalex_concepts"])
+CONCEPT_IDS = "|".join(config["openalex_concepts"])
 INPUT_PATH = "data/openAlex/processed/"
 INPUT_FILE = f"openalex_data_{CONCEPT_IDS}_year-2019-2020-2021-2022-2023_train.csv"
 VECTORS_FILEPATH = "data/openAlex/vectors/sentence_vectors_384.parquet"
@@ -405,7 +404,7 @@ def run_baseline_model(
     )
     logging.info(metrics)
 
-    confusion_matrix = classification_utils.create_heatmap_table(
+    confusion_matrix = classification_utils.create_confusion_matrix(
         Y_train, baseline_predictions, mlb.classes_, proportions=False
     )
 
