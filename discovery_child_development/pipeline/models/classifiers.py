@@ -42,7 +42,7 @@ load_dotenv()
 
 CONCEPT_IDS = "|".join(config["openalex_concepts"])
 INPUT_PATH = f"data/openAlex/processed/openalex_data_{CONCEPT_IDS}_year-2019-2020-2021-2022-2023_train.csv"
-VECTORS_FILEPATH = "data/openAlex/vectors/sentence_vectors_384.parquet"
+
 DATA_PATH_LOCAL = PROJECT_DIR / "inputs/data/"
 FIG_PATH = PROJECT_DIR / "outputs/figures/"
 MODEL_PATH = PROJECT_DIR / "outputs/models/"
@@ -81,13 +81,7 @@ if __name__ == "__main__":
     openalex_data_wide = openalex_data_wide.set_index("openalex_id")
 
     # Load embeddings
-    embeddings = S3.download_obj(
-        S3_BUCKET,
-        path_from=VECTORS_FILEPATH,
-        download_as="dataframe",
-    )
-
-    embeddings = embeddings.set_index("openalex_id")
+    embeddings = oa.get_sentence_embeddings()
 
     openalex_data_wide = openalex_data_wide.join(
         embeddings, on="openalex_id", how="left"
