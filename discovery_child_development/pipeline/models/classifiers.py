@@ -50,6 +50,15 @@ SEED = 42
 # Set the seed
 np.random.seed(SEED)
 
+
+def ensure_path_exists(path):
+    if not path.exists():
+        path.mkdir(parents=True, exist_ok=True)
+
+
+for path in [DATA_PATH_LOCAL, FIG_PATH, MODEL_PATH]:
+    ensure_path_exists(path)
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Script to run with command line arguments."
