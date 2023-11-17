@@ -11,10 +11,10 @@ First, amend these variables:
 * YEARS: list of years you want to retrieve publications from
 
 To test the flow with just the first year in the list:
-python discovery_child_development/pipeline/openalex/00_openalex_metaflow.py run --production False 
+python discovery_child_development/pipeline/openalex/00a_openalex_metaflow.py run --production False 
 
 To fetch the full dataset:
-python discovery_child_development/pipeline/openalex/00_openalex_metaflow.py run --production True 
+python discovery_child_development/pipeline/openalex/00a_openalex_metaflow.py run --production True 
 """
 import requests
 from metaflow import FlowSpec, S3, step, Parameter, retry, batch
@@ -26,6 +26,7 @@ from discovery_child_development import PROJECT_DIR, S3_BUCKET, config
 
 API_ROOT = "https://api.openalex.org/works?filter="
 S3_PATH = "metaflow"
+SEED = config["seed"]
 load_dotenv()
 
 
@@ -35,11 +36,12 @@ def generate_random_queries(years: List[str], number_works: int) -> List[str]:
 
     Args:
         years : list of years to be queried
+        number_works : number of works to be retrieved per year
 
     Returns:
         query_list : list of all queries
     """
-    return [f"{year}&sample={number_works}" for year in years]
+    return [f"{year}&sample={number_works}&seed={SEED}" for year in years]
 
 
 def api_generator_random(api_root: str, filter_call: str) -> list:
@@ -47,8 +49,7 @@ def api_generator_random(api_root: str, filter_call: str) -> list:
 
     Args:
         api_root : root URL of the OpenAlex API
-
-        concept_ids : list of concept IDs to be queried
+        filter_call : the filter call for the API
 
     Returns:
         all_pages: list of pages required to return all results
@@ -63,7 +64,7 @@ def api_generator_random(api_root: str, filter_call: str) -> list:
     number_of_pages = -(total_results // -200)  # ceiling division
     print(f"Total number of pages queried: {number_of_pages}")
     all_pages = [
-        f"{api_root}publication_year:{filter_call}&per-page=200&cursor="
+        f"{api_root}publication_year:{filter_call}&per-page=200&page={_}"
         for _ in range(1, number_of_pages + 1)
     ]
 
@@ -80,7 +81,6 @@ class OpenAlexWorksFlowRandom(FlowSpec):
         """
         Starts the flow.
         """
-        self.concept_ids = config[self.concepts]
         self.year_list = config[self.years]
         self.next(self.generate_api_calls)
 
@@ -95,8 +95,7 @@ class OpenAlexWorksFlowRandom(FlowSpec):
 
         output_lists = generate_random_queries(year_list, self.number_works)
         self.merged = output_lists
-
-        print(len(self.merged))
+        print(f"Number of runs: {len(self.merged)}")
         self.next(self.retrieve_data, foreach="merged")
 
     @retry()
@@ -108,13 +107,11 @@ class OpenAlexWorksFlowRandom(FlowSpec):
 
         # Get all results
         outputs = []
-        cursor = "*"  # cursor iteration required to return >10k results
         for call in api_call_list:
             try:  # catch transient errors
-                req = requests.get(f"{call}{cursor}").json()
+                req = requests.get(f"{call}").json()
                 for result in req["results"]:
                     outputs.append(result)
-                cursor = req["meta"]["next_cursor"]
             except:
                 pass
         print(self.input)

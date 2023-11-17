@@ -84,11 +84,15 @@ def api_generator(api_root: str, concept_ids: List[str], random_sample: bool) ->
     number_of_pages = -(total_results // -200)  # ceiling division
     print(f"Total number of pages queried: {number_of_pages}")
     if random_sample:
+        # For a random sample, we need to use basic paging, see OpenAlex API docs on
+        # sample entity lists, so need to cycle through pages
         all_pages = [
             f"{api_root}concepts.id:{concepts_text}&per-page=200&page={_}"
             for _ in range(1, number_of_pages + 1)
         ]
     else:
+        # For the full dataset, we can use cursor iteration,
+        # so we don't need to cycle through pages (see below in retrieve_data)
         all_pages = [
             f"{api_root}concepts.id:{concepts_text}&per-page=200"
             for _ in range(1, number_of_pages + 1)
@@ -161,7 +165,7 @@ class OpenAlexWorksFlow(FlowSpec):
         api_call_list = api_generator(API_ROOT, self.input, self.random_sample)
         # Get all results
         outputs = []
-        cursor = "*"  # cursor iteration required to return >10k results
+        cursor = "*"  # cursor iteration required to return >10k results (does not work for random sample, basic paging used instead)
         for call in api_call_list:
             try:  # catch transient errors
                 if self.random_sample:
