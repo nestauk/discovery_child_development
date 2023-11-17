@@ -21,6 +21,7 @@ from sklearn.metrics import (
     jaccard_score,
 )
 import seaborn as sns
+from typing import Tuple
 
 
 def add_binarise_labels(
@@ -203,7 +204,7 @@ def evaluate_model_performance(y_true, y_pred, y_pred_proba, label_names):
 # evaluate_model_performance(y_true, y_pred, y_pred_proba, label_names)
 
 
-def create_heatmap_table(y_true, y_pred, label_names, proportions=False):
+def create_confusion_matrix(y_true, y_pred, label_names, proportions=False):
     # Calculate confusion matrices for each label
     mcm = multilabel_confusion_matrix(y_true, y_pred)
 
@@ -231,6 +232,11 @@ def create_heatmap_table(y_true, y_pred, label_names, proportions=False):
             "True Positives",
         ],
     )
+    return df
+
+
+def create_heatmap_table(y_true, y_pred, label_names, proportions=False):
+    df = create_confusion_matrix(y_true, y_pred, label_names, proportions=False)
 
     # Create a mask for True Negatives
     mask = np.zeros_like(df, dtype=bool)
@@ -253,7 +259,6 @@ def create_heatmap_table(y_true, y_pred, label_names, proportions=False):
         else "Confusion Matrix Stats per Label"
     )
     plt.show()
-    return df.reset_index()
 
 
 # Example usage:
@@ -262,7 +267,25 @@ def create_heatmap_table(y_true, y_pred, label_names, proportions=False):
 # print(false_negatives_identifiers)
 
 
-def categorise_predictions(label, predictions, actual):
+def categorise_predictions(
+    label: str, predictions: np.array, actual: pd.DataFrame
+) -> Tuple[pd.Index, pd.Index, pd.Index, pd.Index]:
+    """
+    If you have the predictions from a multilabel classifier and want to inspect the model's performance for
+    an individual label, you can supply the label (eg "Robotics"), the model's predictions, and the actual
+    y values and get back the indexes of the true positives, true negatives, false positives and false negatives.
+
+    The index of `actual` should be meaningful eg a unique identifier.
+
+    Parameters:
+    label (str): The label for which predictions are to be categorised.
+    predictions (np.array): A DataFrame containing the prediction values.
+    actual (pd.DataFrame): A DataFrame containing the actual values.
+
+    Returns:
+    Tuple[pd.Index, pd.Index, pd.Index, pd.Index]: A tuple containing indices for true positives,
+    true negatives, false positives, and false negatives.
+    """
     predictions_val_df = pd.DataFrame(
         predictions, index=actual.index, columns=actual.columns
     )

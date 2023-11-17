@@ -12,11 +12,10 @@ datasets
 transformers[torch]
 umap-learn
 google-cloud-bigquery==3.11
-nesta_ds_utils[s3,viz] @ git+https://github.com/nestauk/nesta_ds_utils.git
+nesta_ds_utils[s3,viz, gis] @ git+https://github.com/nestauk/nesta_ds_utils.git
 db-dtypes
 seaborn
 wandb
 df2gspread
 nltk
-geopandas # needed for nesta_ds_utils
 openai

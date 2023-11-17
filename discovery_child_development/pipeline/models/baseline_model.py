@@ -5,7 +5,9 @@ Usage:
 
 python discovery_child_development/pipeline/models/baseline_model.py --model_type most_probable --wandb True
 
-model_type can either be 'most_probable' or 'majority_combination' and determines the type of baseline classifier used.
+model_type can either be 'most_probable' or 'majority_combination' and determines the type of baseline classifier used:
+* majority_combination = predicts the same combination of labels for every single new datapoint
+* most_probable = generates predictions based on the distribution of labels in the training set
 
 wandb determines whether a run gets logged on wandb when the script is run.
 
@@ -25,16 +27,12 @@ import wandb
 from nesta_ds_utils.loading_saving import S3
 
 ## project code
-from discovery_child_development import PROJECT_DIR, logging
+from discovery_child_development import PROJECT_DIR, logging, S3_BUCKET, config
 from discovery_child_development.utils import classification_utils
 from discovery_child_development.utils import wandb as wb
-from discovery_child_development.utils.io import import_config
 
 load_dotenv()
-
-S3_BUCKET = os.environ.get("S3_BUCKET")
-PARAMS = import_config("config.yaml")
-CONCEPT_IDS = "|".join(PARAMS["openalex_concepts"])
+CONCEPT_IDS = "|".join(config["openalex_concepts"])
 INPUT_PATH = "data/openAlex/processed/"
 INPUT_FILE = f"openalex_data_{CONCEPT_IDS}_year-2019-2020-2021-2022-2023_train.csv"
 VECTORS_FILEPATH = "data/openAlex/vectors/sentence_vectors_384.parquet"
@@ -287,6 +285,37 @@ def run_baseline_model(
     vectors_filepath: str = VECTORS_FILEPATH,
     model_path: str = MODEL_PATH,
 ) -> None:
+    """
+    Runs a baseline model for classification based on a specified model type, either using a majority combination
+    or the most probable label approach. The function integrates with Weights & Biases (wandb) for experiment tracking.
+
+    This function performs the following steps:
+    - Validates the model type.
+    - Downloads and processes data from an S3 bucket.
+    - Optionally initializes a wandb run for experiment tracking.
+    - Filters and processes the dataset based on a score threshold.
+    - Binarizes labels and splits data into training and validation sets.
+    - Initializes and trains the baseline classifier (either MostCommonClassifier or MostProbableClassifier).
+    - Predicts and evaluates the model on the training set.
+    - Logs metrics, model, and confusion matrix to wandb, if enabled.
+
+    Parameters:
+    - model_type (str): Type of baseline model to run. Options are "majority_combination" or "most_probable".
+    - wandb_run (bool): If True, initializes a wandb run for experiment tracking.
+    - score_threshold (float): Threshold to filter the data based on scores.
+    - s3_bucket (str): The S3 bucket name to download data from.
+    - input_path (str): The path within the S3 bucket to the input data.
+    - input_file (str): The filename of the input data within the S3 bucket.
+    - vectors_filepath (str): Filepath for the embeddings data within the S3 bucket.
+    - model_path (str): Path to save the trained model.
+
+    Returns:
+    None
+
+    Raises:
+    ValueError: If an invalid model type is specified.
+    """
+
     valid_inputs = ["majority_combination", "most_probable"]
 
     if model_type not in valid_inputs:
@@ -406,7 +435,7 @@ def run_baseline_model(
     )
     logging.info(metrics)
 
-    confusion_matrix = classification_utils.create_heatmap_table(
+    confusion_matrix = classification_utils.create_confusion_matrix(
         Y_train, baseline_predictions, mlb.classes_, proportions=False
     )
 

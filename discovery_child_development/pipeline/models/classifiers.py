@@ -1,17 +1,25 @@
+"""
+Run three versions of the taxonomy classifier: knn, random forest or one-vs-rest logistic regression.
+
+Usage:
+
+python discovery_child_development/pipeline/models/classifiers.py --wandb True
+
+wandb determines whether a run gets logged on wandb when the script is run.
+
+"""
+
 import argparse
 from dotenv import load_dotenv
 import numpy as np
 import os
 import pandas as pd
 
-from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import multilabel_confusion_matrix
 from sklearn.model_selection import train_test_split
 from sklearn.multiclass import OneVsRestClassifier
 from sklearn.neighbors import KNeighborsClassifier
-from typing import Any, Iterable, List, Tuple, Union
 import wandb
 
 import numpy as np
@@ -23,27 +31,33 @@ import matplotlib.pyplot as plt
 from nesta_ds_utils.loading_saving import S3
 
 ## project code
-from discovery_child_development import PROJECT_DIR, logging
+from discovery_child_development import PROJECT_DIR, logging, config, S3_BUCKET
 from discovery_child_development.getters import openalex as oa
 from discovery_child_development.pipeline.models import baseline_model as bm
 from discovery_child_development.utils import classification_utils
 from discovery_child_development.utils import cluster_analysis_utils as cau
 from discovery_child_development.utils import wandb as wb
-from discovery_child_development.utils.io import import_config
 
 load_dotenv()
 
-S3_BUCKET = os.environ.get("S3_BUCKET")
-PARAMS = import_config("config.yaml")
-CONCEPT_IDS = "|".join(PARAMS["openalex_concepts"])
+CONCEPT_IDS = "|".join(config["openalex_concepts"])
 INPUT_PATH = f"data/openAlex/processed/openalex_data_{CONCEPT_IDS}_year-2019-2020-2021-2022-2023_train.csv"
-VECTORS_FILEPATH = "data/openAlex/vectors/sentence_vectors_384.parquet"
+
 DATA_PATH_LOCAL = PROJECT_DIR / "inputs/data/"
 FIG_PATH = PROJECT_DIR / "outputs/figures/"
 MODEL_PATH = PROJECT_DIR / "outputs/models/"
 SEED = 42
 # Set the seed
 np.random.seed(SEED)
+
+
+def ensure_path_exists(path):
+    if not path.exists():
+        path.mkdir(parents=True, exist_ok=True)
+
+
+for path in [DATA_PATH_LOCAL, FIG_PATH, MODEL_PATH]:
+    ensure_path_exists(path)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
@@ -76,13 +90,7 @@ if __name__ == "__main__":
     openalex_data_wide = openalex_data_wide.set_index("openalex_id")
 
     # Load embeddings
-    embeddings = S3.download_obj(
-        S3_BUCKET,
-        path_from=VECTORS_FILEPATH,
-        download_as="dataframe",
-    )
-
-    embeddings = embeddings.set_index("openalex_id")
+    embeddings = oa.get_sentence_embeddings()
 
     openalex_data_wide = openalex_data_wide.join(
         embeddings, on="openalex_id", how="left"
@@ -155,7 +163,7 @@ if __name__ == "__main__":
         )
         logging.info(metrics)
 
-        confusion_matrix = classification_utils.create_heatmap_table(
+        confusion_matrix = classification_utils.create_confusion_matrix(
             Y_val, predictions, mlb.classes_, proportions=False
         )
 
