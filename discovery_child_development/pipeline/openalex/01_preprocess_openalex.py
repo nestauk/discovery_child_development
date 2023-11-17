@@ -150,7 +150,7 @@ def create_text_data(df: pd.DataFrame) -> pd.DataFrame:
         lambda x: openalex_utils.deinvert_abstract(x)
     )
 
-    df.loc[:, "text"] = df["title"] + " " + df["abstract"]
+    df.loc[:, "text"] = df["title"] + ". " + df["abstract"]
 
     return df[["id", "title", "abstract", "text"]]
 

@@ -2,16 +2,18 @@ from dotenv import load_dotenv
 from nesta_ds_utils.loading_saving import S3
 import os
 
-from discovery_child_development.utils.io import import_config
+from discovery_child_development import PROJECT_DIR, S3_BUCKET, config, logging
 
 load_dotenv()
 
-S3_BUCKET = os.environ["S3_BUCKET"]
-
-PARAMS = import_config("config.yaml")
-CONCEPT_IDS = "|".join(PARAMS["openalex_concepts"])
-YEARS = [str(y) for y in PARAMS["openalex_years"]]
+CONCEPT_IDS = "|".join(config["openalex_concepts"])
+YEARS = [str(y) for y in config["openalex_years"]]
 YEARS = "-".join(YEARS)
+FILEPATH_PROCESSED = (
+    f"data/openAlex/processed/openalex_data_{CONCEPT_IDS}_year-{YEARS}_train.csv"
+)
+VECTORS_FILEPATH = "data/openAlex/vectors/sentence_vectors_384.parquet"
+SCORE_THRESHOLD = 0.3
 
 
 def get_abstracts(concepts=CONCEPT_IDS, years=YEARS, bucket=S3_BUCKET):
@@ -79,3 +81,38 @@ def get_concepts_metadata(concepts=CONCEPT_IDS, years=YEARS, bucket=S3_BUCKET):
     )
 
     return openalex_concepts
+
+
+def get_labelled_data(
+    filepath=FILEPATH_PROCESSED,
+    score_threshold=SCORE_THRESHOLD,
+    s3_bucket=S3_BUCKET,
+    train=True,
+):
+    if train == True:
+        filepath = filepath
+    else:
+        filepath = str.replace(filepath, "train", "test")
+
+    openalex_data = S3.download_obj(
+        s3_bucket,
+        path_from=filepath,
+        download_as="dataframe",
+        kwargs_reading={"index_col": 0},
+    )
+
+    openalex_filtered = openalex_data[openalex_data["score"] >= score_threshold]
+
+    return openalex_filtered, filepath
+
+
+def get_sentence_embeddings(s3_bucket=S3_BUCKET, filepath=VECTORS_FILEPATH):
+    # Load embeddings
+    embeddings = S3.download_obj(
+        s3_bucket,
+        path_from=filepath,
+        download_as="dataframe",
+    )
+
+    embeddings = embeddings.set_index("openalex_id")
+    return embeddings

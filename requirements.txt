@@ -1,20 +1,21 @@
 altair
-hdbscan==0.8.33
-metaflow==2.9.14
-numpy==1.23.4
+hdbscan
+metaflow
+numpy
 pandas
-pyalex==0.11
-python-dotenv==1.0.0
-requests==2.31.0
-scikit-learn==1.3.1
-sentence-transformers==2.2.2
-spacy==3.6.1
-en_core_web_sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.6.0/en_core_web_sm-3.6.0-py3-none-any.whl
-umap-learn==0.5.4
+pyalex
+python-dotenv
+requests
+scikit-learn
+sentence-transformers
+datasets
+transformers[torch]
+umap-learn
 google-cloud-bigquery==3.11
-nesta_ds_utils[s3,viz] @ git+https://github.com/nestauk/nesta_ds_utils.git
-db-dtypes==1.1
-seaborn==0.13
+nesta_ds_utils[s3,viz, gis] @ git+https://github.com/nestauk/nesta_ds_utils.git
+db-dtypes
+seaborn
 wandb
 df2gspread
 nltk
+openai

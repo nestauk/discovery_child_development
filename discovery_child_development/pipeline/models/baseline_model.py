@@ -3,9 +3,11 @@ Get predictions from a baseline model
 
 Usage:
 
-python discovery_child_development/analysis/baseline_model.py --model_type most_probable --wandb True
+python discovery_child_development/pipeline/models/baseline_model.py --model_type most_probable --wandb True
 
-model_type can either be 'most_probable' or 'majority_combination' and determines the type of baseline classifier used.
+model_type can either be 'most_probable' or 'majority_combination' and determines the type of baseline classifier used:
+* majority_combination = predicts the same combination of labels for every single new datapoint
+* most_probable = generates predictions based on the distribution of labels in the training set
 
 wandb determines whether a run gets logged on wandb when the script is run.
 
@@ -25,17 +27,14 @@ import wandb
 from nesta_ds_utils.loading_saving import S3
 
 ## project code
-from discovery_child_development import PROJECT_DIR, logging
+from discovery_child_development import PROJECT_DIR, logging, S3_BUCKET, config
 from discovery_child_development.utils import classification_utils
 from discovery_child_development.utils import wandb as wb
-from discovery_child_development.utils.io import import_config
 
 load_dotenv()
-
-S3_BUCKET = os.environ.get("S3_BUCKET")
-PARAMS = import_config("config.yaml")
-CONCEPT_IDS = "|".join(PARAMS["openalex_concepts"])
-INPUT_PATH = f"data/openAlex/processed/openalex_data_{CONCEPT_IDS}_year-2019-2020-2021-2022-2023_train.csv"
+CONCEPT_IDS = "|".join(config["openalex_concepts"])
+INPUT_PATH = "data/openAlex/processed/"
+INPUT_FILE = f"openalex_data_{CONCEPT_IDS}_year-2019-2020-2021-2022-2023_train.csv"
 VECTORS_FILEPATH = "data/openAlex/vectors/sentence_vectors_384.parquet"
 DATA_PATH_LOCAL = PROJECT_DIR / "inputs/data/"
 FIG_PATH = PROJECT_DIR / "outputs/figures/"
@@ -282,10 +281,42 @@ def run_baseline_model(
     score_threshold=0.3,
     s3_bucket: str = S3_BUCKET,
     input_path: str = INPUT_PATH,
+    input_file: str = INPUT_FILE,
     vectors_filepath: str = VECTORS_FILEPATH,
     model_path: str = MODEL_PATH,
 ) -> None:
-    valid_inputs = ["majority_combination", "most_probable"]  # "majority_label",
+    """
+    Runs a baseline model for classification based on a specified model type, either using a majority combination
+    or the most probable label approach. The function integrates with Weights & Biases (wandb) for experiment tracking.
+
+    This function performs the following steps:
+    - Validates the model type.
+    - Downloads and processes data from an S3 bucket.
+    - Optionally initializes a wandb run for experiment tracking.
+    - Filters and processes the dataset based on a score threshold.
+    - Binarizes labels and splits data into training and validation sets.
+    - Initializes and trains the baseline classifier (either MostCommonClassifier or MostProbableClassifier).
+    - Predicts and evaluates the model on the training set.
+    - Logs metrics, model, and confusion matrix to wandb, if enabled.
+
+    Parameters:
+    - model_type (str): Type of baseline model to run. Options are "majority_combination" or "most_probable".
+    - wandb_run (bool): If True, initializes a wandb run for experiment tracking.
+    - score_threshold (float): Threshold to filter the data based on scores.
+    - s3_bucket (str): The S3 bucket name to download data from.
+    - input_path (str): The path within the S3 bucket to the input data.
+    - input_file (str): The filename of the input data within the S3 bucket.
+    - vectors_filepath (str): Filepath for the embeddings data within the S3 bucket.
+    - model_path (str): Path to save the trained model.
+
+    Returns:
+    None
+
+    Raises:
+    ValueError: If an invalid model type is specified.
+    """
+
+    valid_inputs = ["majority_combination", "most_probable"]
 
     if model_type not in valid_inputs:
         raise ValueError(
@@ -294,7 +325,7 @@ def run_baseline_model(
 
     openalex_data = S3.download_obj(
         s3_bucket,
-        path_from=input_path,
+        path_from=f"{input_path}{input_file}",
         download_as="dataframe",
         kwargs_reading={"index_col": 0},
     )
@@ -303,24 +334,21 @@ def run_baseline_model(
         # Initialize a wandb run and log score threshold with wandb
         run = wandb.init(
             project="ISS supervised ML",
-            job_type="Baseline modeling",
+            job_type="Taxonomy classifier",
             save_code=True,
-            config={
-                "baseline_model_type": model_type,
-                "score_threshold": score_threshold,
-            },
+            tags=[f"baseline_{model_type}"],
         )
         # We will use set the wandb description to be the dataset name (which includes details of concepts and years)
         # - we set the description, and not the name, as there is a limit on the length of artifact names.
         # wandb artifact names also cannot include "|" so we replace this.
-        wandb_name = training_data_filename.replace("|", "_")
+        wandb_name = input_file.replace("|", "_")
         # add reference to this data in wandb
         wb.add_ref_to_data(
             run,
             "openalex_train_data_raw",
             wandb_name,
             S3_BUCKET,
-            training_data_filename,
+            input_file,
         )
 
     # Filter the data using a score threshold (0.3 is the threshold used by OpenAlex)
@@ -403,17 +431,31 @@ def run_baseline_model(
     baseline_predictions = classifier.predict(X_train)
 
     metrics = classification_utils.create_average_metrics(
-        Y_train, baseline_predictions, average="samples"
+        Y_train, baseline_predictions, average="macro"
     )
     logging.info(metrics)
 
+    confusion_matrix = classification_utils.create_confusion_matrix(
+        Y_train, baseline_predictions, mlb.classes_, proportions=False
+    )
+
     if wandb_run:
         # Log metrics
-        for key, value in metrics.items():
-            wandb.log({f"{key}": value})
+        wandb.run.summary["macro_avg_f1"] = metrics["f1"]
+        wandb.run.summary["accuracy"] = metrics["accuracy"]
+        wandb.run.summary["macro_avg_precision"] = metrics["precision"]
+        wandb.run.summary["macro_avg_recall"] = metrics["recall"]
+
         # Save and log the model and metrics
-        model_path = f"{model_path}/baseline_most_probable.pkl"
+        model_path = f"{model_path}/baseline_{model_type}.pkl"
         wb.log_model(run, f"baseline_{model_type}", classifier, model_path)
+
+        # Log confusion matrix
+        wb_confusion_matrix = wandb.Table(
+            data=confusion_matrix, columns=confusion_matrix.columns
+        )
+        run.log({"confusion_matrix": wb_confusion_matrix})
+
         # End the weights and biases run
         wandb.finish()
 
@@ -445,6 +487,7 @@ if __name__ == "__main__":
         score_threshold=SCORE_THRESHOLD,
         s3_bucket=S3_BUCKET,
         input_path=INPUT_PATH,
+        input_file=INPUT_FILE,
         vectors_filepath=VECTORS_FILEPATH,
         model_path=MODEL_PATH,
     )
