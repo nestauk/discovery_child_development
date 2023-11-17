@@ -14,18 +14,21 @@ First, amend these variables:
 * YEARS: list of years you want to retrieve publications from
 
 To test the flow with just the first concept in the list:
-python discovery_child_development/pipeline/openalex/00_openalex_metaflow.py run --production False 
+python discovery_child_development/pipeline/openalex/00_openalex_metaflow.py run --production False
 
 To fetch the full dataset:
-python discovery_child_development/pipeline/openalex/00_openalex_metaflow.py run --production True 
+python discovery_child_development/pipeline/openalex/00_openalex_metaflow.py run --production True
 
 If you want to run a random sample of works based on a concept and year, use the following command:
-python discovery_child_development/pipeline/openalex/00_openalex_metaflow.py run --production True --random_sample True 
+python discovery_child_development/pipeline/openalex/00_openalex_metaflow.py run --production True --random_sample True
 
-If you are reducing the chunk size, such that you will have more than 10 api calls per second (i.e the number of runs is higher than 10). 
+If you are reducing the chunk size, such that you will have more than 10 api calls per second (i.e the number of runs is higher than 10).
 You will need to add --max-workers 10 to the command. Note: This will increase the time taken to run the flow significantly.
 
-To see a random sample of works regardless of concept, look at 00a_openalex_metaflow_random.py. Note: you will be able to get max 10000 works. 
+If you wish to change the concept IDs or years, you can do so by adding the following to the command line:
+--concept_ids name_of_concepts_list_in_config --year_list name_of_years_list_in_config
+
+To see a random sample of works regardless of concept, look at 00a_openalex_metaflow_random.py. Note: you will be able to get max 10000 works.
 """
 import itertools
 import requests
