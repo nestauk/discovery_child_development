@@ -1,4 +1,6 @@
 # %% [markdown]
+# This notebook "trains" the two baseline classifiers ("majority combination" and "most probable") plus actually trains a KNN model,  one-vs-rest logistic regression and a Random Forest classifier. It has been refactored into the script `pipeline/models/classifiers.py`. This notebook shows somewhat more of the thinking behind the process, compared to the script.
+#
 # Resources:
 # * Scikit-learn documentation of the MultiOutputClassifier [here](https://scikit-learn.org/stable/modules/multiclass.html#multiclass-multioutput-classification)
 # * Kaggle example of classification of arXiv papers [here](https://www.kaggle.com/code/kobakhit/eda-and-multi-label-classification-for-arxiv) (one vs rest)
@@ -63,7 +65,7 @@ np.random.seed(SEED)
 
 # %%
 # Load the data. Just the training set by default
-openalex_data = oa.get_labelled_data()
+openalex_data = oa.get_labelled_data()[0]
 
 # Check distribution of the labels
 openalex_data["sub_category"].value_counts()
