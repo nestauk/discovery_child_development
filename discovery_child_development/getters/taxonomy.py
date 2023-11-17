@@ -1,13 +1,11 @@
 import pandas as pd
 
-from discovery_child_development import PROJECT_DIR, logging
+from discovery_child_development import PROJECT_DIR, logging, config
 from discovery_child_development.utils import google_utils
-from discovery_child_development.utils.io import import_config
 
-PARAMS = import_config("config.yaml")
-N_WORKS = PARAMS["taxonomy"]["n_works"]
-SHEET_ID = PARAMS["taxonomy"]["sheet_id"]
-SHEET_NAME = PARAMS["taxonomy"]["sheet_name"]
+N_WORKS = config["taxonomy"]["n_works"]
+SHEET_ID = config["taxonomy"]["sheet_id"]
+SHEET_NAME = config["taxonomy"]["sheet_name"]
 
 
 def clean_string(s: str):
