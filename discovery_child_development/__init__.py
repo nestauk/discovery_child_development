@@ -7,7 +7,7 @@ from typing import Optional
 import yaml
 
 # Bucket name
-BUCKET_NAME = "discovery-iss"
+S3_BUCKET = "discovery-iss"
 
 
 def get_yaml_config(file_path: Path) -> Optional[dict]:

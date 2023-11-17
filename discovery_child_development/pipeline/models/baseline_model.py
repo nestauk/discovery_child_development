@@ -25,14 +25,13 @@ import wandb
 from nesta_ds_utils.loading_saving import S3
 
 ## project code
-from discovery_child_development import PROJECT_DIR, logging
+from discovery_child_development import PROJECT_DIR, logging, S3_BUCKET
 from discovery_child_development.utils import classification_utils
 from discovery_child_development.utils import wandb as wb
 from discovery_child_development.utils.io import import_config
 
 load_dotenv()
 
-S3_BUCKET = os.environ.get("S3_BUCKET")
 PARAMS = import_config("config.yaml")
 CONCEPT_IDS = "|".join(PARAMS["openalex_concepts"])
 INPUT_PATH = "data/openAlex/processed/"
