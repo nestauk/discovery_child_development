@@ -23,13 +23,9 @@ from sentence_transformers import SentenceTransformer
 from nesta_ds_utils.loading_saving import S3
 
 from discovery_child_development.getters import openalex
-from discovery_child_development import PROJECT_DIR, logging
+from discovery_child_development import PROJECT_DIR, logging, S3_BUCKET
 
 model = SentenceTransformer("all-MiniLM-L6-v2")
-
-load_dotenv()
-
-S3_BUCKET = os.environ["S3_BUCKET"]
 
 VECTORS_PATH = "data/openAlex/vectors/"
 VECTORS_FILE = "sentence_vectors_384.parquet"

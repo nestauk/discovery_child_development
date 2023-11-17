@@ -18,9 +18,8 @@ from sklearn.model_selection import train_test_split
 
 from nesta_ds_utils.loading_saving import S3
 
-from discovery_child_development import PROJECT_DIR, logging
+from discovery_child_development import PROJECT_DIR, logging, config, S3_BUCKET
 from discovery_child_development.utils import google_utils, labelling_utils
-from discovery_child_development.utils.io import import_config
 
 google_utils.find_credentials("GOOGLE_SHEETS_CREDENTIALS")
 
@@ -28,11 +27,7 @@ GOOGLE_SHEETS_CREDENTIALS = os.path.join(
     PROJECT_DIR, os.environ["GOOGLE_SHEETS_CREDENTIALS"]
 )
 
-S3_BUCKET = os.environ["S3_BUCKET"]
-
-PARAMS = import_config("config.yaml")
-
-CONCEPT_IDS = "|".join(PARAMS["openalex_concepts"])
+CONCEPT_IDS = "|".join(config["openalex_concepts"])
 
 OUT_PATH = "data/openAlex/processed/"
 
