@@ -18,6 +18,7 @@ from transformers.models.distilbert.modeling_distilbert import (
 )
 from typing import Union
 from pathlib import Path
+import random
 from sklearn.metrics import f1_score, roc_auc_score, accuracy_score
 
 # %%
@@ -59,6 +60,9 @@ MODEL_PATH = PROJECT_DIR / "outputs/models/"
 SEED = 42
 # Set the seed
 np.random.seed(SEED)
+random.seed(SEED)
+
+NUM_SAMPLES = 1000
 
 
 # %%
@@ -179,7 +183,12 @@ def multi_label_metrics(
     y_pred = binarise_predictions(predictions, threshold)
     y_true = labels
     f1_micro_average = f1_score(y_true=y_true, y_pred=y_pred, average=averaging)
-    roc_auc = roc_auc_score(y_true, y_pred, average=averaging)
+    try:
+        roc_auc = roc_auc_score(y_true, y_pred, average=averaging)
+    except ValueError:
+        roc_auc = float(
+            "nan"
+        )  # needed for testing on small samples where you are not guaranteed to have both positive and negative samples for all classes
     accuracy = accuracy_score(y_true, y_pred)
     return {"f1": f1_micro_average, "roc_auc": roc_auc, "accuracy": accuracy}
 
@@ -256,8 +265,8 @@ unique_ids = openalex_data_wide.index.unique()
 train_ids, val_ids = train_test_split(unique_ids, test_size=0.1, random_state=SEED)
 
 # just a sample to try fine-tuning
-embeddings_train_ids = train_ids[0:1000]
-embeddings_val_ids = val_ids[0:1000]
+embeddings_train_ids = random.sample(list(train_ids), NUM_SAMPLES)
+embeddings_val_ids = random.sample(list(val_ids), NUM_SAMPLES)
 
 X_train = openalex_data_wide[openalex_data_wide.index.isin(embeddings_train_ids)][
     ["text"]
