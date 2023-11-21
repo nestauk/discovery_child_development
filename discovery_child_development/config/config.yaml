@@ -17,6 +17,30 @@ openalex_years:
   - 2021
   - 2022
   - 2023
+  # openalex keywords (for expanding on the seed concepts)
+openalex_keywords:
+  - "'artificial intelligence'"
+  - "assess"
+  - "assessment"
+  - "'augmented reality'"
+  - "autism"
+  - "behaviour"
+  - "development"
+  - "'eye tracking'"
+  - "genetics"
+  - "income"
+  - "learning"
+  - "'learning environment'"
+  - "monitor"
+  - "psychotherapy"
+  - "'randomised controlled trials'"
+  - "robotics"
+  - "'social media'"
+  - "'social services'"
+  - "'special need'"
+  - "technology"
+  - "'virtual reality'"
+  - "wearable"
 
 taxonomy:
   n_works: 20
