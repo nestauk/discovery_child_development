@@ -1,0 +1,23 @@
+name: finetuning
+
+resources:
+  cloud: aws
+  region: eu-west-2
+  accelerators: K80:1
+
+file_mounts:
+  /covid:
+    source: s3://discovery-iss
+    mode: MOUNT
+
+setup: |
+  pip install --upgrade pip
+  conda init bash
+  git clone https://github.com/nestauk/discovery_child_development
+  cd discovery_child_development
+  make install
+
+run: |
+  cd ~/iscovery_child_development
+  conda activate iscovery_child_development
+  jupyter notebook --port 8888
