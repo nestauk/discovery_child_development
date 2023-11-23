@@ -21,9 +21,7 @@ setup: |
   cd discovery_child_development
   git checkout 34-fine-tuning-and-skypilot #remove this line prior to merging to dev
   direnv allow .
-  conda create --file=environment.yaml -y
-  conda activate discovery_child_development
-  pip install -r ~/sky_workdir/discovery_child_development/infra/skypilot/requirements.txt
+  make install
 
 run: |
   cd ~/sky_workdir/discovery_child_development

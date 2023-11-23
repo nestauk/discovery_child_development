@@ -19,5 +19,3 @@ wandb
 df2gspread
 nltk
 openai
-tensorflow
-skypilot
