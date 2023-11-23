@@ -20,12 +20,12 @@ setup: |
   git clone https://github.com/nestauk/discovery_child_development
   cd discovery_child_development
   direnv allow .
-  make install
+  conda create --file=environment.yaml -y
+  conda activate discovery_child_development
+  pip install -r ./infra/skypilot/requirements.txt
 
 run: |
   cd ~/sky_workdir/discovery_child_development
   conda deactivate
   conda activate discovery_child_development
-  pip install ipykernel
-  python -m ipykernel install --user --name=discovery_child_development
   jupyter notebook --port 8888
