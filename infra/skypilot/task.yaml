@@ -22,7 +22,7 @@ setup: |
   direnv allow .
   conda create --file=environment.yaml -y
   conda activate discovery_child_development
-  pip install -r ./infra/skypilot/requirements.txt
+  pip install -r ~/sky_workdir/discovery_child_development/infra/skypilot/requirements.txt
 
 run: |
   cd ~/sky_workdir/discovery_child_development
