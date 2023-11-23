@@ -1,5 +1,6 @@
 ipykernel
 jupytext
+jupyter
 flake8
 flake8-black
 flake8-import-order
