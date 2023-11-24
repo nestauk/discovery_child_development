@@ -2,12 +2,12 @@ Loosely based on [these docs](https://skypilot.readthedocs.io/en/latest/examples
 
 To run a jupyter notebook on skypilot:
 
-- Navigate to this repo
-- Activate the conda env and make sure requirements are installed
-- Export secrets
+- Navigate to this repo and make sure you have a conda env with the requirements installed (run `make install`)
+- Activate the conda env
+- Pip install skypilot (causes problems if it's in `requirements.txt`, so you need to install it manually)
 
 ```
-export OPENAI_API_KEY= #<OpenAI API key>
+pip install skypilot
 ```
 
 - Then run
