@@ -21,6 +21,11 @@ from pathlib import Path
 import random
 from sklearn.metrics import f1_score, roc_auc_score, accuracy_score
 
+import wandb
+
+# %%
+PRODUCTION = True  # If false, the code will run on just a sample
+
 # %%
 # preamble
 
@@ -49,7 +54,6 @@ from discovery_child_development.pipeline.models.taxonomy_classifier import (
     baseline_model as bm,
 )
 from discovery_child_development.utils import classification_utils
-from discovery_child_development.utils import cluster_analysis_utils as cau
 from discovery_child_development.utils import wandb as wb
 
 
@@ -226,6 +230,14 @@ def load_trainer(
 
 
 # %%
+run = wandb.init(
+    project="ISS supervised ML",
+    job_type="Taxonomy classifier",
+    save_code=True,
+    tags=["finetuning"],
+)
+
+# %%
 # Load the data. Just the training set by default
 openalex_data, training_file_name = oa.get_labelled_data()
 logging.info(training_file_name)
@@ -267,8 +279,12 @@ unique_ids = openalex_data_wide.index.unique()
 train_ids, val_ids = train_test_split(unique_ids, test_size=0.1, random_state=SEED)
 
 # just a sample to try fine-tuning
-embeddings_train_ids = random.sample(list(train_ids), NUM_SAMPLES)
-embeddings_val_ids = random.sample(list(val_ids), NUM_SAMPLES)
+if PRODUCTION:
+    embeddings_train_ids = train_ids
+    embeddings_val_ids = val_ids
+else:
+    embeddings_train_ids = random.sample(list(train_ids), NUM_SAMPLES)
+    embeddings_val_ids = random.sample(list(val_ids), NUM_SAMPLES)
 
 X_train = openalex_data_wide[openalex_data_wide.index.isin(embeddings_train_ids)][
     ["text"]
@@ -330,5 +346,62 @@ predictions = trainer.predict(val_ds)
 compute_metrics(predictions)
 
 # %%
+predictions
+
+# %%
+y_pred = binarise_predictions(predictions.predictions, threshold=0.5)
+y_pred_proba = torch.sigmoid(torch.Tensor(predictions.predictions)).numpy()
+y_true = predictions.label_ids
+
+# %%
+label_names = list(Y_val.columns[1:])
+
+# %%
+from sklearn.metrics import precision_score, recall_score
+
+precision = precision_score(y_true, y_pred, average="macro")
+recall = recall_score(y_true, y_pred, average="macro")
+print(f"Precision: {precision}; recall: {recall}")
+
+# %%
+# get the metrics for individual labels
+precision = precision_score(y_true, y_pred, average=None)
+recall = recall_score(y_true, y_pred, average=None)
+print(f"Precision: {precision}; recall: {recall}")
+
+# %%
+classification_utils.evaluate_model_performance(
+    y_true, y_pred, y_pred_proba, label_names
+)
+
+# %%
+confusion_matrix = classification_utils.create_confusion_matrix(
+    y_true, y_pred, label_names, proportions=False
+)
+
+# %%
+classification_utils.create_heatmap_table(
+    y_true, y_pred, label_names, proportions=False
+)
+
+# %%
+metrics = classification_utils.create_average_metrics(y_true, y_pred, average="macro")
+metrics
+
+# %%
+wandb.run.summary["macro_avg_f1"] = metrics["f1"]
+wandb.run.summary["accuracy"] = metrics["accuracy"]
+wandb.run.summary["macro_avg_precision"] = metrics["precision"]
+wandb.run.summary["macro_avg_recall"] = metrics["recall"]
+
+# %%
+# Log confusion matrix
+wb_confusion_matrix = wandb.Table(
+    data=confusion_matrix, columns=confusion_matrix.columns
+)
+run.log({"confusion_matrix": wb_confusion_matrix})
+
+# %%
+wandb.finish()
 
 # %%
