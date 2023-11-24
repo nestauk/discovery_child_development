@@ -2,48 +2,32 @@ Loosely based on [these docs](https://skypilot.readthedocs.io/en/latest/examples
 
 To run a jupyter notebook on skypilot:
 
-- Navigate to this repo and make sure you have a conda env with the requirements installed (run `make install`)
-- Activate the conda env
-- Pip install skypilot (causes problems if it's in `requirements.txt`, so you need to install it manually)
+1. Navigate to this repo
+2. Activate the conda env and make sure you have a conda env with the requirements installed (run make install)
+3. Pip install skypilot (causes problems if it's in `requirements.txt``, so you need to install it manually)
 
 ```
 pip install skypilot
 ```
 
-- Then run
+4. Then run
 
 ```
 sky launch -c task --use-spot ./infra/skypilot/task.yaml
 ```
 
-- Input "Y" when prompted to start the cluster.
-- SSH into the cluster (means you can interact with the cluster through your local terminal):
+5. Input "Y" when prompted to start the cluster. The cluster should now launch and you will see that jupyter is running! Pay attention to the URLs provided here - you will need the `token` part
+6. In a **NEW** terminal, SSH into the cluster (means you can interact with the cluster through your local terminal):
 
 ```
 ssh -L 8888:localhost:8888 task
 ```
 
-- Navigate to the correct directory:
+7. Paste `localhost:8888` into a local browser. It may prompt you for a token - use one of the tokens from the URLs in step (5). You should now be able to run any jupyter notebooks from this repo on the cloud!
+8. **IMPORTANT**: when you are done, exit the skypilot task with `exit`. Once back in your local terminal, run the following command to kill the compute instance:
 
 ```
-cd sky_workdir/discovery_child_development
+sky down task
 ```
 
-- You may also need to deactivate a conda environment:
-
-```
-conda deactivate
-```
-
-- Activate the correct env with:
-
-```
-conda activate discovery_child_development
-```
-
-- Install and launch jupyter:
-
-```
-pip install jupyter
-jupyter notebook
-```
+This terminates the cluster and stops it from costing us anything!
