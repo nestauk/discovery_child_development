@@ -22,6 +22,7 @@ setup: |
   git checkout 34-fine-tuning-and-skypilot #remove this line prior to merging to dev
   direnv allow .
   make install
+  python -m ipykernel install --user --name=discovery_child_development
 
 run: |
   cd ~/sky_workdir/discovery_child_development
