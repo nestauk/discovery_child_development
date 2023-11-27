@@ -24,25 +24,17 @@ from sklearn.metrics import f1_score, roc_auc_score, accuracy_score
 import wandb
 
 # %%
-PRODUCTION = True  # If false, the code will run on just a sample
+PRODUCTION = False  # If false, the code will run on just a sample
 
 # %%
-# preamble
-
-
 import numpy as np
-import os
 import pandas as pd
 
-
-from sklearn.metrics import multilabel_confusion_matrix
 from sklearn.model_selection import train_test_split
-from typing import Any, Iterable, List, Tuple, Union
+from typing import Union
 
 import numpy as np
 import pandas as pd
-import seaborn as sns
-import matplotlib.pyplot as plt
 
 ## nesta ds
 from nesta_ds_utils.loading_saving import S3
@@ -50,11 +42,7 @@ from nesta_ds_utils.loading_saving import S3
 ## project code
 from discovery_child_development import PROJECT_DIR, logging, S3_BUCKET, config
 from discovery_child_development.getters import openalex as oa
-from discovery_child_development.pipeline.models.taxonomy_classifier import (
-    baseline_model as bm,
-)
 from discovery_child_development.utils import classification_utils
-from discovery_child_development.utils import wandb as wb
 
 
 CONCEPT_IDS = "|".join(config["openalex_concepts"])
