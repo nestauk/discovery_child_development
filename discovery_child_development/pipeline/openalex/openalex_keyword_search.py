@@ -10,8 +10,8 @@ import time
 
 from discovery_child_development import S3_BUCKET, config
 
-API_ROOT = "https://api.openalex.org/works?search=(abstract:(child OR infant OR baby OR prenatal OR pregnancy) AND KEYWORD) OR (title:(child OR infant OR baby OR prenatal OR pregnancy) AND KEYWORD)"
-S3_PATH = "metaflow"
+API_ROOT = "https://api.openalex.org/works?search=(abstract:(child OR infant OR baby OR prenatal OR pregnancy) AND abstract:(KEYWORD)) OR (title:(child OR infant OR baby OR prenatal OR pregnancy) AND title:(KEYWORD))"
+S3_PATH = "metaflow/openalex_keyword_search"
 YEARS = config["openalex_years"]
 KEYWORDS = config["openalex_keywords"]
 
@@ -37,10 +37,10 @@ def generate_queries(
     List[str]: A list of complete API query strings.
     """
     queries = []
-    for k in keywords:
-        temp_root = root.replace("KEYWORD", k)
-        for year in years:
-            queries.append(f"{temp_root}&filter=publication_year:{year}")
+    k = " OR ".join(keywords)
+    temp_root = root.replace("KEYWORD", k)
+    for year in years:
+        queries.append(f"{temp_root}&filter=publication_year:{year}")
     return queries
 
 
@@ -119,17 +119,17 @@ class OpenAlexFlow(FlowSpec):
             time.sleep(2)
         filename = f"openalex_keywords_{self.production}.json"
 
+        # Define a filename and save to S3
+        year = self.input.split(":")[-1]
+        filename = f"openalex_keywords_{self.production}_year-{year}.json"
+
         # Specify location to save the file within the bucket
-        # custom_path = f"{S3_PATH}/{filename}"
+        custom_path = f"{S3_PATH}/{filename}"
 
         # Use boto3 to save to the desired bucket
         s3_client = boto3.client("s3")
         data = json.dumps(outputs).encode("utf-8")  # Convert string to bytes
-        s3_client.put_object(
-            Bucket=S3_BUCKET,
-            Key=f"metaflow/openalex_keyword_search/{filename}",
-            Body=data,
-        )
+        s3_client.put_object(Bucket=S3_BUCKET, Key=custom_path, Body=data)
 
         self.next(self.dummy_join)
 
