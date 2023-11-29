@@ -20,7 +20,9 @@ import hdbscan
 import umap
 from discovery_child_development import logging
 import discovery_child_development.utils.openai_utils
-import openai
+from openai import OpenAI
+
+client = OpenAI()
 import copy
 
 
@@ -355,6 +357,9 @@ def describe_clusters_with_gpt(
     embeddings: np.ndarray,
     n_central: int = 15,
     gpt_message: str = None,
+    model="gpt-3.5-turbo",
+    temperature: float = 0.6,
+    max_tokens=3000,
 ) -> List[str]:
     """
     Generate cluster descriptions from cluster centroids using GPT
@@ -385,26 +390,31 @@ def describe_clusters_with_gpt(
     # Generate cluster descriptions
     cluster_descriptions = []
     for i in range(len(centroids)):
-        abstracts = cluster_df.iloc[most_central[i]].text.to_list()
+        # take just the 200 chars of each text in order to stay within the token limit
+        abstracts = [text[:200] for text in cluster_df.iloc[most_central[i]]["text"]]
+        print(f"Cluster {i}: {abstracts}")
+        formatted_message = copy.deepcopy(gpt_message).format("\n".join(abstracts))
+        if len(formatted_message) > max_tokens:
+            formatted_message = formatted_message[:max_tokens]
         messages = [
             {
                 "role": "user",
-                "content": copy.deepcopy(gpt_message).format("\n".join(abstracts)),
+                "content": formatted_message,
             }
         ]
-        chatgpt_output = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
-            messages=messages,
-            temperature=0.6,
-            max_tokens=1000,
-        ).to_dict()
-        cluster_descriptions.append(chatgpt_output["choices"][0]["message"]["content"])
-
+        chatgpt_output = client.chat.completions.create(
+            model=model, messages=messages, temperature=temperature, max_tokens=1000
+        )
+        cluster_description = chatgpt_output.choices[0].message.content
+        cluster_descriptions.append(cluster_description)
     return cluster_descriptions
 
 
 def generate_cluster_names_with_gpt(
-    cluster_descriptions: List[str], gpt_message: str = None
+    cluster_descriptions: List[str],
+    gpt_message: str = None,
+    model="gpt-3.5-turbo",
+    temperature: float = 0.6,
 ) -> Dict[int, str]:
     """Generate cluster names from cluster descriptions using GPT
 
@@ -425,13 +435,11 @@ def generate_cluster_names_with_gpt(
         {"role": "user", "content": gpt_message.format("\n".join(cluster_descriptions))}
     ]
     # Generate cluster names
-    cluster_names = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",
-        messages=messages,
-        temperature=0.6,
-        max_tokens=1000,
-    ).to_dict()
+    cluster_names = client.chat.completions.create(
+        model=model, messages=messages, temperature=temperature, max_tokens=1000
+    )
     # Get cluster names from the GPT response
-    cluster_names_ = cluster_names["choices"][0]["message"]["content"].split("\n")
+    cluster_names_response = cluster_names.choices[0].message.content
+    cluster_names_ = cluster_names_response.split("\n")
     # Map cluster index to cluster name
     return {i: cluster_name for i, cluster_name in enumerate(cluster_names_)}
