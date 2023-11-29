@@ -47,7 +47,6 @@ from discovery_child_development.utils import classification_utils
 
 CONCEPT_IDS = "|".join(config["openalex_concepts"])
 INPUT_PATH = f"data/openAlex/processed/openalex_data_{CONCEPT_IDS}_year-2019-2020-2021-2022-2023_train.csv"
-VECTORS_FILEPATH = "data/openAlex/vectors/sentence_vectors_384.parquet"
 DATA_PATH_LOCAL = PROJECT_DIR / "inputs/data/"
 FIG_PATH = PROJECT_DIR / "outputs/figures/"
 MODEL_PATH = PROJECT_DIR / "outputs/models/"
@@ -240,17 +239,6 @@ openalex_data_wide = (
 )
 # Set the index - useful later for creating training/validation split
 openalex_data_wide = openalex_data_wide.set_index("openalex_id")
-
-# Load embeddings
-embeddings = S3.download_obj(
-    S3_BUCKET,
-    path_from=VECTORS_FILEPATH,
-    download_as="dataframe",
-)
-
-embeddings = embeddings.set_index("openalex_id")
-
-openalex_data_wide = openalex_data_wide.join(embeddings, on="openalex_id", how="left")
 
 # The multilabel binarizer splits the sub-category tuple into binary labels.
 # Y has a column for each unique sub-category in the data, and one row per OpenAlex ID.
