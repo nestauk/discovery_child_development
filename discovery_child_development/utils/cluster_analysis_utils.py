@@ -392,7 +392,7 @@ def describe_clusters_with_gpt(
     for i in range(len(centroids)):
         # take just the 200 chars of each text in order to stay within the token limit
         abstracts = [text[:200] for text in cluster_df.iloc[most_central[i]]["text"]]
-        print(f"Cluster {i}: {abstracts}")
+        logging.info(f"Cluster {i}: {abstracts}")
         formatted_message = copy.deepcopy(gpt_message).format("\n".join(abstracts))
         if len(formatted_message) > max_tokens:
             formatted_message = formatted_message[:max_tokens]

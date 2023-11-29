@@ -80,9 +80,15 @@ openalex_docs = openalex_en_abstracts["text"].tolist()
 openalex_docs[10]
 
 # %%
-t0 = time()
-sentence_vectors_384 = model.encode(openalex_docs, show_progress_bar=True)
-print(f"vectorization done in {time() - t0:.3f} s")
+# t0 = time()
+# sentence_vectors_384 = model.encode(openalex_docs, show_progress_bar=True)
+# print(f"vectorization done in {time() - t0:.3f} s")
+
+# %%
+# np.save("openalex_sentence_vectors_384.npy", sentence_vectors_384)
+
+# %%
+sentence_vectors_384 = np.load("openalex_sentence_vectors_384.npy")
 
 # %%
 umap_params = {
@@ -108,9 +114,6 @@ kmeans_labels = cau.kmeans_clustering(
 openalex_texts_2d = cau.reduce_to_2D(sentence_vectors_384, random_state=SEED)
 
 # %%
-kmeans_labels
-
-# %%
 cluster_df = openalex_en_abstracts.assign(
     cluster=kmeans_labels,
     x=openalex_texts_2d[:, 0],
@@ -118,35 +121,42 @@ cluster_df = openalex_en_abstracts.assign(
 )
 
 # %%
-fig_hdbscan = (
-    alt.Chart(cluster_df)
-    .mark_circle()
-    .encode(
-        x="x",
-        y="y",
-        color=alt.Color("cluster:N", legend=alt.Legend(title="cluster")),
-        tooltip=["title", "cluster"],
-    )
-    .properties(width=800, height=600)
-    .interactive()
+# fig_hdbscan = (
+#     alt.Chart(
+#         cluster_df
+#     )
+#     .mark_circle()
+#     .encode(
+#         x="x",
+#         y="y",
+#         color=alt.Color("cluster:N", legend=alt.Legend(title="cluster")),
+#         tooltip=["title", "cluster"],
+#     )
+#     .properties(width=800, height=600)
+#     .interactive()
+# )
+
+# fig_hdbscan
+
+# %%
+CLUSTER_SUMMARY_MESSAGE = "Here are the most central texts of a cluster. \
+Summarise what texts in this cluster are about in 2 sentences. \
+\n\n##Abstracts\n\n {} \n\n##Description (2 short sentences)"
+
+cluster_descriptions = cau.describe_clusters_with_gpt(
+    cluster_df=cluster_df,
+    embeddings=sentence_vectors_384,
+    n_central=10,
+    gpt_message=CLUSTER_SUMMARY_MESSAGE,
 )
 
-fig_hdbscan
+# %%
+cluster_names_dict = cau.generate_cluster_names_with_gpt(
+    cluster_descriptions=cluster_descriptions,
+)
 
 # %%
-# CLUSTER_SUMMARY_MESSAGE = "Here are the most central texts of a cluster. \
-# Summarise what texts in this cluster are about in 2 sentences. \
-# \n\n##Abstracts\n\n {} \n\n##Description (2 short sentences)"
-
-# cluster_descriptions = cau.describe_clusters_with_gpt(
-#     cluster_df=cluster_df,
-#     embeddings=sentence_vectors_384,
-#     n_central=10,
-#     gpt_message=CLUSTER_SUMMARY_MESSAGE,
-# )
-
-# cluster_names_dict = cau.generate_cluster_names_with_gpt(
-#     cluster_descriptions=cluster_descriptions,
-# )
+cluster_descriptions
 
 # %%
+cluster_names_dict
