@@ -15,23 +15,13 @@ from typing import Optional
 from typing import Union
 
 import os
-import aiofiles
-import openai
 import dotenv
-
-from openai.error import APIConnectionError
-from openai.error import APIError
-from openai.error import RateLimitError
-from openai.error import ServiceUnavailableError
-from openai.error import Timeout
-from tenacity import before_sleep_log
-from tenacity import retry
-from tenacity import retry_if_exception_type
-from tenacity import stop_after_attempt
-from tenacity import wait_exponential
+import aiofiles
+from openai import OpenAI, AsyncOpenAI
 
 dotenv.load_dotenv()
-openai.api_key = os.environ["OPENAI_API_KEY"]
+client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
+aclient = AsyncOpenAI(api_key=os.environ["OPENAI_API_KEY"])
 
 logger = logging.getLogger(__name__)
 
@@ -250,7 +240,7 @@ class Classifier:
         )
 
         parsed_response = json.loads(
-            response["choices"][0]["message"]["function_call"]["arguments"]
+            response.choices[0].message.function_call.arguments
         )
         if parsed_response:
             parsed_response["id"] = message_kwargs["id"]
@@ -270,33 +260,14 @@ class Classifier:
 
         return prompt.to_prompt()
 
-    @staticmethod
-    @retry(
-        retry(
-            reraise=True,
-            stop=stop_after_attempt(6),
-            wait=wait_exponential(multiplier=1, min=1, max=60),
-            retry=(
-                retry_if_exception_type(Timeout)  # noqa: W503
-                | retry_if_exception_type(APIError)  # noqa: W503
-                | retry_if_exception_type(APIConnectionError)  # noqa: W503
-                | retry_if_exception_type(RateLimitError)  # noqa: W503
-                | retry_if_exception_type(ServiceUnavailableError)  # noqa: W503
-            ),
-            before_sleep=before_sleep_log(logger, logging.WARNING),
-        )
-    )
     def _call(
         messages: List[Dict],
         model: str = "gpt-3.5-turbo",
         temperature: float = 0.0,
         **kwargs,
     ) -> Dict:
-        response = openai.ChatCompletion.create(
-            messages=messages,
-            model=model,
-            temperature=temperature,
-            **kwargs,
+        response = client.chat.completions.create(
+            messages=messages, model=model, temperature=temperature, **kwargs
         )
 
         return response  # type: ignore
@@ -352,8 +323,7 @@ class Classifier:
                 model=model,
                 **openai_kwargs,
             )
-
-            response = response["choices"][0]["message"]["function_call"]["arguments"]
+            response = response.choices[0].message.function_call.arguments
             parsed_response = await cls._parse_json(response)
             if parsed_response:
                 parsed_response["id"] = message_kwargs["id"]
@@ -361,33 +331,14 @@ class Classifier:
 
             return message_kwargs["id"]
 
-    @staticmethod
-    @retry(
-        retry(
-            reraise=True,
-            stop=stop_after_attempt(6),
-            wait=wait_exponential(multiplier=1, min=1, max=60),
-            retry=(
-                retry_if_exception_type(Timeout)  # noqa: W503
-                | retry_if_exception_type(APIError)  # noqa: W503
-                | retry_if_exception_type(APIConnectionError)  # noqa: W503
-                | retry_if_exception_type(RateLimitError)  # noqa: W503
-                | retry_if_exception_type(ServiceUnavailableError)  # noqa: W503
-            ),
-            before_sleep=before_sleep_log(logger, logging.WARNING),
-        )
-    )
     async def _acall(
         messages: List[Dict],
         model: str = "gpt-3.5-turbo",
         temperature: float = 0.0,
         **kwargs,
     ) -> Dict:
-        response = await openai.ChatCompletion.acreate(
-            messages=messages,
-            model=model,
-            temperature=temperature,
-            **kwargs,
+        response = await aclient.chat.completions.create(
+            messages=messages, model=model, temperature=temperature, **kwargs
         )
 
         return response  # type: ignore

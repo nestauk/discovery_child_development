@@ -4,7 +4,6 @@ This script is used to test the relevancy labelling prompt and function.
 Usage:
     python discovery_child_development/notebooks/labelling/run_relevancy_labelling_test.py
 """
-from discovery_child_development.utils.openai_utils import openai
 from discovery_child_development import logging
 import json
 import pandas as pd
@@ -22,8 +21,6 @@ from discovery_child_development.utils.labelling_utils import (
     create_category_description_string,
     create_directory_if_not_exists,
 )
-
-from aiohttp import ClientSession
 
 PATH_TO_PROMPTS = (
     PROJECT_DIR / "discovery_child_development/notebooks/labelling/prompts/relevance"
@@ -48,8 +45,7 @@ TEST_TEXTS = [
 
 
 async def main() -> None:
-    """Create prompts for path selection and infer paths."""
-    openai.aiosession.set(ClientSession())
+    """Fetch prompts and run the classifier"""
 
     # Fetch the data to be categorised (replace with real data)
     texts_df = pd.DataFrame(
@@ -68,7 +64,7 @@ async def main() -> None:
     temperature = 0.6
 
     for i, batched_results in enumerate(batch(texts_df, 20)):
-        print(f"Batch {i} / {len(texts_df) // 20}")  # noqa: T001
+        logging.info(f"Batch {i} / {len(texts_df) // 20}")  # noqa: T001
         tasks = [
             Classifier.agenerate(
                 model=model,
@@ -98,8 +94,6 @@ async def main() -> None:
 
         time.sleep(2)
 
-    await openai.aiosession.get().close()  # Close the http session at the end of the program
-
 
 if "__main__" == __name__:
     # create data/ directory if it doesn't exist
@@ -115,4 +109,6 @@ if "__main__" == __name__:
         loop.close()
     e = time.perf_counter()
 
-    print(f"Concurrent execution completed in: {e - s:0.2f} seconds")  # noqa: T001
+    logging.info(
+        f"Concurrent execution completed in: {e - s:0.2f} seconds"
+    )  # noqa: T001
