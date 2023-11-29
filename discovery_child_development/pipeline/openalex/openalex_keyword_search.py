@@ -9,39 +9,14 @@ from typing import List
 import time
 
 from discovery_child_development import S3_BUCKET, config
+from discovery_child_development.utils import openalex_utils
 
-API_ROOT = "https://api.openalex.org/works?search=(abstract:(child OR infant OR baby OR prenatal OR pregnancy) AND abstract:(KEYWORD)) OR (title:(child OR infant OR baby OR prenatal OR pregnancy) AND title:(KEYWORD))"
+API_ROOT = config["openalex_keywords_api_root"]
 S3_PATH = "metaflow/openalex_keyword_search"
 YEARS = config["openalex_years"]
 KEYWORDS = config["openalex_keywords"]
 
 load_dotenv()
-
-
-def generate_queries(
-    root: str = API_ROOT, keywords: List[str] = KEYWORDS, years: List[int] = YEARS
-) -> List[str]:
-    """
-    Generates a list of API queries based on given keywords and years.
-
-    This function constructs queries by combining a root API endpoint with
-    specified keywords and a filter for publication years. Each query is
-    formed by appending a keyword and a year filter to the root endpoint.
-
-    Args:
-    root (str): The root URL or endpoint of the API.
-    keywords (List[str]): A list of keywords to include in the queries.
-    years (List[int]): A list of years to filter the publications by.
-
-    Returns:
-    List[str]: A list of complete API query strings.
-    """
-    queries = []
-    k = " OR ".join(keywords)
-    temp_root = root.replace("KEYWORD", k)
-    for year in years:
-        queries.append(f"{temp_root}&filter=publication_year:{year}")
-    return queries
 
 
 def api_generator(query: str) -> List[str]:
@@ -91,7 +66,9 @@ class OpenAlexFlow(FlowSpec):
         else:
             keyword_list = KEYWORDS[:1]
             year_list = YEARS[:1]
-        self.merged = generate_queries(API_ROOT, keyword_list, year_list)
+        self.merged = openalex_utils.generate_keyword_queries(
+            API_ROOT, keyword_list, year_list
+        )
         print(len(self.merged))
         self.next(self.retrieve_data, foreach="merged")
 

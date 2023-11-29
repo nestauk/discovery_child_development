@@ -19,7 +19,8 @@ from tqdm import tqdm
 import hdbscan
 import umap
 from discovery_child_development import logging
-from discovery_child_development.utils.openai_utils import openai
+import discovery_child_development.utils.openai_utils
+import openai
 import copy
 
 

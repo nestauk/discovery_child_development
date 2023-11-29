@@ -42,6 +42,8 @@ openalex_keywords:
   - "'virtual reality'"
   - "wearable"
 
+openalex_keywords_api_root: "https://api.openalex.org/works?search=(abstract:(child OR infant OR baby OR prenatal OR pregnancy) AND abstract:(KEYWORD)) OR (title:(child OR infant OR baby OR prenatal OR pregnancy) AND title:(KEYWORD))"
+
 taxonomy:
   n_works: 20
   sheet_id: "1KIXSjS2MktbUKuyM-lprSK56kOh14u_gmHyGdHce87w"
