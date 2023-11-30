@@ -1,15 +1,13 @@
 # DO NOT save credentials in this file. Use '.env'
 
-# User email for accessing OpenAlex API
-USER_EMAIL =
-
 # AWS credentials
-AWS_ACCESS_KEY_ID=
-AWS_SECRET_ACCESS_KEY=
-S3_BUCKET =
-# Credentials for patent data (testing)
-LOGIC_MILL_TOKEN=
-# Credentials for Google products
-GOOGLE_APPLICATION_CREDENTIALS=<path-to-credentials-file>
-GOOGLE_SHEETS_CREDENTIALS=<path-to-credentials-file>
-OPENAI_API_KEY=
+export AWS_ACCESS_KEY_ID=<id>
+export AWS_SECRET_ACCESS_KEY=<key>
+
+export GOOGLE_APPLICATION_CREDENTIALS=<path-to-credentials-json>
+
+export GOOGLE_SHEETS_CREDENTIALS=<path-to-credentials-json>
+
+export OPENAI_API_KEY=<key>
+
+export LOGIC_MILL_TOKEN=<token>

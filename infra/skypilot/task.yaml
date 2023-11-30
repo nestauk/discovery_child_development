@@ -1,0 +1,32 @@
+name: finetuning
+
+resources:
+  instance_type: g5.xlarge
+  use_spot: true # This line specifies that you want to use a spot instance, which is cheaper
+  cloud: aws
+  region: eu-west-2
+
+file_mounts:
+  /skypilot:
+    source: s3://discovery-iss
+    mode: MOUNT
+
+setup: |
+  sudo apt-get update -y
+  sudo apt-get install direnv
+  pip install --upgrade pip
+  conda init bash
+  rm -rf discovery_child_development  # Remove the directory if it exists
+  git clone https://github.com/nestauk/discovery_child_development
+  cd discovery_child_development
+  git checkout 34-fine-tuning-and-skypilot #remove this line prior to merging to dev
+  direnv allow .
+  make install
+  conda activate discovery_child_development
+  python -m ipykernel install --user --name=discovery_child_development
+
+run: |
+  cd ~/sky_workdir/discovery_child_development
+  conda deactivate
+  conda activate discovery_child_development
+  jupyter notebook --port 8888

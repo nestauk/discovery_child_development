@@ -19,6 +19,4 @@ wandb
 df2gspread
 nltk
 openai
-tensorflow
 aiofiles
-tenacity
