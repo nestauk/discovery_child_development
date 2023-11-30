@@ -1,5 +1,8 @@
 import pandas as pd
 from sklearn.preprocessing import MultiLabelBinarizer
+from typing import Dict, Generator
+import os
+import random
 
 
 def add_binarise_labels(
@@ -32,3 +35,37 @@ def add_binarise_labels(
         valid_cols = dummy_cols.columns
 
     return dummy_cols[valid_cols], mlb
+
+
+def create_category_description_string(
+    categories: dict, randomise: bool = False
+) -> str:
+    """Create the category descriptions for the prompt
+
+    Args:
+        categories (Dict): The categories, in the format {category: description}
+        randomise (bool, optional): Whether to randomise the order of the categories. Defaults to False.
+
+    Returns:
+        str: The category descriptions with each category and description in a new line
+    """
+    category_descriptions = ""
+    all_categories = list(categories.keys())
+    if randomise:
+        all_categories = random.sample(all_categories, len(all_categories))
+    # randomise the order categories so that the order is not always the same
+    for category in all_categories:
+        category_descriptions += f"{category}: {categories[category]}\n"
+    return category_descriptions
+
+
+def batch(lst: list, n: int) -> Generator:
+    """Yield successive n-sized chunks from lst."""
+    for i in range(0, len(lst), n):
+        yield lst[i : i + n]
+
+
+def create_directory_if_not_exists(dir_path: str) -> None:
+    """Create a directory if it doesn't exist."""
+    if not os.path.exists(dir_path):
+        os.makedirs(dir_path)
