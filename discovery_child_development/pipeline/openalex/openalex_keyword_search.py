@@ -7,6 +7,7 @@ from nesta_ds_utils.loading_saving import S3 as nesta_s3
 import requests
 from typing import List
 import time
+import datetime
 
 from discovery_child_development import S3_BUCKET, config
 from discovery_child_development.utils import openalex_utils
@@ -15,6 +16,11 @@ API_ROOT = config["openalex_keywords_api_root"]
 S3_PATH = "metaflow/openalex_keyword_search"
 YEARS = config["openalex_years"]
 KEYWORDS = config["openalex_keywords"]
+
+# Output path
+timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+query_name = f"openalex_keywords_{timestamp}"
+OUT_PATH = f"{S3_PATH}/{query_name}"
 
 load_dotenv()
 
@@ -44,6 +50,31 @@ def api_generator(query: str) -> List[str]:
     number_of_pages = -(total_results // -200)  # ceiling division
     all_pages = [f"{query}&per-page=200&cursor=" for _ in range(1, number_of_pages + 1)]
     return all_pages
+
+
+def save_keywords_to_s3(
+    keywords: List[str], path: str, timestamp: str, file_prefix: str
+) -> None:
+    """
+    Save the KEYWORDS list to a .txt file and upload it to S3.
+
+    Args:
+        keywords (List[str]): List of keywords to save.
+        path (str): S3 path to upload to.
+        timestamp (str): Timestamp to create a unique filename.
+    """
+    if isinstance(keywords, list):
+        keywords_str = "\n".join(keywords)
+    else:
+        keywords_str = keywords
+
+    filename = f"{file_prefix}_{timestamp}.txt"
+    custom_path = f"{path}/{filename}"
+
+    s3_client = boto3.client("s3")
+    s3_client.put_object(
+        Bucket=S3_BUCKET, Key=custom_path, Body=keywords_str.encode("utf-8")
+    )
 
 
 class OpenAlexFlow(FlowSpec):
@@ -94,25 +125,62 @@ class OpenAlexFlow(FlowSpec):
                 print(f"Failure for query: {query}")
                 pass
             time.sleep(2)
-        filename = f"openalex_keywords_{self.production}.json"
 
-        # Define a filename and save to S3
-        year = self.input.split(":")[-1]
-        filename = f"openalex_keywords_{self.production}_year-{year}.json"
+        # # Save KEYWORDS to S3
+        # save_keywords_to_s3(KEYWORDS, out_path, timestamp, "keywords")
+        # save_keywords_to_s3(self.input, out_path, timestamp, "api_calls")
+        # # Define a filename and save to S3
+        # year = self.input.split(":")[-1]
+        # filename = f"openalex_keywords_production_{self.production}_year-{year}.json"
 
-        # Specify location to save the file within the bucket
-        custom_path = f"{S3_PATH}/{filename}"
+        # # Specify location to save the file within the bucket
+        # custom_path = f"{out_path}/{filename}"
 
-        # Use boto3 to save to the desired bucket
-        s3_client = boto3.client("s3")
-        data = json.dumps(outputs).encode("utf-8")  # Convert string to bytes
-        s3_client.put_object(Bucket=S3_BUCKET, Key=custom_path, Body=data)
+        # # Use boto3 to save to the desired bucket
+        # s3_client = boto3.client("s3")
+        # data = json.dumps(outputs).encode("utf-8")  # Convert string to bytes
+        # s3_client.put_object(Bucket=S3_BUCKET, Key=custom_path, Body=data)
 
-        self.next(self.dummy_join)
+        self.outputs = outputs
+        self.next(self.join)
 
     @step
-    def dummy_join(self, inputs):
+    def join(self, inputs):
+        """Join all the outputs from the parallel steps"""
+        all_outputs = []
+        for input in inputs:
+            all_outputs.extend(input.outputs)
+
+        # Save all outputs to a single JSON file
+        self.save_all_outputs_to_s3(all_outputs)
         self.next(self.end)
+
+    def save_all_outputs_to_s3(self, all_outputs):
+        """Save all outputs to a single JSON file in S3"""
+        file_name = f"openalex_keywords_combined.json"
+        out_path = f"{OUT_PATH}_production_{self.production}"
+        custom_path = f"{out_path}/{file_name}"
+
+        s3_client = boto3.client("s3")
+        data = json.dumps(all_outputs).encode("utf-8")
+        s3_client.put_object(Bucket=S3_BUCKET, Key=custom_path, Body=data)
+        print("Saved data")
+
+        if self.production == False:
+            keywords_to_save = KEYWORDS[:1]
+            apis_to_save = apis_to_save = openalex_utils.generate_keyword_queries(
+                API_ROOT, keywords_to_save, YEARS[:1]
+            )
+        else:
+            keywords_to_save = KEYWORDS
+            apis_to_save = openalex_utils.generate_keyword_queries(
+                API_ROOT, KEYWORDS, YEARS
+            )
+
+        save_keywords_to_s3(keywords_to_save, out_path, timestamp, "keywords")
+        print("Saved keywords")
+        save_keywords_to_s3(apis_to_save, out_path, timestamp, "api_calls")
+        print("Saved API calls")
 
     @step
     def end(self):
