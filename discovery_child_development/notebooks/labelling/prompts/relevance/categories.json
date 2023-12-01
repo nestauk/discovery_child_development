@@ -1,0 +1,5 @@
+{
+  "Relevant": "Text that describes an innovation, technology or aspect related to human child development and developmental needs, where the child is between 0 and 5 years old (including 5 year olds). If the age is not specified, texts about infants, babies, toddlers or preschool are also relevant.",
+  "Non-relevant": "Text about any other topic than child development, or if the children are too old (older than 5 years old and/or already going to school), or if the text is about non-human children.",
+  "Unclear": "Text that is about human child development and developmental needs, but the age of the children has not been explicitly specified."
+}

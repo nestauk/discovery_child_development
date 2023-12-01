@@ -18,33 +18,31 @@ from transformers.models.distilbert.modeling_distilbert import (
 )
 from typing import Union
 from pathlib import Path
+import random
 from sklearn.metrics import f1_score, roc_auc_score, accuracy_score
 
+import wandb
+
 # %%
-# preamble
+PRODUCTION = False  # If false, the code will run on just a sample
 
 
 import numpy as np
-import os
 import pandas as pd
 
-
-from sklearn.metrics import multilabel_confusion_matrix
 from sklearn.model_selection import train_test_split
-from typing import Any, Iterable, List, Tuple, Union
+from typing import Union
 
 import numpy as np
 import pandas as pd
-import seaborn as sns
-import matplotlib.pyplot as plt
 
 ## nesta ds
 from nesta_ds_utils.loading_saving import S3
 
 ## project code
 from discovery_child_development import PROJECT_DIR, logging, S3_BUCKET, config
+from discovery_child_development import PROJECT_DIR, logging, S3_BUCKET, config
 from discovery_child_development.getters import openalex as oa
-from discovery_child_development.pipeline.models import baseline_model as bm
 from discovery_child_development.utils import classification_utils
 from discovery_child_development.utils import cluster_analysis_utils as cau
 from discovery_child_development.utils import wandb as wb
@@ -52,13 +50,15 @@ from discovery_child_development.utils import wandb as wb
 
 CONCEPT_IDS = "|".join(config["openalex_concepts"])
 INPUT_PATH = f"data/openAlex/processed/openalex_data_{CONCEPT_IDS}_year-2019-2020-2021-2022-2023_train.csv"
-VECTORS_FILEPATH = "data/openAlex/vectors/sentence_vectors_384.parquet"
 DATA_PATH_LOCAL = PROJECT_DIR / "inputs/data/"
 FIG_PATH = PROJECT_DIR / "outputs/figures/"
 MODEL_PATH = PROJECT_DIR / "outputs/models/"
 SEED = 42
 # Set the seed
 np.random.seed(SEED)
+random.seed(SEED)
+
+NUM_SAMPLES = 1000
 
 
 # %%
@@ -179,7 +179,12 @@ def multi_label_metrics(
     y_pred = binarise_predictions(predictions, threshold)
     y_true = labels
     f1_micro_average = f1_score(y_true=y_true, y_pred=y_pred, average=averaging)
-    roc_auc = roc_auc_score(y_true, y_pred, average=averaging)
+    try:
+        roc_auc = roc_auc_score(y_true, y_pred, average=averaging)
+    except ValueError:
+        roc_auc = float(
+            "nan"
+        )  # needed for testing on small samples where you are not guaranteed to have both positive and negative samples for all classes
     accuracy = accuracy_score(y_true, y_pred)
     return {"f1": f1_micro_average, "roc_auc": roc_auc, "accuracy": accuracy}
 
@@ -215,6 +220,14 @@ def load_trainer(
 
 
 # %%
+run = wandb.init(
+    project="ISS supervised ML",
+    job_type="Taxonomy classifier",
+    save_code=True,
+    tags=["finetuning"],
+)
+
+# %%
 # Load the data. Just the training set by default
 openalex_data, training_file_name = oa.get_labelled_data()
 logging.info(training_file_name)
@@ -229,17 +242,6 @@ openalex_data_wide = (
 )
 # Set the index - useful later for creating training/validation split
 openalex_data_wide = openalex_data_wide.set_index("openalex_id")
-
-# Load embeddings
-embeddings = S3.download_obj(
-    S3_BUCKET,
-    path_from=VECTORS_FILEPATH,
-    download_as="dataframe",
-)
-
-embeddings = embeddings.set_index("openalex_id")
-
-openalex_data_wide = openalex_data_wide.join(embeddings, on="openalex_id", how="left")
 
 # The multilabel binarizer splits the sub-category tuple into binary labels.
 # Y has a column for each unique sub-category in the data, and one row per OpenAlex ID.
@@ -256,8 +258,12 @@ unique_ids = openalex_data_wide.index.unique()
 train_ids, val_ids = train_test_split(unique_ids, test_size=0.1, random_state=SEED)
 
 # just a sample to try fine-tuning
-embeddings_train_ids = train_ids[0:1000]
-embeddings_val_ids = val_ids[0:1000]
+if PRODUCTION:
+    embeddings_train_ids = train_ids
+    embeddings_val_ids = val_ids
+else:
+    embeddings_train_ids = random.sample(list(train_ids), NUM_SAMPLES)
+    embeddings_val_ids = random.sample(list(val_ids), NUM_SAMPLES)
 
 X_train = openalex_data_wide[openalex_data_wide.index.isin(embeddings_train_ids)][
     ["text"]
@@ -319,5 +325,62 @@ predictions = trainer.predict(val_ds)
 compute_metrics(predictions)
 
 # %%
+predictions
+
+# %%
+y_pred = binarise_predictions(predictions.predictions, threshold=0.5)
+y_pred_proba = torch.sigmoid(torch.Tensor(predictions.predictions)).numpy()
+y_true = predictions.label_ids
+
+# %%
+label_names = list(Y_val.columns[1:])
+
+# %%
+from sklearn.metrics import precision_score, recall_score
+
+precision = precision_score(y_true, y_pred, average="macro")
+recall = recall_score(y_true, y_pred, average="macro")
+print(f"Precision: {precision}; recall: {recall}")
+
+# %%
+# get the metrics for individual labels
+precision = precision_score(y_true, y_pred, average=None)
+recall = recall_score(y_true, y_pred, average=None)
+print(f"Precision: {precision}; recall: {recall}")
+
+# %%
+classification_utils.evaluate_model_performance(
+    y_true, y_pred, y_pred_proba, label_names
+)
+
+# %%
+confusion_matrix = classification_utils.create_confusion_matrix(
+    y_true, y_pred, label_names, proportions=False
+)
+
+# %%
+classification_utils.create_heatmap_table(
+    y_true, y_pred, label_names, proportions=False
+)
+
+# %%
+metrics = classification_utils.create_average_metrics(y_true, y_pred, average="macro")
+metrics
+
+# %%
+wandb.run.summary["macro_avg_f1"] = metrics["f1"]
+wandb.run.summary["accuracy"] = metrics["accuracy"]
+wandb.run.summary["macro_avg_precision"] = metrics["precision"]
+wandb.run.summary["macro_avg_recall"] = metrics["recall"]
+
+# %%
+# Log confusion matrix
+wb_confusion_matrix = wandb.Table(
+    data=confusion_matrix, columns=confusion_matrix.columns
+)
+run.log({"confusion_matrix": wb_confusion_matrix})
+
+# %%
+wandb.finish()
 
 # %%

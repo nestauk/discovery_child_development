@@ -33,7 +33,9 @@ from nesta_ds_utils.loading_saving import S3
 ## project code
 from discovery_child_development import PROJECT_DIR, logging, config, S3_BUCKET
 from discovery_child_development.getters import openalex as oa
-from discovery_child_development.pipeline.models import baseline_model as bm
+from discovery_child_development.pipeline.models.taxonomy_classifier import (
+    baseline_model as bm,
+)
 from discovery_child_development.utils import classification_utils
 from discovery_child_development.utils import cluster_analysis_utils as cau
 from discovery_child_development.utils import wandb as wb
