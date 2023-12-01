@@ -13,8 +13,6 @@ This will pull in the metadata for Openalex works for the broad "not relevant" c
 For the relevant concepts, run the following script:
 `python discovery_child_development/pipeline/openalex/00_openalex_metaflow.py run --production True`
 
-[IN PROGRESS]
-2. Embedding the text data
+[IN PROGRESS] 2. Embedding the text data
 
-
-3. Creating the training and validation set. 
+3. Creating the training and validation set.
