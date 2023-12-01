@@ -62,7 +62,7 @@ def concat_json_files(input_files, s3_bucket, s3_path) -> pd.DataFrame:
     df = pd.DataFrame()
 
     for file in input_files:
-        openalex_data = nesta_s3.download_obj(s3_bucket, f"{s3_path}/{file}", "dict")
+        openalex_data = nesta_s3.download_obj(s3_bucket, f"{s3_path}{file}", "dict")
 
         logging.info(f"Number of works in {file}: {len(openalex_data)}")
 
@@ -104,6 +104,7 @@ def extract_concept_data(row: pd.Series) -> pd.DataFrame:
     concepts_df["openalex_id"] = row["id"]
     concepts_df["title"] = row["title"]
     concepts_df["year"] = row["publication_year"]
+    concepts_df["extracted_date_time"] = row["extracted_date_time"]
     concepts_df.rename(columns={"id": "concept_id"}, inplace=True)
     return concepts_df
 
@@ -142,6 +143,7 @@ def create_concepts_metadata(df: pd.DataFrame) -> pd.DataFrame:
             "openalex_id",
             "title",
             "year",
+            "extracted_date_time",
             "concept_id",
             "wikidata",
             "display_name",
@@ -207,3 +209,28 @@ def save_keywords_to_s3(
     s3_client.put_object(
         Bucket=S3_BUCKET, Key=custom_path, Body=keywords_str.encode("utf-8")
     )
+
+
+def clean_openalex_data(df):
+    logging.info(f"Number of works before cleaning: {len(df)}")
+    # Retain only works in English
+    openalex_en = df[df["language"] == "en"]
+
+    logging.info(
+        f"Number of works lost because they were not in English: {len(df)-len(openalex_en)}"
+    )
+
+    # Retain only works where abstract and title are not null
+    logging.info(
+        f"Number of NAs in 'abstract_inverted_index' before cleaning: {openalex_en['abstract_inverted_index'].isna().sum()}"
+    )
+    logging.info(
+        f"Number of NAs in 'title' before cleaning: {openalex_en['title'].isna().sum()}"
+    )
+
+    openalex_en = openalex_en[openalex_en["abstract_inverted_index"].notnull()]
+    openalex_en = openalex_en[openalex_en["title"].notnull()]
+
+    logging.info(f"Remaining number of works after removing NAs: {len(openalex_en)}")
+
+    return openalex_en
