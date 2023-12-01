@@ -15,10 +15,9 @@ For the relevant concepts, run the following script:
 
 2. Preprocess the Openalex metadata to retain only English works, remove titles in the EY concept seed list and ensure works returned have abstracts/titles:
 
-`python discovery_child_development/pipeline/binary_classifier/01_preprocess_openalex.py`
+`python discovery_child_development/pipeline/binary_classifier/01_preprocess_openalex_broad.py`
 
-[IN PROGRESS] 
-3. (a) Embedding the text data for the simple classifier using the"all-MiniLM-L6-v2" model:
+[IN PROGRESS] 3. (a) Embedding the text data for the simple classifier using the"all-MiniLM-L6-v2" model:
 
 `python discovery_child_development/pipeline/binary_classifier/02_embed_openalex_docs_broad.py`
 
@@ -28,4 +27,4 @@ For the relevant concepts, run the following script:
 
 `python discovery_child_development/pipeline/binary_classifier/03_binary_classifier_training_data.py`
 
-This script creates 3 training sets with different proportions of relevant and irrelevant works for testing balanced and unbalanced training sets. 
+This script creates 3 training sets with different proportions of relevant and irrelevant works for testing balanced and unbalanced training sets.
