@@ -126,21 +126,6 @@ class OpenAlexFlow(FlowSpec):
                 pass
             time.sleep(2)
 
-        # # Save KEYWORDS to S3
-        # save_keywords_to_s3(KEYWORDS, out_path, timestamp, "keywords")
-        # save_keywords_to_s3(self.input, out_path, timestamp, "api_calls")
-        # # Define a filename and save to S3
-        # year = self.input.split(":")[-1]
-        # filename = f"openalex_keywords_production_{self.production}_year-{year}.json"
-
-        # # Specify location to save the file within the bucket
-        # custom_path = f"{out_path}/{filename}"
-
-        # # Use boto3 to save to the desired bucket
-        # s3_client = boto3.client("s3")
-        # data = json.dumps(outputs).encode("utf-8")  # Convert string to bytes
-        # s3_client.put_object(Bucket=S3_BUCKET, Key=custom_path, Body=data)
-
         self.outputs = outputs
         self.next(self.join)
 

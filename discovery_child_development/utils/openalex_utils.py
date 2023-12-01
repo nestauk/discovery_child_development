@@ -1,5 +1,6 @@
 from typing import Dict, List, Union
 from itertools import chain
+import boto3
 from nesta_ds_utils.loading_saving import S3 as nesta_s3
 import pandas as pd
 
@@ -181,3 +182,28 @@ def create_text_data(df: pd.DataFrame) -> pd.DataFrame:
     df.loc[:, "text"] = df["title"] + ". " + df["abstract"]
 
     return df[["id", "title", "abstract", "text"]]
+
+
+def save_keywords_to_s3(
+    keywords: List[str], path: str, timestamp: str, file_prefix: str
+) -> None:
+    """
+    Save the KEYWORDS list to a .txt file and upload it to S3.
+
+    Args:
+        keywords (List[str]): List of keywords to save.
+        path (str): S3 path to upload to.
+        timestamp (str): Timestamp to create a unique filename.
+    """
+    if isinstance(keywords, list):
+        keywords_str = "\n".join(keywords)
+    else:
+        keywords_str = keywords
+
+    filename = f"{file_prefix}_{timestamp}.txt"
+    custom_path = f"{path}/{filename}"
+
+    s3_client = boto3.client("s3")
+    s3_client.put_object(
+        Bucket=S3_BUCKET, Key=custom_path, Body=keywords_str.encode("utf-8")
+    )
