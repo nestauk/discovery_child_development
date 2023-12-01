@@ -54,7 +54,7 @@ def parse_timestamp_from_folder_name(folder_name):
             return None
 
 
-def get_latest_subfolder(bucket_name, parent_folder, production=True):
+def get_latest_subfolder(bucket_name, parent_folder, search_string=None):
     """
     Get the subfolder with the most recent timestamp that optionally contains a specific string.
 
@@ -68,8 +68,8 @@ def get_latest_subfolder(bucket_name, parent_folder, production=True):
     """
     subfolders = list_subfolders_in_s3(bucket_name, parent_folder)
 
-    if production:
-        subfolders = [folder for folder in subfolders if "production_True" in folder]
+    if search_string is not None:
+        subfolders = [folder for folder in subfolders if search_string in folder]
 
     # Extract timestamps and filter out invalid folder names
     parsed_folders = [

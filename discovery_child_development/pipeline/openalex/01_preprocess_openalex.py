@@ -32,8 +32,12 @@ if __name__ == "__main__":
     OUTPUT_FILENAME_CONCEPTS = "concepts_metadata.csv"
     OUTPUT_FILENAME_WORKS = "openalex_abstracts.csv"
 
-    keywords_folder = utils.get_latest_subfolder(S3_BUCKET, KEYWORD_PATH)
-    concepts_folder = utils.get_latest_subfolder(S3_BUCKET, CONCEPTS_PATH)
+    keywords_folder = utils.get_latest_subfolder(
+        S3_BUCKET, KEYWORD_PATH, "production_True"
+    )
+    concepts_folder = utils.get_latest_subfolder(
+        S3_BUCKET, CONCEPTS_PATH, "production_True"
+    )
 
     oa_keywords_data = nesta_s3.download_obj(
         S3_BUCKET,

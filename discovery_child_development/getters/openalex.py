@@ -3,20 +3,34 @@ from nesta_ds_utils.loading_saving import S3
 import os
 
 from discovery_child_development import PROJECT_DIR, S3_BUCKET, config, logging
+from discovery_child_development.utils import utils
 
 load_dotenv()
 
-CONCEPT_IDS = "|".join(config["openalex_concepts"])
-YEARS = [str(y) for y in config["openalex_years"]]
-YEARS = "-".join(YEARS)
-FILEPATH_PROCESSED = (
-    f"data/openAlex/processed/openalex_data_{CONCEPT_IDS}_year-{YEARS}_train.csv"
+FILEPATH_PROCESSED = utils.get_latest_subfolder(
+    S3_BUCKET, "data/openAlex/processed/taxonomy_classifier"
 )
-VECTORS_FILEPATH = "data/openAlex/vectors/sentence_vectors_384.parquet"
+TEST_TRAIN_FILENAME = "openalex_data_train.csv"
+# CONCEPT_IDS = "|".join(config["openalex_concepts"])
+# YEARS = [str(y) for y in config["openalex_years"]]
+# YEARS = "-".join(YEARS)
+# FILEPATH_PROCESSED = (
+#     f"data/openAlex/processed/openalex_data_{CONCEPT_IDS}_year-{YEARS}_train.csv"
+# )
+
+
 SCORE_THRESHOLD = 0.3
 
+INPUT_DATA_PATH = "data/openAlex"
+INPUT_DATA_PATH = utils.get_latest_subfolder(S3_BUCKET, INPUT_DATA_PATH)
+ABSTRACTS_FILENAME = "openalex_abstracts.csv"
+CONCEPTS_METADATA_FILENAME = "concepts_metadata.csv"
 
-def get_abstracts(concepts=CONCEPT_IDS, years=YEARS, bucket=S3_BUCKET):
+VECTORS_FILEPATH = utils.get_latest_subfolder(S3_BUCKET, "data/openAlex/vectors")
+VECTORS_FILENAME = "sentence_vectors_384.parquet"
+
+
+def get_abstracts(bucket=S3_BUCKET, input_path=INPUT_DATA_PATH):
     """Downloads OpenAlex text data (titles and abstracts) from S3.
 
     Args:
@@ -31,18 +45,16 @@ def get_abstracts(concepts=CONCEPT_IDS, years=YEARS, bucket=S3_BUCKET):
             - abstract (str): the abstract of the paper
             - text (str): the concatenation of title and abstract
     """
-
-    abstracts_filename = f"openalex_abstracts_{concepts}_year-{years}.csv"
     openalex_data = S3.download_obj(
         bucket,
-        path_from=f"data/openAlex/{abstracts_filename}",
+        path_from=f"{input_path}{ABSTRACTS_FILENAME}",
         download_as="dataframe",
         kwargs_reading={"index_col": 0},
     )
     return openalex_data
 
 
-def get_concepts_metadata(concepts=CONCEPT_IDS, years=YEARS, bucket=S3_BUCKET):
+def get_concepts_metadata(bucket=S3_BUCKET, input_path=INPUT_DATA_PATH):
     """_summary_
 
     Args:
@@ -71,11 +83,9 @@ def get_concepts_metadata(concepts=CONCEPT_IDS, years=YEARS, bucket=S3_BUCKET):
             4  https://openalex.org/W4249228678  REPRINT OF: Relationship of Childhood Abuse an...  2019  https://openalex.org/C187155963  https://www.wikidata.org/wiki/Q629029 Occupational safety and...  2     0.471979
             ```
     """
-    concepts_file = f"concepts_metadata_{concepts}_year-{years}.csv"
-
     openalex_concepts = S3.download_obj(
         bucket,
-        path_from=f"data/openAlex/concepts/{concepts_file}",
+        path_from=f"{input_path}{CONCEPTS_METADATA_FILENAME}",
         download_as="dataframe",
         kwargs_reading={"index_col": 0},
     )
@@ -85,10 +95,13 @@ def get_concepts_metadata(concepts=CONCEPT_IDS, years=YEARS, bucket=S3_BUCKET):
 
 def get_labelled_data(
     filepath=FILEPATH_PROCESSED,
+    filename=TEST_TRAIN_FILENAME,
     score_threshold=SCORE_THRESHOLD,
     s3_bucket=S3_BUCKET,
     train=True,
 ):
+    filepath = f"{filepath}{filename}"
+
     if train == True:
         filepath = filepath
     else:
@@ -106,11 +119,13 @@ def get_labelled_data(
     return openalex_filtered, filepath
 
 
-def get_sentence_embeddings(s3_bucket=S3_BUCKET, filepath=VECTORS_FILEPATH):
+def get_sentence_embeddings(
+    s3_bucket=S3_BUCKET, filepath=VECTORS_FILEPATH, filename=VECTORS_FILENAME
+):
     # Load embeddings
     embeddings = S3.download_obj(
         s3_bucket,
-        path_from=filepath,
+        path_from=f"{filepath}{filename}",
         download_as="dataframe",
     )
 
