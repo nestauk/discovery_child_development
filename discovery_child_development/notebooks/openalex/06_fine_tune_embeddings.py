@@ -26,10 +26,7 @@ import wandb
 # %%
 PRODUCTION = False  # If false, the code will run on just a sample
 
-
-import numpy as np
-import pandas as pd
-
+# %%
 from sklearn.model_selection import train_test_split
 from typing import Union
 
@@ -41,11 +38,8 @@ from nesta_ds_utils.loading_saving import S3
 
 ## project code
 from discovery_child_development import PROJECT_DIR, logging, S3_BUCKET, config
-from discovery_child_development import PROJECT_DIR, logging, S3_BUCKET, config
 from discovery_child_development.getters import openalex as oa
 from discovery_child_development.utils import classification_utils
-from discovery_child_development.utils import cluster_analysis_utils as cau
-from discovery_child_development.utils import wandb as wb
 
 
 CONCEPT_IDS = "|".join(config["openalex_concepts"])
