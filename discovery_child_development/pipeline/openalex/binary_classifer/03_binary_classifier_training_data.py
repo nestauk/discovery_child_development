@@ -1,5 +1,18 @@
 """
 Prepare labelled data for training a classifier
+--------------
+
+For the existing dataset of OpenAlex docs (already preprocessed with 01_preprocess_openalex_broad.py and 01_preprocess_openalex.py)
+* create a test set of 1000 docs (500 relevant, 500 not relevant) for testing the classifier after validation
+* create 3 training/validation sets for the classifier:
+    1. 50% of the data is from the EY seed list, 50% is from the broader concepts (relavant/non-relevant)
+    2. 20% of the data is from the EY seed list, 80% is from the broader concepts (relavant/non-relevant)
+    3. All of the data is from the EY seed list and broader concepts (relavant - ~11% /non-relevant - ~89%)
+* save the training/validation/test sets to S3
+
+Usage:
+
+python discovery_child_development/pipeline/binary_classifier/03_binary_classifier_training_data.py
 """
 
 import pandas as pd

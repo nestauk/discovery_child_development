@@ -1,12 +1,12 @@
 """
-Preprocesses the output from metaflow: splits it into a concepts metadata file, and an OpenAlex abstracts file.
+Preprocesses the output from metaflow: creating an OpenAlex abstracts file.
 
 Additional cleaning steps:
-- NA valyes in 'abstract_inverted_index' and 'title' are removed.
+- NA values in 'abstract_inverted_index' and 'title' are removed.
 - Works that are not in English are removed.
 
 Usage:
-python discovery_child_development/pipeline/01_preprocess_openalex.py
+python discovery_child_development/pipeline/binary_classifier/01_preprocess_openalex_broad.py
 """
 import pandas as pd
 from nesta_ds_utils.loading_saving import S3

@@ -2,13 +2,13 @@
 Embed the OpenAlex abstracts using the sentence-transformers library for the simple classifiers.
 --------------
 
-For the existing dataset of OpenAlex docs (already preprocessed with 01_preprocess_openalex.py)
+For the existing dataset of OpenAlex docs (already preprocessed with 01_preprocess_openalex_broad.py)
 * create embeddings using HuggingFace sentence transformers and the 'all-MiniLM-L6-v2' model
 * save the document IDs and vectors to a parquet file
 
 Usage:
 
-python discovery_child_development/pipeline/02_embed_openalex_docs.py
+python discovery_child_development/pipeline/binary_classifier/02_embed_openalex_docs_broad.py
 
 """
 
