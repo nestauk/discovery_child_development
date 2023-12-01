@@ -5,10 +5,9 @@ import os
 import pandas as pd
 
 from nesta_ds_utils.loading_saving import S3
-from discovery_child_development.utils.io import import_config
+from discovery_child_development import config
 from discovery_child_development.utils.keywords import process_keywords
 
-config = import_config("config.yaml")
 PATENTS_PATH = config["patents_data_path"]
 PATENTS_DATA_VERSION = config["patents_data_version"]
 

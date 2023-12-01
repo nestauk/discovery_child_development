@@ -20,6 +20,10 @@ research_daps/
 metaflow.s3.*
 .run_id
 
+# Notebooks to exclude (eg, code for testing, debugging etc)
+# *.ipynb
+discovery_child_development/notebooks/scrap_scripts/check_taxonomy.ipynb
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -133,3 +137,5 @@ node_modules/
 # wandb
 discovery_child_development/notebooks/wandb/
 wandb/
+
+discovery_child_development/notebooks/labelling/data/*

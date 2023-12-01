@@ -44,6 +44,15 @@ openalex_keywords:
 
 openalex_keywords_api_root: "https://api.openalex.org/works?search=(abstract:(child OR infant OR baby OR prenatal OR pregnancy) AND abstract:(KEYWORD)) OR (title:(child OR infant OR baby OR prenatal OR pregnancy) AND title:(KEYWORD))"
 
+# OpenAlex not relevant concepts
+openalex_broad_concepts:
+  - "C86803240" # biology
+  - "C15744967" # psychology
+  - "C41008148" # computer science
+  - "C127313418" # geology
+  - "C71924100" # medicine
+  - "C144024400" # sociology
+
 taxonomy:
   n_works: 20
   sheet_id: "1KIXSjS2MktbUKuyM-lprSK56kOh14u_gmHyGdHce87w"
@@ -51,3 +60,5 @@ taxonomy:
 patents_data_path: "data/patents/"
 
 patents_data_version: "GooglePatents_20231106_175151"
+
+MAX_LENGTH: 512

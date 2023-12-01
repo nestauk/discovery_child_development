@@ -3,28 +3,20 @@ Prepare labelled data for training a classifier
 """
 
 import pandas as pd
-import os
 from sklearn.model_selection import train_test_split
 from typing import Tuple
-
 from nesta_ds_utils.loading_saving import S3
-
-from discovery_child_development import PROJECT_DIR, logging
+from discovery_child_development import logging, config, S3_BUCKET
 from discovery_child_development.getters import taxonomy, openalex
-from discovery_child_development.utils.io import import_config
 
-S3_BUCKET = os.environ["S3_BUCKET"]
-
-PARAMS = import_config("config.yaml")
-
-CONCEPT_IDS = "|".join(PARAMS["openalex_concepts"])
-YEARS = [str(y) for y in PARAMS["openalex_years"]]
+CONCEPT_IDS = "|".join(config["openalex_concepts"])
+YEARS = [str(y) for y in config["openalex_years"]]
 YEARS = "-".join(YEARS)
 
 OUT_PATH = "data/openAlex/processed/"
 
 # needed for train-test split
-SEED = PARAMS["seed"]
+SEED = config["seed"]
 
 
 def identify_multiple_sub_categories(df: pd.DataFrame) -> Tuple[pd.DataFrame, int]:
