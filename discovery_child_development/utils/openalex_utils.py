@@ -58,7 +58,19 @@ def generate_keyword_queries(
     return queries
 
 
-def concat_json_files(input_files, s3_bucket, s3_path) -> pd.DataFrame:
+def concat_json_files(
+    input_files: List[str], s3_bucket: str, s3_path: str
+) -> pd.DataFrame:
+    """Takes a list of filenames and concatenates these json files into a single dataframe.
+
+    Args:
+        input_files (List[str]): List of names of files to be concatenated.
+        s3_bucket (str): S3 bucket where the data is located
+        s3_path (str): Path to the data within the bucket
+
+    Returns:
+        pd.DataFrame: Returns a dataframe with the concatenated data.
+    """
     df = pd.DataFrame()
 
     for file in input_files:
@@ -174,8 +186,6 @@ def create_text_data(df: pd.DataFrame) -> pd.DataFrame:
             - "abstract": The abstract of the publication as plain text.
             - "text": The concatenation of title and abstract.
     """
-    # Deinvert the abstract and stick together the title and abstract. This mimics preprocessing done to create
-    # [this dataset](https://huggingface.co/datasets/colonelwatch/abstracts-embeddings).
 
     df.loc[:, "abstract"] = df["abstract_inverted_index"].apply(
         lambda x: deinvert_abstract(x)
@@ -212,6 +222,17 @@ def save_keywords_to_s3(
 
 
 def clean_openalex_data(df):
+    """Preprocessing of OpenAlex data:
+    * Retain only works in English
+    * Remove works where abstract or title is null
+    * Deinvert the abstract (make it normal text)
+
+    Args:
+        df (pd.DataFrame): Raw dataframe of OpenAlex data
+
+    Returns:
+        pd.DataFrame: Dataframe of cleaned data
+    """
     logging.info(f"Number of works before cleaning: {len(df)}")
     # Retain only works in English
     openalex_en = df[df["language"] == "en"]

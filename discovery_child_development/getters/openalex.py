@@ -1,6 +1,7 @@
 from dotenv import load_dotenv
 from nesta_ds_utils.loading_saving import S3
-import os
+import pandas as pd
+from typing import Optional
 
 from discovery_child_development import PROJECT_DIR, S3_BUCKET, config, logging
 from discovery_child_development.utils import utils
@@ -11,12 +12,6 @@ FILEPATH_PROCESSED = utils.get_latest_subfolder(
     S3_BUCKET, "data/openAlex/processed/taxonomy_classifier"
 )
 TEST_TRAIN_FILENAME = "openalex_data_train.csv"
-# CONCEPT_IDS = "|".join(config["openalex_concepts"])
-# YEARS = [str(y) for y in config["openalex_years"]]
-# YEARS = "-".join(YEARS)
-# FILEPATH_PROCESSED = (
-#     f"data/openAlex/processed/openalex_data_{CONCEPT_IDS}_year-{YEARS}_train.csv"
-# )
 
 
 SCORE_THRESHOLD = 0.3
@@ -30,13 +25,14 @@ VECTORS_FILEPATH = utils.get_latest_subfolder(S3_BUCKET, "data/openAlex/vectors"
 VECTORS_FILENAME = "sentence_vectors_384.parquet"
 
 
-def get_abstracts(bucket=S3_BUCKET, input_path=INPUT_DATA_PATH):
+def get_abstracts(
+    bucket: str = S3_BUCKET, input_path: str = INPUT_DATA_PATH
+) -> pd.DataFrame:
     """Downloads OpenAlex text data (titles and abstracts) from S3.
 
     Args:
-        concepts (str, optional): The concept IDs used in the metaflow. Defaults to CONCEPT_IDS.
-        years (str, optional): The years for which we have data eg "2019_2020". Defaults to YEARS.
         bucket (str, optional): Name of the bucket where the data is stored. Defaults to S3_BUCKET.
+        input_path (str, optional): Path to the folder where the data is stored. Defaults to INPUT_DATA_PATH.
 
     Returns:
         pandas.DataFrame: A pandas dataframe with following columns:
@@ -54,13 +50,14 @@ def get_abstracts(bucket=S3_BUCKET, input_path=INPUT_DATA_PATH):
     return openalex_data
 
 
-def get_concepts_metadata(bucket=S3_BUCKET, input_path=INPUT_DATA_PATH):
-    """_summary_
+def get_concepts_metadata(
+    bucket: str = S3_BUCKET, input_path: str = INPUT_DATA_PATH
+) -> pd.DataFrame:
+    """Downloads OpenAlex concepts metadata from S3.
 
     Args:
-        concepts (str, optional): The concept IDs used in the metaflow. Defaults to CONCEPT_IDS.
-        years (str, optional): The years for which we have data eg "2019_2020". Defaults to YEARS.
         bucket (str, optional): Name of the bucket where the data is stored. Defaults to S3_BUCKET.
+        input_path (str, optional): Path to the folder where the data is stored. Defaults to INPUT_DATA_PATH.
 
     Returns:
         pandas.DataFrame: A dataframe with multiple rows per OpenAlex ID,
@@ -94,12 +91,25 @@ def get_concepts_metadata(bucket=S3_BUCKET, input_path=INPUT_DATA_PATH):
 
 
 def get_labelled_data(
-    filepath=FILEPATH_PROCESSED,
-    filename=TEST_TRAIN_FILENAME,
-    score_threshold=SCORE_THRESHOLD,
-    s3_bucket=S3_BUCKET,
-    train=True,
-):
+    filepath: str = FILEPATH_PROCESSED,
+    filename: str = TEST_TRAIN_FILENAME,
+    score_threshold: float = SCORE_THRESHOLD,
+    s3_bucket: str = S3_BUCKET,
+    train: bool = True,
+) -> pd.DataFrame:
+    """Downloads preprocessed OpenAlex data from S3 (either the training&validation, or the test set),
+    and filters it to only include papers with a score above a threshold.
+
+    Args:
+        filepath (str, optional): Path to the data within the bucket. Defaults to FILEPATH_PROCESSED.
+        filename (str, optional): Name of the csv. Defaults to TEST_TRAIN_FILENAME.
+        score_threshold (float, optional): Get rid of concept/paper combinations where the OA algorithm's confidence in a concept is below this threshold. Defaults to SCORE_THRESHOLD.
+        s3_bucket (str, optional): Name of the bucket where data is stored. Defaults to S3_BUCKET.
+        train (bool, optional): Should this be the training set or the test set? Defaults to True (training set).
+
+    Returns:
+        pd.DataFrame: A dataframe with one row per paper/concept combination
+    """
     filepath = f"{filepath}{filename}"
 
     if train == True:
@@ -120,8 +130,10 @@ def get_labelled_data(
 
 
 def get_sentence_embeddings(
-    s3_bucket=S3_BUCKET, filepath=VECTORS_FILEPATH, filename=VECTORS_FILENAME
-):
+    s3_bucket: str = S3_BUCKET,
+    filepath: str = VECTORS_FILEPATH,
+    filename: str = VECTORS_FILENAME,
+) -> pd.DataFrame:
     # Load embeddings
     embeddings = S3.download_obj(
         s3_bucket,
