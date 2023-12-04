@@ -361,11 +361,13 @@ class Classifier:
         return result
 
     @staticmethod
-    async def write_line_to_file(item: dict, filename: str) -> None:
+    async def write_line_to_file(
+        item: dict, path: str, filename: str = "parsed_json"
+    ) -> None:
         """Write the item to a file."""
-        file = f"{filename}/invalid_json.txt"
+        file = f"{path}/{filename}_invalid.txt"
         if isinstance(item, dict):
-            file = f"{filename}/parsed_json.jsonl"
+            file = f"{path}/{filename}.jsonl"
 
         async with aiofiles.open(file, "a") as f:
             await f.write(f"{json.dumps(item)}\n")

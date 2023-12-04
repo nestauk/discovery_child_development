@@ -59,13 +59,19 @@ def create_category_description_string(
     return category_descriptions
 
 
-def batch(lst: list, n: int) -> Generator:
-    """Yield successive n-sized chunks from lst."""
-    for i in range(0, len(lst), n):
-        yield lst[i : i + n]
+def create_examples_string(
+    examples,
+) -> str:
+    """Create the example descriptions for the prompt
 
+    Args:
+        examples (List[Dict]): The examples in a jsonl format [{category, description}]
 
-def create_directory_if_not_exists(dir_path: str) -> None:
-    """Create a directory if it doesn't exist."""
-    if not os.path.exists(dir_path):
-        os.makedirs(dir_path)
+    Returns:
+        str: All the examples in one string
+    """
+    # create one string per line
+    examples_string = ""
+    for example in examples:
+        examples_string += f"Example:{example['text']}\nCategory:{example['label']}\n\n"
+    return examples_string
