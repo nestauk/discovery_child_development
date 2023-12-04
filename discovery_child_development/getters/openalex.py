@@ -1,7 +1,7 @@
 from dotenv import load_dotenv
 from nesta_ds_utils.loading_saving import S3
 import pandas as pd
-from typing import Optional
+from typing import Optional, Tuple
 
 from discovery_child_development import PROJECT_DIR, S3_BUCKET, config, logging
 from discovery_child_development.utils import utils
@@ -96,7 +96,7 @@ def get_labelled_data(
     score_threshold: float = SCORE_THRESHOLD,
     s3_bucket: str = S3_BUCKET,
     train: bool = True,
-) -> pd.DataFrame:
+) -> Tuple[pd.DataFrame, str]:
     """Downloads preprocessed OpenAlex data from S3 (either the training&validation, or the test set),
     and filters it to only include papers with a score above a threshold.
 
@@ -108,7 +108,7 @@ def get_labelled_data(
         train (bool, optional): Should this be the training set or the test set? Defaults to True (training set).
 
     Returns:
-        pd.DataFrame: A dataframe with one row per paper/concept combination
+        Tuple[pd.DataFrame, str]: A tuple containing a dataframe with one row per paper/concept combination; and the file path as a string.
     """
     filepath = f"{filepath}{filename}"
 
