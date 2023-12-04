@@ -4,31 +4,22 @@ innovation_sweet_spots.utils.cluster_analysis_utils
 Module for various cluster analysis (eg extracting cluster-specific keywords)
 """
 
-from discovery_child_development import logging
-
-# import discovery_child_development.utils.openai_utils
-from discovery_child_development.utils.openai_utils import client as client
-import openai
-
 import numpy as np
 import numpy.typing
 import pandas as pd
-
-# from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
 from sklearn.metrics.pairwise import euclidean_distances
 from sklearn.model_selection import ParameterGrid
-
-# from sklearn.feature_extraction import text
+from sklearn.feature_extraction import text
 from typing import Iterator, Dict, Tuple, List
-
-# from collections import defaultdict
-# from tqdm import tqdm
+from collections import defaultdict
+from tqdm import tqdm
 import hdbscan
-import umap.umap_ as umap
-
-
+import umap
+from discovery_child_development import logging
+from discovery_child_development.utils.openai_utils import openai
 import copy
 
 
@@ -39,13 +30,13 @@ def reduce_to_2D(vectors, random_state=1):
     return embedding
 
 
-# from nltk.corpus import stopwords
-# from nltk.stem import WordNetLemmatizer
-# import re
+from nltk.corpus import stopwords
+from nltk.stem import WordNetLemmatizer
+import re
 
-# lemmatizer = WordNetLemmatizer()
+lemmatizer = WordNetLemmatizer()
 
-# DEFAULT_STOPWORDS = stopwords.words("english")
+DEFAULT_STOPWORDS = stopwords.words("english")
 
 umap_def_params = {
     "n_components": 50,
@@ -231,105 +222,105 @@ def highest_silhouette_model_params(param_search_results: pd.DataFrame) -> dict:
     ).model_params.values[0]
 
 
-# def simple_preprocessing(text: str, stopwords=DEFAULT_STOPWORDS) -> str:
-#     """Simple preprocessing for cluster texts"""
-#     text = re.sub(r"[^a-zA-Z ]+", "", text).lower()
-#     text = simple_tokenizer(text)
-#     text = [lemmatizer.lemmatize(t) for t in text]
-#     text = [t for t in text if ((t not in stopwords) and (len(t) > 1))]
-#     return " ".join(text)
+def simple_preprocessing(text: str, stopwords=DEFAULT_STOPWORDS) -> str:
+    """Simple preprocessing for cluster texts"""
+    text = re.sub(r"[^a-zA-Z ]+", "", text).lower()
+    text = simple_tokenizer(text)
+    text = [lemmatizer.lemmatize(t) for t in text]
+    text = [t for t in text if ((t not in stopwords) and (len(t) > 1))]
+    return " ".join(text)
 
 
-# def simple_tokenizer(text: str) -> Iterator[str]:
-#     return [token.strip() for token in text.split(" ") if len(token) > 0]
+def simple_tokenizer(text: str) -> Iterator[str]:
+    return [token.strip() for token in text.split(" ") if len(token) > 0]
 
 
-# def cluster_texts(documents: Iterator[str], cluster_labels: Iterator) -> Dict:
-#     """
-#     Creates a large text string for each cluster, by joining up the
-#     text strings (documents) belonging to the same cluster
+def cluster_texts(documents: Iterator[str], cluster_labels: Iterator) -> Dict:
+    """
+    Creates a large text string for each cluster, by joining up the
+    text strings (documents) belonging to the same cluster
 
-#     Args:
-#         documents: A list of text strings
-#         cluster_labels: A list of cluster labels, indicating the membership of the text strings
+    Args:
+        documents: A list of text strings
+        cluster_labels: A list of cluster labels, indicating the membership of the text strings
 
-#     Returns:
-#         A dictionary where keys are cluster labels, and values are cluster text documents
-#     """
+    Returns:
+        A dictionary where keys are cluster labels, and values are cluster text documents
+    """
 
-#     assert len(documents) == len(cluster_labels)
-#     doc_type = type(documents[0])
+    assert len(documents) == len(cluster_labels)
+    doc_type = type(documents[0])
 
-#     cluster_text_dict = defaultdict(doc_type)
-#     for i, doc in enumerate(documents):
-#         if doc_type is str:
-#             cluster_text_dict[cluster_labels[i]] += doc + " "
-#         elif doc_type is list:
-#             cluster_text_dict[cluster_labels[i]] += doc
-#     return cluster_text_dict
+    cluster_text_dict = defaultdict(doc_type)
+    for i, doc in enumerate(documents):
+        if doc_type is str:
+            cluster_text_dict[cluster_labels[i]] += doc + " "
+        elif doc_type is list:
+            cluster_text_dict[cluster_labels[i]] += doc
+    return cluster_text_dict
 
 
-# def cluster_keywords(
-#     documents: Iterator[str],
-#     cluster_labels: Iterator[int],
-#     n: int = 10,
-#     tokenizer=simple_tokenizer,
-#     max_df: float = 0.90,
-#     min_df: float = 0.01,
-#     Vectorizer=TfidfVectorizer,
-#     ngram_range: Tuple[int, int] = (1, 1),
-# ) -> Dict:
-#     """
-#     Generates keywords that characterise the cluster, using the specified Vectorizer
+def cluster_keywords(
+    documents: Iterator[str],
+    cluster_labels: Iterator[int],
+    n: int = 10,
+    tokenizer=simple_tokenizer,
+    max_df: float = 0.90,
+    min_df: float = 0.01,
+    Vectorizer=TfidfVectorizer,
+    ngram_range: Tuple[int, int] = (1, 1),
+) -> Dict:
+    """
+    Generates keywords that characterise the cluster, using the specified Vectorizer
 
-#     Args:
-#         documents: List of (preprocessed) text documents
-#         cluster_labels: List of integer cluster labels
-#         n: Number of top keywords to return
-#         Vectorizer: Vectorizer object to use (eg, TfidfVectorizer, CountVectorizer)
-#         tokenizer: Function to use to tokenise the input documents; by default splits the document into words
+    Args:
+        documents: List of (preprocessed) text documents
+        cluster_labels: List of integer cluster labels
+        n: Number of top keywords to return
+        Vectorizer: Vectorizer object to use (eg, TfidfVectorizer, CountVectorizer)
+        tokenizer: Function to use to tokenise the input documents; by default splits the document into words
 
-#     Returns:
-#         Dictionary that maps cluster integer labels to a list of keywords
-#     """
-#     my_stop_words = text.ENGLISH_STOP_WORDS
+    Returns:
+        Dictionary that maps cluster integer labels to a list of keywords
+    """
+    my_stop_words = text.ENGLISH_STOP_WORDS
 
-#     # Define vectorizer
-#     vectorizer = Vectorizer(
-#         analyzer="word",
-#         tokenizer=tokenizer,
-#         preprocessor=lambda x: x,
-#         token_pattern=None,
-#         max_df=max_df,
-#         min_df=min_df,
-#         max_features=10000,
-#         stop_words=list(my_stop_words),
-#         ngram_range=ngram_range,
-#     )
+    # Define vectorizer
+    vectorizer = Vectorizer(
+        analyzer="word",
+        tokenizer=tokenizer,
+        preprocessor=lambda x: x,
+        token_pattern=None,
+        max_df=max_df,
+        min_df=min_df,
+        max_features=10000,
+        stop_words=list(my_stop_words),
+        ngram_range=ngram_range,
+    )
 
-#     # Create cluster text documents
-#     cluster_documents = cluster_texts(documents, cluster_labels)
-#     unique_cluster_labels = list(cluster_documents.keys())
+    # Create cluster text documents
+    cluster_documents = cluster_texts(documents, cluster_labels)
+    unique_cluster_labels = list(cluster_documents.keys())
 
-#     # Apply the vectorizer
-#     token_score_matrix = vectorizer.fit_transform(list(cluster_documents.values()))
+    # Apply the vectorizer
+    token_score_matrix = vectorizer.fit_transform(list(cluster_documents.values()))
 
-#     # Create a token lookup dictionary
-#     id_to_token = dict(
-#         zip(list(vectorizer.vocabulary_.values()), list(vectorizer.vocabulary_.keys()))
-#     )
+    # Create a token lookup dictionary
+    id_to_token = dict(
+        zip(list(vectorizer.vocabulary_.values()), list(vectorizer.vocabulary_.keys()))
+    )
 
-#     # For each cluster, check the top n tokens
-#     top_cluster_tokens = {}
-#     for i in range(token_score_matrix.shape[0]):
-#         # Get the cluster feature vector
-#         x = token_score_matrix[i, :].todense()
-#         # Find the indices of the top n tokens
-#         x = list(np.flip(np.argsort(np.array(x)))[0])[0:n]
-#         # Find the tokens corresponding to the top n indices
-#         top_cluster_tokens[unique_cluster_labels[i]] = [id_to_token[j] for j in x]
+    # For each cluster, check the top n tokens
+    top_cluster_tokens = {}
+    for i in range(token_score_matrix.shape[0]):
+        # Get the cluster feature vector
+        x = token_score_matrix[i, :].todense()
+        # Find the indices of the top n tokens
+        x = list(np.flip(np.argsort(np.array(x)))[0])[0:n]
+        # Find the tokens corresponding to the top n indices
+        top_cluster_tokens[unique_cluster_labels[i]] = [id_to_token[j] for j in x]
 
-#     return top_cluster_tokens
+    return top_cluster_tokens
 
 
 def get_cluster_centroids(df: pd.DataFrame, embeddings: np.ndarray) -> List[np.ndarray]:
@@ -363,9 +354,6 @@ def describe_clusters_with_gpt(
     embeddings: np.ndarray,
     n_central: int = 15,
     gpt_message: str = None,
-    model="gpt-3.5-turbo",
-    temperature: float = 0.6,
-    max_tokens=3000,
 ) -> List[str]:
     """
     Generate cluster descriptions from cluster centroids using GPT
@@ -396,31 +384,26 @@ def describe_clusters_with_gpt(
     # Generate cluster descriptions
     cluster_descriptions = []
     for i in range(len(centroids)):
-        # limit to 200 chars in order to escape the max_tokens limit
-        abstracts = [text[:200] for text in cluster_df.iloc[most_central[i]]["text"]]
-        logging.info(f"Cluster {i}: {abstracts}")
-        formatted_message = copy.deepcopy(gpt_message).format("\n".join(abstracts))
-        # if len(formatted_message) > max_tokens:
-        #     formatted_message = formatted_message[:max_tokens]
+        abstracts = cluster_df.iloc[most_central[i]].text.to_list()
         messages = [
             {
                 "role": "user",
-                "content": formatted_message,
+                "content": copy.deepcopy(gpt_message).format("\n".join(abstracts)),
             }
         ]
-        chatgpt_output = client.chat.completions.create(
-            model=model, messages=messages, temperature=temperature, max_tokens=1000
-        )
-        cluster_description = chatgpt_output.choices[0].message.content
-        cluster_descriptions.append(cluster_description)
+        chatgpt_output = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=messages,
+            temperature=0.6,
+            max_tokens=1000,
+        ).to_dict()
+        cluster_descriptions.append(chatgpt_output["choices"][0]["message"]["content"])
+
     return cluster_descriptions
 
 
 def generate_cluster_names_with_gpt(
-    cluster_descriptions: List[str],
-    gpt_message: str = None,
-    model="gpt-3.5-turbo",
-    temperature: float = 0.6,
+    cluster_descriptions: List[str], gpt_message: str = None
 ) -> Dict[int, str]:
     """Generate cluster names from cluster descriptions using GPT
 
@@ -441,11 +424,13 @@ def generate_cluster_names_with_gpt(
         {"role": "user", "content": gpt_message.format("\n".join(cluster_descriptions))}
     ]
     # Generate cluster names
-    cluster_names = client.chat.completions.create(
-        model=model, messages=messages, temperature=temperature, max_tokens=1000
-    )
+    cluster_names = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=messages,
+        temperature=0.6,
+        max_tokens=1000,
+    ).to_dict()
     # Get cluster names from the GPT response
-    cluster_names_response = cluster_names.choices[0].message.content
-    cluster_names_ = cluster_names_response.split("\n")
+    cluster_names_ = cluster_names["choices"][0]["message"]["content"].split("\n")
     # Map cluster index to cluster name
     return {i: cluster_name for i, cluster_name in enumerate(cluster_names_)}
