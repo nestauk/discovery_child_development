@@ -26,7 +26,7 @@ from oauth2client.service_account import ServiceAccountCredentials
 from google.cloud import bigquery
 from pathlib import PosixPath
 
-from discovery_child_development import PROJECT_DIR, BUCKET_NAME, logging
+from discovery_child_development import PROJECT_DIR, S3_BUCKET, logging
 from nesta_ds_utils.loading_saving.S3 import download_file, upload_file, upload_obj
 
 import pandas as pd
