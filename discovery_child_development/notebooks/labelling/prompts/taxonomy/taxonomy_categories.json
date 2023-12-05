@@ -1,0 +1,53 @@
+{
+  "development": {
+    "Cognitive development": "cognition, memory, problem-solving, language acquisition, executive function",
+    "SEND": "special needs, disabilities, learning difficulties",
+    "Communication and language": "language development, communication skills, speech",
+    "Physical": "motor skills, physical development",
+    "Expressive arts and design": "creativity, arts, design, imagination",
+    "Prenatal": "prenatal development, maternal health, fetal development, pregnancy, birth",
+    "Literacy": "reading, writing, literacy development, phonics",
+    "Infancy": "age 0-2, infancy, newborns, early infancy",
+    "Mathematics": "math development, numeracy, mathematical skills",
+    "Sleep": "sleep patterns, sleep quality, sleep duration, bedtime routines.",
+    "Personal social emotional": "social development, emotional development, self-awareness, relationships"
+  },
+  "Safety and security": {
+    "Child protection": "child abuse, child safety, protection policies"
+  },
+  "Technology or innovation": {
+    "Non-tech assessments": "non-tech assessments, questionnaires, surveys, diagnostic tools",
+    "Data": "data analysis, data collection, research data",
+    "Internet": "internet usage, online safety, digital literacy",
+    "Mobile": "mobile devices, mobile learning, apps for children, tablets",
+    "Statistical methods": "statistics, statistical analysis",
+    "Games": "educational games, learning through play, game-based learning",
+    "Data Science and AI": "artificial intelligence, machine learning, data science",
+    "AR VR": "augmented reality, virtual reality, immersive technology",
+    "RCTs": "randomised controlled trials",
+    "Genetics": "genetics, heredity, genetic factors",
+    "Robotics": "robotics",
+    "Neuroscience": "neuroscience, brain development, cognitive neuroscience, brain imaging",
+    "Media": "media influence, media literacy, screen time",
+    "Operations": "program operations, logistics, program management",
+    "Social media": "social media, social networking, online communities"
+  },
+  "Socioeconomic context": {
+    "Income": "family income, socioeconomic status, economic factors, cash transfers",
+    "Inequalities": "educational inequalities, socio-economic disparities",
+    "Labour market": "parental employment, work-life balance, parental leave, gender pay gap",
+    "Social services": "social services, support programs",
+    "Social environment": "social environment, community influence",
+    "Policy": "education policy, child development policy, government policy"
+  },
+  "Health": {
+    "Health": "child health, well-being, healthcare",
+    "Mental health": "child mental health, emotional well-being, mental health interventions",
+    "Nutrition and weight": "nutrition, weight, dietary habits, breastfeeding, obesity, malnutrition",
+    "Oral health": "oral health, dental care, dental hygiene"
+  },
+  "Enabling environment": {
+    "Culture and communities": "cultural diversity, community involvement, multiculturalism",
+    "Family environment": "family dynamics, parenting, family support"
+  }
+}
