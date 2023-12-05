@@ -7,15 +7,13 @@
 # * Find the top terms per cluster
 
 # %%
-import boto3
-from io import BytesIO
+
 import os
-from dotenv import find_dotenv, load_dotenv
+from dotenv import load_dotenv
 from time import time
 import pandas as pd
 import numpy as np
 import pickle
-import s3fs
 
 import umap.umap_ as umap
 import hdbscan
@@ -24,40 +22,21 @@ import altair as alt
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.preprocessing import normalize
 
+## nesta ds
+from nesta_ds_utils.loading_saving import S3
 
-# %% [markdown]
-# We store the concepts we're using as a variable so that they can be pasted into file names (the metaflow process stores the concepts that were used to get the data in the file name, and it seems wise to preserve this information at different stages of the process).
-#
-# At some point it may help to store these in a config file, in case we want to work with different sets of concepts at the same time for comparison.
+## project code
+from discovery_child_development import PROJECT_DIR, logging, S3_BUCKET, config
+from discovery_child_development.getters import openalex as oa
+from discovery_child_development.utils import cluster_analysis_utils as cau
 
-# %%
-CONCEPT_IDS = [
-    "C109260823",  # child development
-    "C2993937534",  # childhood development
-    "C2777082460",  # early childhood
-    "C2911196330",  # child rearing
-    "C2993037610",  # child care
-    "C2779415726",  # child protection
-    "C2781192327",  # child behavior checklist
-    "C15471489",  # child psychotherapy
-    "C178229462",  # early childhood education
-    # "C138496976",  # developmental psychology (level 1).
-]
-
-CONCEPTS = "|".join(CONCEPT_IDS)
-
-# %%
 load_dotenv()
 
-S3_BUCKET = os.environ["S3_BUCKET"]
-AWS_ACCESS_KEY_ID = os.environ["AWS_ACCESS_KEY_ID"]
-AWS_SECRET_ACCESS_KEY = os.environ["AWS_SECRET_ACCESS_KEY"]
+SEED = 42
+# Set the seed
+np.random.seed(SEED)
 
-s3_client = boto3.client("s3")
-
-WORKS_PATH = "data/openAlex/"
-WORKS_FILE = f"openalex_abstracts_{CONCEPTS}_year-2023.csv"
-VECTORS_PATH = "data/openAlex/vectors/"
+alt.data_transformers.disable_max_rows()
 
 
 # %%
@@ -124,23 +103,26 @@ def plot_clusters(df, cluster_label, x_col, y_col, plot_noise=False):
 
 # %%
 # Read in the text data
-text_data_path = f"{WORKS_PATH}{WORKS_FILE}"
-response = s3_client.get_object(Bucket=S3_BUCKET, Key=text_data_path)
-csv_data = response["Body"].read()
-openalex_text_df = pd.read_csv(BytesIO(csv_data), index_col=0)
-openalex_text_df.head()
+openalex_text_df = oa.get_abstracts()
+
+# text_data_path = f"{WORKS_PATH}{WORKS_FILE}"
+# response = s3_client.get_object(Bucket=S3_BUCKET, Key=text_data_path)
+# csv_data = response["Body"].read()
+# openalex_text_df = pd.read_csv(BytesIO(csv_data), index_col=0)
+# openalex_text_df.head()
 
 # %%
 # Load embeddings and check that we have the same IDs
-vector_filename = f"sentence_vectors_384.parquet"
-vector_path = f"s3://{S3_BUCKET}/{VECTORS_PATH}{vector_filename}"
 
-vectors_df = pd.read_parquet(vector_path)
+vectors_df = oa.get_sentence_embeddings()
 
-if np.array_equal(openalex_text_df["id"], vectors_df["openalex_id"]):
+if np.array_equal(openalex_text_df["id"], vectors_df.index):
     logging.info("The OpenAlex text IDs match the vector IDs")
 else:
     logging.error("The OpenAlex text IDs do not match the vector IDs")
+
+# %%
+vectors_df = vectors_df.reset_index()
 
 # %%
 # Merge the dataframes

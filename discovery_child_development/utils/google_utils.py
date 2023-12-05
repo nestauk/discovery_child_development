@@ -68,7 +68,7 @@ def find_credentials(credentials_env_var: str) -> PosixPath:
         try:
             download_file(
                 path_from=f"credentials/{credentials_json.name}",
-                bucket=BUCKET_NAME,
+                bucket=S3_BUCKET,
                 path_to=str(credentials_json),
             )
         except Exception as e:
@@ -215,13 +215,13 @@ def upload_query_to_s3(
     # Upload the data
     upload_obj(
         query_df,
-        environ["S3_BUCKET"],
+        S3_BUCKET,
         f"{path}{query_name}/{query_name}.parquet",
     )
     # Upload the query
     upload_obj(
         query,
-        environ["S3_BUCKET"],
+        S3_BUCKET,
         f"{path}{query_name}/{query_name}_query.txt",
     )
     # Upload any other metadata files
@@ -230,7 +230,7 @@ def upload_query_to_s3(
             filename = Path(file).stem + Path(file).suffix
             upload_file(
                 str(file),
-                environ["S3_BUCKET"],
+                S3_BUCKET,
                 f"{path}{query_name}/{filename}",
             )
     logging.info(f"Query results uploaded to {path}{query_name}/")

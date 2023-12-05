@@ -37,12 +37,19 @@ from nesta_ds_utils.loading_saving import S3 as nesta_s3
 from dotenv import load_dotenv
 from typing import NoReturn, List, Any
 import time
+import datetime
 
 from discovery_child_development import S3_BUCKET, config
+from discovery_child_development.utils import openalex_utils
 
 API_ROOT = "https://api.openalex.org/works?filter="
-S3_PATH = "metaflow"
+S3_PATH = "metaflow/openalex_concepts"
 SEED = config["seed"]
+
+# Output path
+timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+query_name = f"openalex_concepts_{timestamp}"
+OUT_PATH = f"{S3_PATH}/{query_name}"
 
 load_dotenv()
 
@@ -138,8 +145,8 @@ class OpenAlexWorksFlow(FlowSpec):
             concept_list = self.concept_ids
             year_list = self.year_list
         else:
-            concept_list = self.concept_ids[:1]
-            year_list = self.year_list[:1]
+            concept_list = self.concept_ids[:2]
+            year_list = self.year_list[:2]
         # Generate chunks of concepts
         concept_chunks = get_chunks(concept_list, self.chunk_size)
         print(f"Number of concepts: {len(concept_chunks)}")
@@ -182,12 +189,23 @@ class OpenAlexWorksFlow(FlowSpec):
         concept = self.input.split(",")[0]
         # Define a filename and save to S3
         year = self.input.split(":")[-1].replace("&", "_").replace("=", "-")
-        filename = f"openalex-works_production-{self.production}_concept-{concept}_year-{year}.json"
+        filename = f"openalex-works_year-{year}.json"
 
         # Specify location to save the file within the bucket
-        custom_path = f"{S3_PATH}/{self.concepts}/{filename}"
+        out_path = f"{OUT_PATH}_production_{self.production}"
+
+        custom_path = f"{out_path}/{filename}"
 
         nesta_s3.upload_obj(obj=outputs, bucket=S3_BUCKET, path_to=custom_path)
+
+        if self.production:
+            concept_list = self.concept_ids
+        else:
+            concept_list = self.concept_ids[:2]
+
+        openalex_utils.save_keywords_to_s3(
+            concept_list, out_path, timestamp, "concepts"
+        )
 
         self.next(self.dummy_join)
 
