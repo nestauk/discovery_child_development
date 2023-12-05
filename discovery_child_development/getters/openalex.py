@@ -110,12 +110,13 @@ def get_labelled_data(
     Returns:
         Tuple[pd.DataFrame, str]: A tuple containing a dataframe with one row per paper/concept combination; and the file path as a string.
     """
-    filepath = f"{filepath}{filename}"
 
     if train == True:
-        filepath = filepath
+        filename = filename
     else:
-        filepath = str.replace(filepath, "train", "test")
+        filename = str.replace(filename, "train", "test")
+
+    filepath = f"{filepath}{filename}"
 
     openalex_data = S3.download_obj(
         s3_bucket,
