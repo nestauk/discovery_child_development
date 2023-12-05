@@ -88,7 +88,18 @@ if __name__ == "__main__":
     openalex_en_abstracts = openalex_en_abstracts[
         openalex_en_abstracts.text.notnull()
     ].reset_index(drop=True)
-    logging.info(f"Remaining number of works after removing NAs: {len(openalex_en)}")
+    logging.info(
+        f"Remaining number of works after removing NAs: {len(openalex_en_abstracts)}"
+    )
+
+    # Removing duplicates (based on id)
+    logging.info("Removing duplicates...")
+    openalex_en_abstracts = openalex_en_abstracts.drop_duplicates(
+        subset=["id"], keep="first"
+    ).reset_index(drop=True)
+    logging.info(
+        f"Remaining number of works after removing duplicates: {len(openalex_en_abstracts)}"
+    )
 
     logging.info("Saving OpenAlex text data to S3...")
     # Write the text data to s3
