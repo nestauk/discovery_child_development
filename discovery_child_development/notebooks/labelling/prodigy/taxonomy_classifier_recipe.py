@@ -19,9 +19,7 @@ prodigy drop taxonomy_data
 
 import prodigy
 from prodigy.components.loaders import JSONL
-from prodigy.components.preprocess import add_tokens
 from pathlib import Path
-import spacy
 from typing import Iterator
 import copy
 
@@ -45,7 +43,7 @@ category_list = [
 categories_prompt = "\n".join(category_list)
 
 
-def make_tasks(nlp: spacy.language.Language, stream: Iterator[dict]) -> Iterator[dict]:
+def make_tasks(stream: Iterator[dict]) -> Iterator[dict]:
     for eg in stream:
         task = copy.deepcopy(eg)
         text = eg["text"]
@@ -110,13 +108,9 @@ def make_tasks(nlp: spacy.language.Language, stream: Iterator[dict]) -> Iterator
     source=("The source data as a .jsonl file", "positional", None, Path),
 )
 def custom_oa(dataset: str, source: str):
-    nlp = spacy.blank("en")
-
     stream = JSONL(source)
 
-    # stream = add_tokens(nlp, stream)
-
-    stream = make_tasks(nlp, stream)
+    stream = make_tasks(stream)
 
     return {
         "dataset": dataset,
