@@ -1,0 +1,13 @@
+### Instructions ###
+Here are the labels texts can be labelled with, and some indicative keywords associated with each category:
+-----------------------------------
+### List of labels ###
+CATEGORIES_AND_KEYWORDS
+-----------------------------------
+The task is non-exclusive, so you can provide more than one label.
+If the text cannot be classified into any of the provided labels, return `==NONE==`.
+Do not create new labels, and do not modify the provided labels.
+Label the following text with one or more labels from the list above:
+```
+TEXT_TO_LABEL
+```

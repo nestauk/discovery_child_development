@@ -1,0 +1,14 @@
+{
+  "name": "predict_category",
+  "description": "Assign category labels to the given text",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "label": {
+        "type": "string",
+        "description": "Labels to assign to the given text"
+      }
+    },
+    "required": ["label"]
+  }
+}

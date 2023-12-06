@@ -28,7 +28,7 @@ import dotenv
 from openai import OpenAI
 import json
 
-from utils import flatten_dictionary
+from utils import flatten_dictionary, get_labels_from_gpt_response
 
 dotenv.load_dotenv()
 client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
@@ -88,23 +88,19 @@ def make_tasks(stream: Iterator[dict], model=MODEL) -> Iterator[dict]:
             function_call={"name": "predict_category"},
         )
 
-        output = response.choices[0].message.function_call.arguments
-
         # Process and format the output for Prodigy
         options = [
             {"id": category, "text": category}
             for category in list(categories_flat.keys())
         ]
 
+        output_as_list = get_labels_from_gpt_response(response)
+
         task["options"] = options
 
-        task["accept"] = [
-            category.strip() for category in json.loads(output)["label"].split(",")
-        ]
+        task["accept"] = output_as_list
 
-        task["model_output"] = [
-            category.strip() for category in json.loads(output)["label"].split(",")
-        ]
+        task["model_output"] = output_as_list
 
         yield task
 
