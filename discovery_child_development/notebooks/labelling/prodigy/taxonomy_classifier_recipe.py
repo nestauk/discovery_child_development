@@ -33,7 +33,10 @@ from utils import flatten_dictionary
 dotenv.load_dotenv()
 client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
 
-with open("../prompts/taxonomy/taxonomy_categories.json") as json_file:
+MODEL = "gpt-3.5-turbo-1106"
+TAXONOMY_PATH = "../prompts/taxonomy/taxonomy_categories.json"
+
+with open(TAXONOMY_PATH) as json_file:
     categories = json.load(json_file)
 
 categories_flat = flatten_dictionary(categories)
@@ -43,7 +46,7 @@ category_list = [
 categories_prompt = "\n".join(category_list)
 
 
-def make_tasks(stream: Iterator[dict]) -> Iterator[dict]:
+def make_tasks(stream: Iterator[dict], model=MODEL) -> Iterator[dict]:
     for eg in stream:
         task = copy.deepcopy(eg)
         text = eg["text"]
@@ -78,7 +81,7 @@ def make_tasks(stream: Iterator[dict]) -> Iterator[dict]:
 
         # Call OpenAI API
         response = client.chat.completions.create(
-            model="gpt-3.5-turbo-1106",
+            model=model,
             temperature=0.0,
             messages=prompt,
             functions=[function],
@@ -99,6 +102,10 @@ def make_tasks(stream: Iterator[dict]) -> Iterator[dict]:
             category.strip() for category in json.loads(output)["label"].split(",")
         ]
 
+        task["model_output"] = [
+            category.strip() for category in json.loads(output)["label"].split(",")
+        ]
+
         yield task
 
 
@@ -110,7 +117,7 @@ def make_tasks(stream: Iterator[dict]) -> Iterator[dict]:
 def custom_oa(dataset: str, source: str):
     stream = JSONL(source)
 
-    stream = make_tasks(stream)
+    stream = make_tasks(stream, model=MODEL)
 
     return {
         "dataset": dataset,
