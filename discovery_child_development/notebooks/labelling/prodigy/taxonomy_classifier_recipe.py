@@ -4,6 +4,17 @@ To test this, cd into discovery_child_development/prodigy/ and run:
 prodigy oa_classification taxonomy_data test_sample.jsonl -F taxonomy_classifier_recipe.py
 ```
 
+To export the data and have it saved locally, run:
+```
+prodigy db-out taxonomy_data > taxonomy_data.jsonl
+```
+
+If you have labelled your test examples and want to scrap those labels and start again (eg if you've switched to a different GPT model),
+run:
+```
+prodigy drop taxonomy_data
+```
+
 """
 
 import prodigy
@@ -24,9 +35,7 @@ from utils import flatten_dictionary
 dotenv.load_dotenv()
 client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
 
-with open(
-    "../notebooks/labelling/prompts/taxonomy/taxonomy_categories.json"
-) as json_file:
+with open("../prompts/taxonomy/taxonomy_categories.json") as json_file:
     categories = json.load(json_file)
 
 categories_flat = flatten_dictionary(categories)
@@ -105,7 +114,7 @@ def custom_oa(dataset: str, source: str):
 
     stream = JSONL(source)
 
-    stream = add_tokens(nlp, stream)
+    # stream = add_tokens(nlp, stream)
 
     stream = make_tasks(nlp, stream)
 
