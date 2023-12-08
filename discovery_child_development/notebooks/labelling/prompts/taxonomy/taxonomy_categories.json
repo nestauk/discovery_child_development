@@ -10,7 +10,8 @@
     "Infancy": "age 0-2, infancy, newborns, early infancy",
     "Mathematics": "math development, numeracy, mathematical skills",
     "Sleep": "sleep patterns, sleep quality, sleep duration, bedtime routines.",
-    "Personal social emotional": "social development, emotional development, self-awareness, relationships"
+    "Personal social emotional": "social development, emotional development, self-awareness, relationships",
+    "Early childhood development (general)": "ages 0-5, early childhood development, early years, early childhood, early childhood education, early learning, early education"
   },
   "Safety and security": {
     "Child protection": "child abuse, child safety, protection policies"
@@ -30,7 +31,9 @@
     "Neuroscience": "neuroscience, brain development, cognitive neuroscience, brain imaging",
     "Media": "media influence, media literacy, screen time",
     "Operations": "program operations, logistics, program management",
-    "Social media": "social media, social networking, online communities"
+    "Social media": "social media, social networking, online communities",
+    "Assessment (general)": "assessments, evaluation, measurement, monitoring, evaluation",
+    "Technology (general)": "technology, innovation, digital, ICT, edtech, tech"
   },
   "Socioeconomic context": {
     "Income": "family income, socioeconomic status, economic factors, cash transfers",

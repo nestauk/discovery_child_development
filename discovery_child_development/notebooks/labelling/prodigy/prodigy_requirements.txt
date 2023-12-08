@@ -2,3 +2,4 @@ prodigy==1.14.11
 python==3.10.13
 spacy==3.7.2
 spacy-llm==0.6.4
+tiktoken==0.5.2
