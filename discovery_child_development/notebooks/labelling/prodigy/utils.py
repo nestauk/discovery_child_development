@@ -1,19 +1,19 @@
 import json
+from pathlib import Path
 
 from discovery_child_development import PROJECT_DIR
+from discovery_child_development.utils.openai_utils import (
+    FunctionTemplate,
+    MessageTemplate,
+)
 
-FUNCTION_PATH = (
-    PROJECT_DIR
-    / "discovery_child_development/notebooks/labelling/prompts/taxonomy/function.json"
+PATH_TO_PROMPTS = (
+    PROJECT_DIR / "discovery_child_development/notebooks/labelling/prompts/taxonomy"
 )
-CATEGORIES_PATH = (
-    PROJECT_DIR
-    / "discovery_child_development/notebooks/labelling/prompts/taxonomy/taxonomy_categories.json"
-)
-PROMPT_TEXT_PATH = (
-    PROJECT_DIR
-    / "discovery_child_development/notebooks/labelling/prompts/taxonomy/task_prompt.txt"
-)
+PATH_USER = PATH_TO_PROMPTS / "user.json"
+PATH_SYSTEM = PATH_TO_PROMPTS / "system.json"
+PATH_FUNCTION = PATH_TO_PROMPTS / "function.json"
+PATH_CATEGORIES = PATH_TO_PROMPTS / "taxonomy_categories.json"
 
 
 def flatten_dictionary(d):
@@ -49,7 +49,7 @@ def get_labels_from_gpt_response(response):
     return [label.strip() for label in json.loads(output)["label"].split(",")]
 
 
-def load_categories(categories_path=CATEGORIES_PATH):
+def load_categories(categories_path=PATH_CATEGORIES):
     with open(categories_path) as json_file:
         categories = json.load(json_file)
 
@@ -58,23 +58,10 @@ def load_categories(categories_path=CATEGORIES_PATH):
     return categories_flat
 
 
-def format_function(path=FUNCTION_PATH):
-    categories_flat = load_categories()
-
-    with open(path) as json_file:
-        function_json = json.load(json_file)
-
-    function_json["parameters"]["properties"]["label"]["enum"] = list(
-        categories_flat.keys()
-    )
-
-    return function_json
-
-
 def format_categories_for_prompt(categories_flat):
     category_list = []
     for category in categories_flat.keys():
-        string = f"{category}: {categories_flat[category]}"
+        string = f"'{category}': {categories_flat[category]}"
         category_list.append(string)
 
     category_list = "\n".join(category_list)
@@ -82,14 +69,32 @@ def format_categories_for_prompt(categories_flat):
     return category_list
 
 
-def format_message(text, path=PROMPT_TEXT_PATH, categories_flat=load_categories()):
-    category_list = format_categories_for_prompt(categories_flat)
+def format_function(path=PATH_FUNCTION):
+    if isinstance(path, Path):
+        path = str(path)
 
-    with open(path, "r") as file:
-        task_prompt = file.read()
+    categories_flat = load_categories()
 
-    task_prompt = task_prompt.replace("TEXT_TO_LABEL", text).replace(
-        "CATEGORIES_AND_KEYWORDS", category_list
+    function = FunctionTemplate.load(path).to_prompt()
+
+    function["parameters"]["properties"]["label"]["enum"] = list(categories_flat.keys())
+
+    return function
+
+
+def build_prompt(text, path_system=PATH_SYSTEM, path_user=PATH_USER):
+    if isinstance(path_system, Path):
+        path_system = str(path_system)
+
+    if isinstance(path_user, Path):
+        path_user = str(path_user)
+
+    categories_flat = load_categories()
+
+    system = MessageTemplate.load(path_system).to_prompt()
+    user_message = MessageTemplate.load(path_user).to_prompt()
+    user_message["content"] = user_message["content"].format(
+        text=text, categories=format_categories_for_prompt(categories_flat)
     )
 
-    return task_prompt
+    return [system, user_message]
