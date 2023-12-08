@@ -11,7 +11,7 @@
     "Mathematics": "math development, numeracy, mathematical skills",
     "Sleep": "sleep patterns, sleep quality, sleep duration, bedtime routines.",
     "Personal social emotional": "social development, emotional development, self-awareness, relationships",
-    "Early childhood development (general)": "ages 0-5, early childhood development, early years, early childhood, early childhood education, early learning, early education"
+    "Early childhood development (general)": "ages 0-5, early childhood development, early years, early childhood"
   },
   "Safety and security": {
     "Child protection": "child abuse, child safety, protection policies"
@@ -51,6 +51,7 @@
   },
   "Enabling environment": {
     "Culture and communities": "cultural diversity, community involvement, multiculturalism",
-    "Family environment": "family dynamics, parenting, family support"
+    "Family environment": "family dynamics, parenting, family support",
+    "Education": "early childhood education, early learning, early education, preschool, pre-primary, kindergarten"
   }
 }
