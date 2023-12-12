@@ -1,28 +1,38 @@
 from dotenv import load_dotenv
 from nesta_ds_utils.loading_saving import S3
-import os
+import pandas as pd
+from typing import Optional, Tuple
 
 from discovery_child_development import PROJECT_DIR, S3_BUCKET, config, logging
+from discovery_child_development.utils import utils
 
 load_dotenv()
 
-CONCEPT_IDS = "|".join(config["openalex_concepts"])
-YEARS = [str(y) for y in config["openalex_years"]]
-YEARS = "-".join(YEARS)
-FILEPATH_PROCESSED = (
-    f"data/openAlex/processed/openalex_data_{CONCEPT_IDS}_year-{YEARS}_train.csv"
+FILEPATH_PROCESSED = utils.get_latest_subfolder(
+    S3_BUCKET, "data/openAlex/processed/taxonomy_classifier"
 )
-VECTORS_FILEPATH = "data/openAlex/vectors/sentence_vectors_384.parquet"
+TEST_TRAIN_FILENAME = "openalex_data_train.csv"
+
+
 SCORE_THRESHOLD = 0.3
 
+INPUT_DATA_PATH = "data/openAlex"
+INPUT_DATA_PATH = utils.get_latest_subfolder(S3_BUCKET, INPUT_DATA_PATH)
+ABSTRACTS_FILENAME = "openalex_abstracts.csv"
+CONCEPTS_METADATA_FILENAME = "concepts_metadata.csv"
 
-def get_abstracts(concepts=CONCEPT_IDS, years=YEARS, bucket=S3_BUCKET):
+VECTORS_FILEPATH = utils.get_latest_subfolder(S3_BUCKET, "data/openAlex/vectors")
+VECTORS_FILENAME = "sentence_vectors_384.parquet"
+
+
+def get_abstracts(
+    bucket: str = S3_BUCKET, input_path: str = INPUT_DATA_PATH
+) -> pd.DataFrame:
     """Downloads OpenAlex text data (titles and abstracts) from S3.
 
     Args:
-        concepts (str, optional): The concept IDs used in the metaflow. Defaults to CONCEPT_IDS.
-        years (str, optional): The years for which we have data eg "2019_2020". Defaults to YEARS.
         bucket (str, optional): Name of the bucket where the data is stored. Defaults to S3_BUCKET.
+        input_path (str, optional): Path to the folder where the data is stored. Defaults to INPUT_DATA_PATH.
 
     Returns:
         pandas.DataFrame: A pandas dataframe with following columns:
@@ -31,24 +41,23 @@ def get_abstracts(concepts=CONCEPT_IDS, years=YEARS, bucket=S3_BUCKET):
             - abstract (str): the abstract of the paper
             - text (str): the concatenation of title and abstract
     """
-
-    abstracts_filename = f"openalex_abstracts_{concepts}_year-{years}.csv"
     openalex_data = S3.download_obj(
         bucket,
-        path_from=f"data/openAlex/{abstracts_filename}",
+        path_from=f"{input_path}{ABSTRACTS_FILENAME}",
         download_as="dataframe",
         kwargs_reading={"index_col": 0},
     )
     return openalex_data
 
 
-def get_concepts_metadata(concepts=CONCEPT_IDS, years=YEARS, bucket=S3_BUCKET):
-    """_summary_
+def get_concepts_metadata(
+    bucket: str = S3_BUCKET, input_path: str = INPUT_DATA_PATH
+) -> pd.DataFrame:
+    """Downloads OpenAlex concepts metadata from S3.
 
     Args:
-        concepts (str, optional): The concept IDs used in the metaflow. Defaults to CONCEPT_IDS.
-        years (str, optional): The years for which we have data eg "2019_2020". Defaults to YEARS.
         bucket (str, optional): Name of the bucket where the data is stored. Defaults to S3_BUCKET.
+        input_path (str, optional): Path to the folder where the data is stored. Defaults to INPUT_DATA_PATH.
 
     Returns:
         pandas.DataFrame: A dataframe with multiple rows per OpenAlex ID,
@@ -71,11 +80,9 @@ def get_concepts_metadata(concepts=CONCEPT_IDS, years=YEARS, bucket=S3_BUCKET):
             4  https://openalex.org/W4249228678  REPRINT OF: Relationship of Childhood Abuse an...  2019  https://openalex.org/C187155963  https://www.wikidata.org/wiki/Q629029 Occupational safety and...  2     0.471979
             ```
     """
-    concepts_file = f"concepts_metadata_{concepts}_year-{years}.csv"
-
     openalex_concepts = S3.download_obj(
         bucket,
-        path_from=f"data/openAlex/concepts/{concepts_file}",
+        path_from=f"{input_path}{CONCEPTS_METADATA_FILENAME}",
         download_as="dataframe",
         kwargs_reading={"index_col": 0},
     )
@@ -84,15 +91,32 @@ def get_concepts_metadata(concepts=CONCEPT_IDS, years=YEARS, bucket=S3_BUCKET):
 
 
 def get_labelled_data(
-    filepath=FILEPATH_PROCESSED,
-    score_threshold=SCORE_THRESHOLD,
-    s3_bucket=S3_BUCKET,
-    train=True,
-):
+    filepath: str = FILEPATH_PROCESSED,
+    filename: str = TEST_TRAIN_FILENAME,
+    score_threshold: float = SCORE_THRESHOLD,
+    s3_bucket: str = S3_BUCKET,
+    train: bool = True,
+) -> Tuple[pd.DataFrame, str]:
+    """Downloads preprocessed OpenAlex data from S3 (either the training&validation, or the test set),
+    and filters it to only include papers with a score above a threshold.
+
+    Args:
+        filepath (str, optional): Path to the data within the bucket. Defaults to FILEPATH_PROCESSED.
+        filename (str, optional): Name of the csv. Defaults to TEST_TRAIN_FILENAME.
+        score_threshold (float, optional): Get rid of concept/paper combinations where the OA algorithm's confidence in a concept is below this threshold. Defaults to SCORE_THRESHOLD.
+        s3_bucket (str, optional): Name of the bucket where data is stored. Defaults to S3_BUCKET.
+        train (bool, optional): Should this be the training set or the test set? Defaults to True (training set).
+
+    Returns:
+        Tuple[pd.DataFrame, str]: A tuple containing a dataframe with one row per paper/concept combination; and the file path as a string.
+    """
+
     if train == True:
-        filepath = filepath
+        filename = filename
     else:
-        filepath = str.replace(filepath, "train", "test")
+        filename = str.replace(filename, "train", "test")
+
+    filepath = f"{filepath}{filename}"
 
     openalex_data = S3.download_obj(
         s3_bucket,
@@ -106,11 +130,15 @@ def get_labelled_data(
     return openalex_filtered, filepath
 
 
-def get_sentence_embeddings(s3_bucket=S3_BUCKET, filepath=VECTORS_FILEPATH):
+def get_sentence_embeddings(
+    s3_bucket: str = S3_BUCKET,
+    filepath: str = VECTORS_FILEPATH,
+    filename: str = VECTORS_FILENAME,
+) -> pd.DataFrame:
     # Load embeddings
     embeddings = S3.download_obj(
         s3_bucket,
-        path_from=filepath,
+        path_from=f"{filepath}{filename}",
         download_as="dataframe",
     )
 
