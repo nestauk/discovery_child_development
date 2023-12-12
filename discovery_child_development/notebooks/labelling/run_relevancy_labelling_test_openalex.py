@@ -27,8 +27,7 @@ from discovery_child_development.utils.labelling_utils import (
     create_examples_string,
 )
 
-from discovery_child_development.getters import patents
-from discovery_child_development.utils import keywords as kw
+from discovery_child_development.getters import openalex
 
 PATH_TO_PROMPTS = (
     PROJECT_DIR / "discovery_child_development/notebooks/labelling/prompts/relevance"
@@ -40,7 +39,7 @@ PATH_TO_EXAMPLES = PATH_TO_PROMPTS / "examples.jsonl"
 OUTPUT_FILEPATH = (
     PROJECT_DIR / "discovery_child_development/notebooks/labelling/data/relevance"
 )
-OUTPUT_FILENAME = "relevance_patents"
+OUTPUT_FILENAME = "relevance_openalex"
 
 
 async def main() -> None:
@@ -48,21 +47,7 @@ async def main() -> None:
 
     # Fetch the data to be categorised
     # Load patent data
-    data_raw_df = patents.get_patents_from_s3()
-    # Load keywords
-    keywords = patents.get_keywords_from_s3()
-    # Process and filter the data
-    texts_df = (
-        data_raw_df
-        # Combine title and abstract
-        .assign(text=lambda df: df["title"] + ". " + df["abstract"])
-        # Remove patents without text
-        .dropna(subset=["text"])
-        # Check which patents have keyword hits in the same sentence
-        .assign(has_hits=lambda df: kw.check_keyword_hits(df.text, keywords))
-        .query("has_hits == True")
-        .rename(columns={"publication_number": "id"})
-    )[["text", "id"]]
+    texts_df = openalex.get_abstracts()
     # Remove texts that are already labelled
     try:
         labelled = load_jsonl(str(OUTPUT_FILEPATH / OUTPUT_FILENAME) + ".jsonl")
