@@ -23,6 +23,7 @@ metaflow.s3.*
 # Notebooks to exclude (eg, code for testing, debugging etc)
 # *.ipynb
 discovery_child_development/notebooks/scrap_scripts/check_taxonomy.ipynb
+discovery_child_development/notebooks/labelling/scraps/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
