@@ -5,12 +5,12 @@ prodigy oa_classification taxonomy_data discovery_child_development/notebooks/la
 ```
 or
 ```
-prodigy oa_classification taxonomy_data inputs/data/labelling/taxonomy/input/training_validation_data.jsonl -F discovery_child_development/notebooks/labelling/prodigy/taxonomy_classifier_recipe.py
+prodigy oa_classification taxonomy_data_v2_gpt3 inputs/data/labelling/taxonomy/input/training_validation_data_v2.jsonl -F discovery_child_development/notebooks/labelling/prodigy/taxonomy_classifier_recipe.py
 ```
 
 To export the data and have it saved locally, run:
 ```
-prodigy db-out taxonomy_data > inputs/data/labelling/taxonomy/output/training_validation_data_LABELLED.jsonl
+prodigy db-out taxonomy_data_v2_gpt3 > inputs/data/labelling/taxonomy/output/training_validation_data_LABELLED_v2_gpt3.jsonl
 ```
 
 If you have labelled your test examples and want to scrap those labels and start again (eg if you've switched to a different GPT model),
@@ -29,23 +29,25 @@ from typing import Iterator
 import copy
 import tiktoken
 
-# import os
-import dotenv
-
-# from openai import OpenAI
-# import json
-
-# from discovery_child_development import PROJECT_DIR
 from discovery_child_development.utils import taxonomy_labelling_utils as tlu
 
-# import discovery_child_development.utils.openai_utils
 from discovery_child_development.utils.openai_utils import client
 
-dotenv.load_dotenv()
-
 MODEL = "gpt-3.5-turbo-1106"
-MODEL_INPUT_COST = 0.001  # based on https://openai.com/pricing
-MODEL_OUTPUT_COST = 0.002
+
+
+def get_model_cost(model):
+    # based on https://openai.com/pricing
+    if model == "gpt-3.5-turbo-1106":
+        input = 0.001
+        output = 0.002
+    elif model == "gpt-4":
+        input = 0.03
+        output = 0.06
+    return input, output
+
+
+MODEL_INPUT_COST, MODEL_OUTPUT_COST = get_model_cost(MODEL)
 TEMPERATURE = 0.0
 encoding = tiktoken.encoding_for_model(MODEL)
 
@@ -56,11 +58,15 @@ categories_list = sorted(list(categories_flat.keys()))
 
 def get_existing_ids(dataset_name, id_field="id"):
     db = connect()
-    return {
-        example[id_field]
-        for example in db.get_dataset(dataset_name)
-        if id_field in example
-    }
+    all_dataset_names = db.datasets
+    if dataset_name not in all_dataset_names:
+        return set()  # Return an empty set if the dataset does not exist
+    else:
+        return {
+            example[id_field]
+            for example in db.get_dataset(dataset_name)
+            if id_field in example
+        }
 
 
 def make_tasks(
@@ -96,6 +102,7 @@ def make_tasks(
 
             task["tokens_input"] = response.usage.prompt_tokens
             task["tokens_output"] = response.usage.completion_tokens
+            task["model"] = model
 
             task["cost"] = (
                 MODEL_INPUT_COST * (response.usage.prompt_tokens / 1000)
