@@ -1,7 +1,7 @@
 """
 Prepare labelled data for training a classifier
 """
-
+import datetime
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from typing import Tuple
@@ -9,11 +9,10 @@ from nesta_ds_utils.loading_saving import S3
 from discovery_child_development import logging, config, S3_BUCKET
 from discovery_child_development.getters import taxonomy, openalex
 
-CONCEPT_IDS = "|".join(config["openalex_concepts"])
-YEARS = [str(y) for y in config["openalex_years"]]
-YEARS = "-".join(YEARS)
-
-OUT_PATH = "data/openAlex/processed/"
+TIMESTAMP = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+OUT_PATH = (
+    f"data/openAlex/processed/taxonomy_classifier/openalex_train_test_{TIMESTAMP}/"
+)
 
 # needed for train-test split
 SEED = config["seed"]
@@ -129,11 +128,11 @@ if __name__ == "__main__":
     S3.upload_obj(
         train_df,
         S3_BUCKET,
-        f"{OUT_PATH}openalex_data_{CONCEPT_IDS}_year-{YEARS}_train.csv",
+        f"{OUT_PATH}openalex_data_train.csv",
     )
     S3.upload_obj(
         test_df,
         S3_BUCKET,
-        f"{OUT_PATH}openalex_data_{CONCEPT_IDS}_year-{YEARS}_test.csv",
+        f"{OUT_PATH}openalex_data_test.csv",
     )
     logging.info("Complete!")

@@ -11,7 +11,7 @@ Usage:
 python discovery_child_development/pipeline/02_embed_openalex_docs.py
 
 """
-
+import datetime
 import os
 from dotenv import load_dotenv
 from time import time
@@ -27,7 +27,8 @@ from discovery_child_development import PROJECT_DIR, logging, S3_BUCKET
 
 model = SentenceTransformer("all-MiniLM-L6-v2")
 
-VECTORS_PATH = "data/openAlex/vectors/"
+TIMESTAMP = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+VECTORS_PATH = f"data/openAlex/vectors/vectors_{TIMESTAMP}/"
 VECTORS_FILE = "sentence_vectors_384.parquet"
 
 if __name__ == "__main__":

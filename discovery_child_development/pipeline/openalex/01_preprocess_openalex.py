@@ -8,81 +8,115 @@ Additional cleaning steps:
 Usage:
 python discovery_child_development/pipeline/01_preprocess_openalex.py
 """
+from nesta_ds_utils.loading_saving import S3 as nesta_s3
 import pandas as pd
-from nesta_ds_utils.loading_saving import S3
-from discovery_child_development import logging, S3_BUCKET, config
-from discovery_child_development.utils.preprocess_openalex_utils import (
-    create_concepts_metadata,
-    create_text_data,
-)
+from dotenv import load_dotenv
+import datetime
+
+from discovery_child_development import S3_BUCKET, config, logging
+from discovery_child_development.utils import openalex_utils as openalex_utils
+from discovery_child_development.utils import utils
 
 if __name__ == "__main__":
-    CONCEPT_IDS = "|".join(config["openalex_concepts"])
-    YEARS_LIST = [str(y) for y in config["openalex_years"]]
-    YEARS = "-".join(YEARS_LIST)
+    API_ROOT = config["openalex_keywords_api_root"]
+    KEYWORD_PATH = "metaflow/openalex_keyword_search"
+    CONCEPTS_PATH = "metaflow/openalex_concepts"
+    YEARS = config["openalex_years"]
+    KEYWORDS = config["openalex_keywords"]
 
-    # paths for saving data
-    S3_PATH = "metaflow"
+    load_dotenv()
 
-    OUTPUT_FILENAME_CONCEPTS = f"concepts_metadata_{CONCEPT_IDS}_year-{YEARS}.csv"
-    OUTPUT_FILEPATH_CONCEPTS = "data/openAlex/concepts/"
-    OUTPUT_FILENAME_WORKS = f"openalex_abstracts_{CONCEPT_IDS}_year-{YEARS}.csv"
-    OUTPUT_FILEPATH_WORKS = "data/openAlex/"
+    TIMESTAMP = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    OUTPUT_DIR = f"data/openAlex/openalex_works_concepts_{TIMESTAMP}/"
 
-    INPUT_FILES = [
-        f"openalex-works_production-True_concept-{CONCEPT_IDS}_year-{year}.json"
-        for year in YEARS_LIST
-    ]
+    OUTPUT_FILENAME_CONCEPTS = "concepts_metadata.csv"
+    OUTPUT_FILENAME_WORKS = "openalex_abstracts.csv"
 
-    openalex_df = pd.DataFrame()
-
-    for file in INPUT_FILES:
-        openalex_data = S3.download_obj(S3_BUCKET, f"{S3_PATH}/{file}", "dict")
-
-        logging.info(f"Number of works in {file}: {len(openalex_data)}")
-
-        year_df = pd.DataFrame(openalex_data)
-
-        openalex_df = pd.concat([openalex_df, year_df])
-
-    # Retain only works in English
-    openalex_en = openalex_df[openalex_df["language"] == "en"]
-
-    logging.info(
-        f"Number of works lost because they were not in English: {len(openalex_df)-len(openalex_en)}"
+    keywords_folder = utils.get_latest_subfolder(
+        S3_BUCKET, KEYWORD_PATH, "production_True"
+    )
+    concepts_folder = utils.get_latest_subfolder(
+        S3_BUCKET, CONCEPTS_PATH, "production_True"
     )
 
-    # Retain only works where abstract and title are not null
-    logging.info(
-        f"Number of NAs in 'abstract_inverted_index' before cleaning: {openalex_en['abstract_inverted_index'].isna().sum()}"
+    oa_keywords_data = nesta_s3.download_obj(
+        S3_BUCKET,
+        path_from=f"{keywords_folder}openalex_keywords_combined.json",
+        download_as="dict",
     )
-    logging.info(
-        f"Number of NAs in 'title' before cleaning: {openalex_en['title'].isna().sum()}"
+    oa_keywords_df = pd.DataFrame(oa_keywords_data)
+    oa_keywords_df["extracted_date_time"] = utils.parse_timestamp_from_folder_name(
+        keywords_folder
     )
 
-    openalex_en = openalex_en[openalex_en["abstract_inverted_index"].notnull()]
-    openalex_en = openalex_en[openalex_en["title"].notnull()]
+    INPUT_FILES = [f"openalex-works_year-{year}.json" for year in YEARS]
 
-    logging.info(f"Remaining number of works after removing NAs: {len(openalex_en)}")
+    openalex_concepts_df = openalex_utils.concat_json_files(
+        INPUT_FILES, S3_BUCKET, concepts_folder
+    )
+    openalex_concepts_df[
+        "extracted_date_time"
+    ] = utils.parse_timestamp_from_folder_name(concepts_folder)
 
-    concepts_df = create_concepts_metadata(openalex_en)
+    keywords_ids = set(oa_keywords_df["id"].unique())
+    concept_works_ids = set(openalex_concepts_df["id"].unique())
+
+    keyword_ids_to_keep = list(keywords_ids - concept_works_ids)
+
+    oa_keywords_df = oa_keywords_df[oa_keywords_df["id"].isin(keyword_ids_to_keep)]
+
+    oa_merged_df = pd.concat([openalex_concepts_df, oa_keywords_df]).reset_index(
+        drop=True
+    )
+
+    oa_cleaned = openalex_utils.clean_openalex_data(oa_merged_df)
+
+    concepts_df = openalex_utils.create_concepts_metadata(oa_cleaned)
+
+    concepts_filename = utils.list_objects_in_subfolder(
+        S3_BUCKET, concepts_folder, "concepts"
+    )
+    keywords_filename = utils.list_objects_in_subfolder(
+        S3_BUCKET, keywords_folder, "keywords.+\.txt"
+    )
+    api_filename = utils.list_objects_in_subfolder(
+        S3_BUCKET, keywords_folder, "api_calls"
+    )
+
+    utils.copy_s3_object(
+        S3_BUCKET,
+        f"{concepts_folder}{concepts_filename[0]}",
+        f"{OUTPUT_DIR}{concepts_filename[0]}",
+    )
+    utils.copy_s3_object(
+        S3_BUCKET,
+        f"{keywords_folder}{keywords_filename[0]}",
+        f"{OUTPUT_DIR}{keywords_filename[0]}",
+    )
+    utils.copy_s3_object(
+        S3_BUCKET,
+        f"{keywords_folder}{api_filename[0]}",
+        f"{OUTPUT_DIR}{api_filename[0]}",
+    )
 
     logging.info("Saving concepts metadata to S3...")
     # Write the concepts metadata to s3
-    S3.upload_obj(
+    nesta_s3.upload_obj(
         concepts_df,
         S3_BUCKET,
-        f"{OUTPUT_FILEPATH_CONCEPTS}{OUTPUT_FILENAME_CONCEPTS}",
+        f"{OUTPUT_DIR}{OUTPUT_FILENAME_CONCEPTS}",
     )
+    logging.info(f"Saved concepts metadata to {OUTPUT_DIR}{OUTPUT_FILENAME_CONCEPTS}")
 
-    openalex_en_abstracts = create_text_data(
-        openalex_en[["id", "title", "abstract_inverted_index"]]
+    openalex_en_abstracts = openalex_utils.create_text_data(
+        oa_cleaned[["id", "title", "abstract_inverted_index"]]
     )
 
     logging.info("Saving OpenAlex text data to S3...")
     # Write the text data to s3
-    S3.upload_obj(
+    nesta_s3.upload_obj(
         openalex_en_abstracts,
         S3_BUCKET,
-        f"{OUTPUT_FILEPATH_WORKS}{OUTPUT_FILENAME_WORKS}",
+        f"{OUTPUT_DIR}{OUTPUT_FILENAME_WORKS}",
     )
+    logging.info(f"Saved abstracts to {OUTPUT_DIR}{OUTPUT_FILENAME_WORKS}")
