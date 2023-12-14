@@ -27,9 +27,6 @@ import wandb
 PRODUCTION = False  # If false, the code will run on just a sample
 
 # %%
-import numpy as np
-import pandas as pd
-
 from sklearn.model_selection import train_test_split
 from typing import Union
 
