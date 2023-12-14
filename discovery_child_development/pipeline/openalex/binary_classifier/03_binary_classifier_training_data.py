@@ -12,7 +12,7 @@ For the existing dataset of OpenAlex docs (already preprocessed with 01_preproce
 
 Usage:
 
-python discovery_child_development/pipeline/binary_classifier/03_binary_classifier_training_data.py
+python discovery_child_development/pipeline/openalex/binary_classifier/03_binary_classifier_training_data.py
 """
 
 import pandas as pd
@@ -41,17 +41,13 @@ if __name__ == "__main__":
     logging.info("Creating test set...")
     # 50/50 split of EY seed list and broader concepts
     test_data = pd.concat(
-        [
-            openalex_broad_data.sample(500, random_state=SEED),
-            openalex_data.sample(500, random_state=SEED),
-        ],
+        [openalex_broad_data.sample(500), openalex_data.sample(500)],
         keys=["not relevant", "relevant"],
     )
 
     test_data = test_data.reset_index(level=[0]).rename(
-        columns={"level_0": "label", "id": "openalex_id"}
+        columns={"level_0": "labels", "id": "openalex_id"}
     )
-
     # Upload test data to S3
     logging.info("Uploading test data to S3...")
     S3.upload_obj(
@@ -74,28 +70,20 @@ if __name__ == "__main__":
     # 1. 50% of the data is from the EY seed list, 50% is from the broader concepts (relavant/non-relevant)
     classifier_data_50 = (
         pd.concat(
-            [
-                openalex_broad_data.sample(openalex_data.shape[0], random_state=SEED),
-                openalex_data,
-            ],
+            [openalex_broad_data.sample(openalex_data.shape[0]), openalex_data],
             keys=["not relevant", "relevant"],
         )
         .reset_index(level=[0])
-        .rename(columns={"level_0": "label", "id": "openalex_id"})
+        .rename(columns={"level_0": "labels", "id": "openalex_id"})
     )
     # 2. 20% of the data is from the EY seed list, 80% is from the broader concepts (relavant/non-relevant)
     classifier_data_20 = (
         pd.concat(
-            [
-                openalex_broad_data.sample(
-                    openalex_data.shape[0] * 4, random_state=SEED
-                ),
-                openalex_data,
-            ],
+            [openalex_broad_data.sample(openalex_data.shape[0] * 4), openalex_data],
             keys=["not relevant", "relevant"],
         )
         .reset_index(level=[0])
-        .rename(columns={"level_0": "label", "id": "openalex_id"})
+        .rename(columns={"level_0": "labels", "id": "openalex_id"})
     )
     # 3. All of the data is from the EY seed list and broader concepts (relavant - ~11% /non-relevant - ~89%)
     classifier_data_all = (
@@ -103,7 +91,7 @@ if __name__ == "__main__":
             [openalex_broad_data, openalex_data], keys=["not relevant", "relevant"]
         )
         .reset_index(level=[0])
-        .rename(columns={"level_0": "label", "id": "openalex_id"})
+        .rename(columns={"level_0": "labels", "id": "openalex_id"})
     )
 
     # Split IDs into random train and validation subsets for each of the 3 datasets
