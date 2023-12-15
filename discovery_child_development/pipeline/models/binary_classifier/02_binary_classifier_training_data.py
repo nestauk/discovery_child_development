@@ -39,7 +39,7 @@ if __name__ == "__main__":
     # 50/50 split of EY seed list and broader concepts
     test_data = pd.concat(
         [
-            labelled_data.query("source=='patents").sample(50, random_state=SEED),
+            labelled_data.query("source=='patents'").sample(50, random_state=SEED),
             labelled_data.query("source=='openalex'").sample(50, random_state=SEED),
         ]
     )
@@ -60,7 +60,7 @@ if __name__ == "__main__":
     # 1. Create a training/validation set
     # Split IDs into random train and validation subsets for each of the 3 datasets
     logging.info("Beginning train-validation split...")
-    unique_ids = labelled_data["openalex_id"].unique()
+    unique_ids = labelled_data["id"].unique()
     train_ids, validation_ids = train_test_split(
         unique_ids, test_size=0.1, random_state=SEED
     )
