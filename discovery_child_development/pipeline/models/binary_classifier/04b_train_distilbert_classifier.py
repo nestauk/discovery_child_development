@@ -157,6 +157,9 @@ if __name__ == "__main__":
         )
         run.log({"confusion_matrix": wb_confusion_matrix})
 
+        # End the weights and biases run
+        wandb.finish()
+
     # Checking results by source
     validation_data = get_labelled_data_for_classifier(set_type="validation")
     openalex_val = validation_data.query("source == 'openalex'")
@@ -168,6 +171,13 @@ if __name__ == "__main__":
             trainer, data[["labels", "text"]], binary_config
         )
         if args.wandb:
+            logging.info("Logging source breakdown on wandb")
+            run = wandb.init(
+                project="ISS supervised ML",
+                job_type="Binary classifier - huggingface",
+                save_code=True,
+                tags=["huggingface", "binary_classifier", "sentence_embeddings", names],
+            )
             # Log metrics
             wandb.run.summary["f1"] = metrics["test_f1"]
             wandb.run.summary["accuracy"] = metrics["test_accuracy"]
@@ -180,6 +190,5 @@ if __name__ == "__main__":
             )
             run.log({f"confusion_matrix_{names}": wb_confusion_matrix})
 
-    if args.wandb:
-        # End the weights and biases run
-        wandb.finish()
+            # End the weights and biases run
+            wandb.finish()
