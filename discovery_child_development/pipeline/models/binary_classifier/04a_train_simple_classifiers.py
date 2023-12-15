@@ -102,7 +102,7 @@ if __name__ == "__main__":
             # Add reference to this data in wandb
             wb.add_ref_to_data(
                 run=run,
-                name="binary_train_data_raw_",
+                name="binary_train_data_raw",
                 description=f"Binary classifier training data",
                 bucket=S3_BUCKET,
                 filepath=f"{PATH_FROM}gpt_labelled_train.csv",
@@ -153,7 +153,7 @@ if __name__ == "__main__":
             # Adding reference to this model in wandb
             wb.add_ref_to_data(
                 run=run,
-                name=f"binary_classifier_{model}_" + args.identifier,
+                name=f"binary_classifier_{model}",
                 description=f"{model} model trained on binary classifier training data",
                 bucket=S3_BUCKET,
                 filepath=f"{S3_PATH}binary_classifier_{model}.pkl",
