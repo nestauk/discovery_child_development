@@ -1,3 +1,15 @@
+"""
+Generates a roughly balanced sample of OpenAlex and patents data for labelling.
+
+The construction of the OpenAlex abstracts sample is:
+* SAMPLE_SIZE per category from the taxonomy (with the taxonomy mapped to the abstracts via the concepts metadata) in order to include texts that should in theory represent all the areas of the taxonomy
+* SAMPLE_SIZE * 10 of the abstracts that had no concepts metadata (these are "wildcards" in that they could be about anything!)
+
+The construction of the patents sample is:
+* SAMPLE_SIZE * number of categories from the taxonomy. The patents are chosen totally at random.
+
+"""
+
 import pandas as pd
 import re
 
@@ -13,6 +25,7 @@ SEED = config["seed"]
 KEYWORDS = config["openalex_keywords"]
 KEYWORDS = [term.replace("'", "") for term in KEYWORDS]
 SAMPLE_SIZE = 10
+# number of OpenAlex abstracts that do not have any concepts - these are "wildcards" in that they could be about anything!
 NO_CONCEPT_SAMPLE_SIZE = SAMPLE_SIZE * 10
 
 PATH_TO_PROMPTS = (
@@ -39,6 +52,7 @@ def sample_per_category(group, sample_size=SAMPLE_SIZE, seed=SEED):
 
 
 def filter_abstracts(df, keywords=KEYWORDS):
+    """Filter the OpenAlex abstracts so that they have to contain one child-related word, AND a word from the taxonomy."""
     # Define the lists of terms
     child_terms = [
         "infant",
