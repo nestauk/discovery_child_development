@@ -91,6 +91,7 @@ if __name__ == "__main__":
     if args.wandb:
         logging.info("Logging run on wandb")
         run = wandb.init(
+            reinit=True,
             project="ISS supervised ML",
             job_type="Binary classifier - huggingface",
             save_code=True,
@@ -180,6 +181,7 @@ if __name__ == "__main__":
         if args.wandb:
             logging.info("Logging source breakdown on wandb")
             run = wandb.init(
+                reinit=True,
                 project="ISS supervised ML",
                 job_type="Binary classifier - huggingface",
                 save_code=True,
