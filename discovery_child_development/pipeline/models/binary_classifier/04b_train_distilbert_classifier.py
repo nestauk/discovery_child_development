@@ -37,9 +37,9 @@ from discovery_child_development import (
 # Set up
 S3_PATH = "models/binary_classifier/"
 VECTORS_PATH = "data/labels/binary_classifier/vectors/"
-VECTORS_FILE = "distilbert_sentence_vectors_384_labelled.parquet"
+VECTORS_FILE = "distilbert_sentence_vectors_384_labelled"
 SEED = config["seed"]
-NUM_SAMPLES = config["embedding_sample_size"]
+NUM_SAMPLES = config["labelled_sample_size"]
 # Set the seed
 np.random.seed(SEED)
 
@@ -140,10 +140,10 @@ if __name__ == "__main__":
         # Adding reference to this model in wandb
         wb.add_ref_to_data(
             run=run,
-            name=f"binary_classifier_{model}",
+            name=f"gpt_labelled_binary_classifier_distilbert_production_{args.production}",
             description=f"{model} model trained on binary classifier training data",
             bucket=S3_BUCKET,
-            filepath=f"{S3_PATH}binary_classifier_{model}.pkl",
+            filepath=f"{S3_PATH}gpt_labelled_binary_classifier_distilbert_production_{args.production}.tar.gz",
         )
 
         # Log confusion matrix

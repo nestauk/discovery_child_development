@@ -38,7 +38,7 @@ from discovery_child_development.utils import wandb as wb
 load_dotenv()
 
 MODEL_PATH = PROJECT_DIR / "outputs/models/"
-S3_PATH = "models/binary_classifier/gpt_labelled_"
+S3_PATH = "models/binary_classifier/"
 
 PATH_FROM = "data/labels/binary_classifier/processed/"
 VECTORS_PATH = "data/labels/binary_classifier/vectors/"
@@ -79,8 +79,12 @@ if __name__ == "__main__":
     # Create training and validation sets
     training_set = labelled_text_training.merge(embeddings_all, on="id", how="left")
     validation_set = labelled_text_validation.merge(embeddings_all, on="id", how="left")
-    training_set = replace_binary_labels(training_set)
-    validation_set = replace_binary_labels(validation_set)
+    training_set = replace_binary_labels(
+        training_set, replace_cat=["Relevant", "Not-relevant"]
+    )
+    validation_set = replace_binary_labels(
+        validation_set, replace_cat=["Relevant", "Not-relevant"]
+    )
 
     # Setting up the training and validation sets
     X_train = training_set["miniLM_384_vector"].apply(pd.Series).values
@@ -140,7 +144,7 @@ if __name__ == "__main__":
         S3.upload_obj(
             obj=classifier,
             bucket=S3_BUCKET,
-            path_to=f"{S3_PATH}binary_classifier_{model}.pkl",
+            path_to=f"{S3_PATH}gpt_labelled_binary_classifier_{model}.pkl",
         )
 
         if args.wandb:
@@ -156,7 +160,7 @@ if __name__ == "__main__":
                 name=f"binary_classifier_{model}",
                 description=f"{model} model trained on binary classifier training data",
                 bucket=S3_BUCKET,
-                filepath=f"{S3_PATH}binary_classifier_{model}.pkl",
+                filepath=f"{S3_PATH}gpt_labelled_binary_classifier_{model}.pkl",
             )
 
             # Log confusion matrix
