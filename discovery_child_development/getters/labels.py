@@ -20,4 +20,5 @@ def get_relevance_labels(filename: str = "relevance_labels_20231212") -> pd.Data
         bucket=S3_BUCKET,
         path_from=f"data/labels/afs_relevance/{filename}.csv",
         download_as="dataframe",
+        kwargs_reading={"index_col": 0},
     )

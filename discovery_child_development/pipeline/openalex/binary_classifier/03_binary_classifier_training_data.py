@@ -41,7 +41,10 @@ if __name__ == "__main__":
     logging.info("Creating test set...")
     # 50/50 split of EY seed list and broader concepts
     test_data = pd.concat(
-        [openalex_broad_data.sample(500), openalex_data.sample(500)],
+        [
+            openalex_broad_data.sample(500, random_state=SEED),
+            openalex_data.sample(500, random_state=SEED),
+        ],
         keys=["not relevant", "relevant"],
     )
 
@@ -70,7 +73,10 @@ if __name__ == "__main__":
     # 1. 50% of the data is from the EY seed list, 50% is from the broader concepts (relavant/non-relevant)
     classifier_data_50 = (
         pd.concat(
-            [openalex_broad_data.sample(openalex_data.shape[0]), openalex_data],
+            [
+                openalex_broad_data.sample(openalex_data.shape[0], random_state=SEED),
+                openalex_data,
+            ],
             keys=["not relevant", "relevant"],
         )
         .reset_index(level=[0])
@@ -79,7 +85,12 @@ if __name__ == "__main__":
     # 2. 20% of the data is from the EY seed list, 80% is from the broader concepts (relavant/non-relevant)
     classifier_data_20 = (
         pd.concat(
-            [openalex_broad_data.sample(openalex_data.shape[0] * 4), openalex_data],
+            [
+                openalex_broad_data.sample(
+                    openalex_data.shape[0] * 4, random_state=SEED
+                ),
+                openalex_data,
+            ],
             keys=["not relevant", "relevant"],
         )
         .reset_index(level=[0])

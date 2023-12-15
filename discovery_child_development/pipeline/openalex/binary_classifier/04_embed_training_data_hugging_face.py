@@ -92,8 +92,12 @@ if __name__ == "__main__":
 
     # Small sample for testing
     if not args.production:
-        openalex_text_training = openalex_text_training.sample(NUM_SAMPLES)
-        openalex_text_validation = openalex_text_validation.sample(NUM_SAMPLES)
+        openalex_text_training = openalex_text_training.sample(
+            NUM_SAMPLES, random_state=SEED
+        )
+        openalex_text_validation = openalex_text_validation.sample(
+            NUM_SAMPLES, random_state=SEED
+        )
         VECTORS_FILE = VECTORS_FILE + "_test"
 
     training_embeddings = df_to_hf_ds(

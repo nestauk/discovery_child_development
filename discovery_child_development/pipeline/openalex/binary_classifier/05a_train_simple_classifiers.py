@@ -84,11 +84,11 @@ if __name__ == "__main__":
     # Embeddings from all-MiniLM-L6-v2
     # Not relevant
     embeddings_all_not = get_sentence_embeddings(
-        filepath=VECTORS_PATH + VECTORS_FILE_NOT_RELEVANT
+        filepath=VECTORS_PATH, filename=VECTORS_FILE_NOT_RELEVANT
     )
     # Relevant
     embeddings_all = get_sentence_embeddings(
-        filepath=VECTORS_PATH + VECTORS_FILE_RELEVANT
+        filepath=VECTORS_PATH, filename=VECTORS_FILE_RELEVANT
     )
     # Combining the two
     embeddings_all_combined = pd.concat(
