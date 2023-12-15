@@ -18,7 +18,6 @@ setup: |
   conda init bash
   rm -rf discovery_child_development  # Remove the directory if it exists
   git clone https://github.com/nestauk/discovery_child_development
-  git checkout 51-binary-classifier-gpt-labelled
   cd discovery_child_development
   direnv allow .
   make install
