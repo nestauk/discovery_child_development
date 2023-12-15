@@ -133,12 +133,15 @@ if __name__ == "__main__":
     )
     test_set = pd.concat([relevant, not_relevant])
 
-    metrics, predictions = testing_examples_huggingface(
+    predictions, metrics = testing_examples_huggingface(
         trainer, test_set[["labels", "text"]], binary_config
     )
 
     # Adding predictions to the test set
     test_set = test_set.assign(predictions=predictions)
+
+    # Reseting the index
+    test_set = test_set.reset_index(drop=True)
 
     # Creating a confusion matrix
     confusion_matrix = classification_utils.plot_confusion_matrix(
@@ -165,5 +168,5 @@ if __name__ == "__main__":
     S3.upload_obj(
         test_set,
         S3_BUCKET,
-        f"{SAVE_PATH}gpt_labelled_results_sample_size{sample_size}.csv",
+        f"{SAVE_PATH}gpt_labelled_results_sample_size_{sample_size}.csv",
     )
