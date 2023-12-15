@@ -12,3 +12,6 @@ load_best_model_at_end: True
 early_stopping_patience: 5
 report_to: "none"
 problem_type: None
+
+# Sample size
+openalex_sample_size: 500
