@@ -290,3 +290,34 @@ def saving_huggingface_model(
         bucket=S3_BUCKET,
         path_to=f"{s3_path}{output_filename}.tar.gz",
     )
+
+
+def load_trained_model(
+    model: DistilBertForSequenceClassification,
+    args: transformers.training_args.TrainingArguments,
+    config: dict,
+    problem_type: bool = True,
+) -> Trainer:
+    """Load trained which can be used make predictions
+
+    Args:
+        model: Model to train
+        args: Training arguments
+        train_dataset: Training dataset
+        eval_dataset: Evaluation dataset
+        config: Dictionary of training arguments
+
+    Returns:
+        Trainer object
+    """
+    if problem_type:
+        compute_metrics = compute_metrics_multilabel
+    else:
+        compute_metrics = compute_metrics_binary
+
+    return Trainer(
+        model=model,
+        args=args,
+        tokenizer=load_tokenizer(config=config, problem_type=problem_type),
+        compute_metrics=compute_metrics,
+    )
