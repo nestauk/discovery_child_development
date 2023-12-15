@@ -25,6 +25,12 @@ from discovery_child_development.utils.huggingface_pipeline import (
 )
 from discovery_child_development.utils import wandb as wb
 from discovery_child_development.utils import classification_utils
+from discovery_child_development.getters.binary_classifier.gpt_labelled_datasets import (
+    get_labelled_data_for_classifier,
+)
+from discovery_child_development.utils.testing_examples_utils import (
+    testing_examples_huggingface,
+)
 from discovery_child_development import (
     logging,
     S3_BUCKET,
@@ -151,5 +157,29 @@ if __name__ == "__main__":
         )
         run.log({"confusion_matrix": wb_confusion_matrix})
 
+    # Checking results by source
+    validation_data = get_labelled_data_for_classifier(set_type="validation")
+    openalex_val = validation_data.query("source == 'openalex'")
+    patents_val = validation_data.query("source == 'patents'")
+
+    # Get results
+    for data, names in zip([openalex_val, patents_val], ["openalex", "patents"]):
+        predictions, metrics = testing_examples_huggingface(
+            trainer, data[["labels", "text"]], binary_config
+        )
+        if args.wandb:
+            # Log metrics
+            wandb.run.summary["f1"] = metrics["test_f1"]
+            wandb.run.summary["accuracy"] = metrics["test_accuracy"]
+            wandb.run.summary["precision"] = metrics["test_precision"]
+            wandb.run.summary["recall"] = metrics["test_recall"]
+
+            # Log confusion matrix
+            wb_confusion_matrix = wandb.Table(
+                data=confusion_matrix, columns=confusion_matrix.columns
+            )
+            run.log({f"confusion_matrix_{names}": wb_confusion_matrix})
+
+    if args.wandb:
         # End the weights and biases run
         wandb.finish()
