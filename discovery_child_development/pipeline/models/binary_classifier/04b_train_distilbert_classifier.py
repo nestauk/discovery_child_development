@@ -23,6 +23,7 @@ from discovery_child_development.utils.huggingface_pipeline import (
     load_trainer,
     saving_huggingface_model,
 )
+from discovery_child_development.utils.general_utils import replace_binary_labels
 from discovery_child_development.utils import wandb as wb
 from discovery_child_development.utils import classification_utils
 from discovery_child_development.getters.binary_classifier.gpt_labelled_datasets import (
@@ -162,8 +163,14 @@ if __name__ == "__main__":
 
     # Checking results by source
     validation_data = get_labelled_data_for_classifier(set_type="validation")
-    openalex_val = validation_data.query("source == 'openalex'")
-    patents_val = validation_data.query("source == 'patents'")
+    openalex_val = replace_binary_labels(
+        validation_data.query("source == 'openalex'"),
+        replace_cat=["Relevant", "Not-relevant"],
+    )
+    patents_val = replace_binary_labels(
+        validation_data.query("source == 'patents'"),
+        replace_cat=["Relevant", "Not-relevant"],
+    )
 
     # Get results
     for data, names in zip([openalex_val, patents_val], ["openalex", "patents"]):
