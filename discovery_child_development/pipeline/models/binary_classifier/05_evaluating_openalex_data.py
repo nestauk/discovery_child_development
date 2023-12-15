@@ -1,3 +1,15 @@
+"""
+Create a testing dataframe for further fine-tuning/adding in further data for the classifier.
+
+Usage:
+
+python discovery_child_development/pipeline/models/binary_classifier/05_evaluating_openalex_data.py
+
+Optional arguments:
+--production : Determines whether you wish to use the production/non-production model (default: True)
+--wandb : Determines whether a run gets logged on wandb (default: False)
+
+"""
 import pandas as pd
 import numpy as np
 import wandb

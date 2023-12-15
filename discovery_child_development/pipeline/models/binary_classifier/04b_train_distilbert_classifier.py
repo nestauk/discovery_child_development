@@ -1,5 +1,4 @@
 """
-[WORK IN PROGRESS]
 Run the binary classifier using distilbert-base-uncased.
 
 Usage:
