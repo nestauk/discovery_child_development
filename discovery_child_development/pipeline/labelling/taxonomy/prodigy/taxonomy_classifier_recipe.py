@@ -5,12 +5,14 @@ prodigy oa_classification taxonomy_data discovery_child_development/notebooks/la
 ```
 or
 ```
-prodigy oa_classification taxonomy_data_v2_gpt3 inputs/data/labelling/taxonomy/input/training_validation_data_v2.jsonl -F discovery_child_development/notebooks/labelling/prodigy/taxonomy_classifier_recipe.py
+prodigy oa_classification taxonomy_data inputs/data/labelling/taxonomy/input/training_validation_data_patents_openalex.jsonl -F discovery_child_development/notebooks/labelling/prodigy/taxonomy_classifier_recipe.py
 ```
 
 To export the data and have it saved locally, run:
 ```
-prodigy db-out taxonomy_data_v2_gpt3 > inputs/data/labelling/taxonomy/output/training_validation_data_LABELLED_v2_gpt3.jsonl
+prodigy db-out taxonomy_data > inputs/data/labelling/taxonomy/output/training_validation_data_patents_openalex_LABELLED.jsonl
+aws s3 cp inputs/data/labelling/taxonomy/output/training_validation_data_patents_openalex_LABELLED.jsonl s3://discovery-iss/data/labels/taxonomy_classifier/training_validation_data_patents_openalex_LABELLED.jsonl
+
 ```
 
 If you have labelled your test examples and want to scrap those labels and start again (eg if you've switched to a different GPT model),
@@ -28,6 +30,7 @@ from pathlib import Path
 from typing import Iterator
 import copy
 import tiktoken
+import random
 
 from discovery_child_development.utils import taxonomy_labelling_utils as tlu
 
@@ -78,6 +81,7 @@ def make_tasks(
         else:
             task = copy.deepcopy(eg)
             text = eg["text"]
+            source = eg["source"]
 
             # Format the prompt with the text to be classified
             prompt = tlu.build_prompt(text, categories_flat)
@@ -103,6 +107,7 @@ def make_tasks(
             task["tokens_input"] = response.usage.prompt_tokens
             task["tokens_output"] = response.usage.completion_tokens
             task["model"] = model
+            task["source"] = source
 
             task["cost"] = (
                 MODEL_INPUT_COST * (response.usage.prompt_tokens / 1000)
@@ -126,7 +131,8 @@ def custom_oa(dataset: str, source: str):
     # Get existing IDs from the dataset
     existing_ids = get_existing_ids(dataset)
 
-    stream = JSONL(source)
+    stream = list(JSONL(source))
+    random.shuffle(stream)
 
     stream = make_tasks(stream, existing_ids, model=MODEL)
 

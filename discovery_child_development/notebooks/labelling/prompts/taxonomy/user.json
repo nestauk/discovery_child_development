@@ -1,5 +1,0 @@
-{
-  "role": "user",
-  "content": "### Instructions ### \n Here are the labels texts can be given, and some indicative keywords associated with each label, in the format '<label>': <keyword 1, keyword 2, ...>: \n ----------------------------------- \n ### List of labels ### \n {categories} \n ----------------------------------- \n The task is non-exclusive, so you can provide more than one label. If none of the labels are appropriate to the given text, return `==NONE==`. Do not create new labels, and do not modify the provided labels. Label the following text with one or more labels from the list above: \n ``` \n {text} \n ```",
-  "name": null
-}

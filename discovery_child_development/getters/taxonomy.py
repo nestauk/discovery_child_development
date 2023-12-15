@@ -1,11 +1,20 @@
 import pandas as pd
 
-from discovery_child_development import PROJECT_DIR, logging, config
+from discovery_child_development import PROJECT_DIR, logging, config, S3_BUCKET
 from discovery_child_development.utils import google_utils
+from discovery_child_development.utils import jsonl_utils as jsonl
+from discovery_child_development.utils.utils import create_directory_if_not_exists
 
 N_WORKS = config["taxonomy"]["n_works"]
 SHEET_ID = config["taxonomy"]["sheet_id"]
 SHEET_NAME = config["taxonomy"]["sheet_name"]
+
+S3_LABELLED_DATA = (
+    "data/labels/taxonomy_classifier/training_validation_data_patents_openalex.jsonl"
+)
+LOCAL_PATH = PROJECT_DIR / "inputs/data/labelling/taxonomy/input"
+LOCAL_FILE = f"{LOCAL_PATH}/training_validation_data_patents_openalex.jsonl"
+create_directory_if_not_exists(LOCAL_PATH)
 
 
 def clean_string(s: str):
@@ -66,3 +75,12 @@ def get_taxonomy(
     )
 
     return taxonomy_data
+
+
+def get_labelling_sample(
+    s3_bucket=S3_BUCKET, s3_file=S3_LABELLED_DATA, local_file=LOCAL_FILE
+):
+    """
+    Get balanced sample of OpenAlex and patents data for labelling.
+    """
+    return jsonl.download_file_from_s3(s3_bucket, s3_file, local_file)

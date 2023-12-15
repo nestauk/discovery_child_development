@@ -9,7 +9,7 @@ from discovery_child_development.utils.openai_utils import (
 )
 
 PATH_TO_PROMPTS = (
-    PROJECT_DIR / "discovery_child_development/notebooks/labelling/prompts/taxonomy"
+    PROJECT_DIR / "discovery_child_development/pipeline/labelling/taxonomy/prompts"
 )
 PATH_USER = PATH_TO_PROMPTS / "user.json"
 PATH_SYSTEM = PATH_TO_PROMPTS / "system.json"

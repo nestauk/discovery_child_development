@@ -1,9 +1,9 @@
 {
   "development": {
-    "Cognitive development": "cognition, memory, problem-solving, language acquisition, executive function",
+    "Cognitive development": "cognition, memory, problem-solving, executive function",
     "SEND": "special needs, disabilities, learning difficulties",
-    "Communication and language": "language development, communication skills, speech",
-    "Physical": "motor skills, physical development",
+    "Communication and language": "language acquisition, language development, communication skills, speech",
+    "Physical": "motor skills, physical development, spatial awareness",
     "Expressive arts and design": "creativity, arts, design, imagination",
     "Prenatal": "prenatal development, maternal health, fetal development, pregnancy, birth",
     "Literacy": "reading, writing, literacy development, phonics",

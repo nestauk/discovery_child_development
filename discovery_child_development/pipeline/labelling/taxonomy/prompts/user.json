@@ -1,0 +1,5 @@
+{
+  "role": "user",
+  "content": "### Task Instructions ### \n Your task is to read the following text and assign appropriate labels from the provided list. This is a multilabel classification task, so each text may have more than one relevant label. If no labels are appropriate, return `==NONE==`. Do not create new labels or modify the existing ones.\n Here are the labels texts can be given, and some indicative keywords associated with each label, in the format '<label>': <keyword 1, keyword 2, ...>: \n ----------------------------------- \n ### List of labels ### \n {categories} \n ----------------------------------- \n ### Text to Classify ### \n ``` \n {text} \n ```",
+  "name": null
+}
