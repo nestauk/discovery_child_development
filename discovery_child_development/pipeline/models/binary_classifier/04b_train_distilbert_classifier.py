@@ -3,7 +3,7 @@ Run the binary classifier using distilbert-base-uncased.
 
 Usage:
 
-python discovery_child_development/pipeline/models/binary_classifier/05b_train_distilbert_classifier.py
+python discovery_child_development/pipeline/models/binary_classifier/04b_train_distilbert_classifier.py
 
 Optional arguments:
 --production : Determines whether to create the embeddings for the full dataset or a test sample (default: True)
