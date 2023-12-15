@@ -15,7 +15,6 @@ The labelled data for this pipeline was created using Chat GPT. The data can be 
 
 `python discovery_child_development/pipeline/models/binary_classifier/02_binary_classifier_training_data.py`
 
-
 3. Embedding the text data for the DistilBERT classifier using the "distilbert-base-uncased" model:
 
 `python discovery_child_development/pipeline/models/binary_classifier/03_embed_training_data_hugging_face.py`
@@ -27,4 +26,3 @@ The labelled data for this pipeline was created using Chat GPT. The data can be 
 4. (b) Training the DistilBERT classifier:
 
 `python discovery_child_development/pipeline/models/binary_classifier/04b_train_distilbert_classifier.py`
-
