@@ -103,9 +103,7 @@ if __name__ == "__main__":
 
     # Loading the model
     model_folder = f"{PATH_TO}gpt_labelled_binary_classifier_distilbert_production_{args.production}"
-    model = load_model(
-        model_path=model_folder, config=binary_config, problem_type=False, num_labels=2
-    )
+    model = load_model(model_path=model_folder, config=binary_config, num_labels=2)
 
     # Train model with early stopping
     training_args = load_training_args(output_dir=S3_PATH, config=binary_config)
@@ -113,7 +111,6 @@ if __name__ == "__main__":
         model=model,
         args=training_args,
         config=binary_config,
-        problem_type=False,
     )
 
     # Trialling the model on the openalex concepts
