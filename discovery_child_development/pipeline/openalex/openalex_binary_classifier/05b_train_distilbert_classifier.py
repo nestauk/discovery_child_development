@@ -90,7 +90,7 @@ if __name__ == "__main__":
         )
 
     # Load the model
-    model = load_model(onfig=binary_config, problem_type=False, num_labels=2)
+    model = load_model(onfig=binary_config, num_labels=2)
 
     # Train model with early stopping
     training_args = load_training_args(output_dir=S3_PATH, config=binary_config)
@@ -100,7 +100,6 @@ if __name__ == "__main__":
         train_dataset=embeddings_training,
         eval_dataset=embeddings_validation,
         config=binary_config,
-        problem_type=False,
     )
     trainer.train()
 

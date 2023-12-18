@@ -105,14 +105,12 @@ if __name__ == "__main__":
         config=binary_config,
         non_label_cols=["openalex_id", "title", "abstract", "text"],
         text_column="text",
-        problem_type=False,
     )
     validation_embeddings = df_to_hf_ds(
         openalex_text_validation,
         config=binary_config,
         non_label_cols=["openalex_id", "title", "abstract", "text"],
         text_column="text",
-        problem_type=False,
     )
 
     # Save the model as a pickle file
