@@ -25,6 +25,8 @@ import numpy as np
 import pandas as pd
 from sklearn.metrics import f1_score, roc_auc_score, accuracy_score
 
+# The following problem types are allowed in this classification pipeline: ["regression", "single_label_classification", "multi_label_classification"]
+
 
 def create_labels(dataset: Dataset, cols_to_skip: list) -> Dataset:
     """Add labels to the dataset. Labels are a list of 0.0s and 1.0s
@@ -40,7 +42,7 @@ def create_labels(dataset: Dataset, cols_to_skip: list) -> Dataset:
     )
 
 
-def load_tokenizer(config: dict, problem_type: bool = True) -> DistilBertTokenizerFast:
+def load_tokenizer(config: dict) -> DistilBertTokenizerFast:
     """Load multi label classification BERT tokenzier
 
     Args:
@@ -49,21 +51,20 @@ def load_tokenizer(config: dict, problem_type: bool = True) -> DistilBertTokeniz
     Returns:
         BERT tokenizer
     """
-    if problem_type:
-        return AutoTokenizer.from_pretrained(
-            "distilbert-base-uncased", problem_type=config["problem_type"]
-        )
-    else:
-        return AutoTokenizer.from_pretrained("distilbert-base-uncased")
+    return AutoTokenizer.from_pretrained(
+        "distilbert-base-uncased", problem_type=config["problem_type"]
+    )
 
 
 def tokenize_dataset(
-    dataset: Dataset, text_column: str, config: dict, problem_type: bool = True
+    dataset: Dataset,
+    text_column: str,
+    config: dict,
 ) -> Dataset:
     """Tokenize text in dataset"""
     remove_cols = dataset.column_names
     remove_cols.remove("labels")
-    tokenizer = load_tokenizer(config=config, problem_type=problem_type)
+    tokenizer = load_tokenizer(config=config)
     return dataset.map(
         lambda row: tokenizer(row[text_column], padding="max_length", truncation=True),
         batched=True,
@@ -76,7 +77,6 @@ def df_to_hf_ds(
     config: dict,
     non_label_cols: list = ["text", "id"],
     text_column: str = "text",
-    problem_type: bool = True,
 ) -> Dataset:
     """Converts a dataframe into a huggingface dataset.
     Adds labels and tokenizes the text.
@@ -93,7 +93,7 @@ def df_to_hf_ds(
         Huggingface dataset
     """
     dataset = Dataset.from_pandas(df, preserve_index=False)
-    if problem_type:
+    if config["problem_type"] == "multi_label_classification":
         dataset = create_labels(dataset, cols_to_skip=non_label_cols)
     return tokenize_dataset(dataset, text_column=text_column, config=config)
 
@@ -102,7 +102,6 @@ def load_model(
     config: dict,
     num_labels: int = None,
     model_path: Union[str, Path] = "distilbert-base-uncased",
-    problem_type: bool = True,
 ) -> DistilBertForSequenceClassification:
     """Loads multi label BERT classifier
 
@@ -115,16 +114,12 @@ def load_model(
     Returns:
         BERT classifier model
     """
-    if problem_type:
-        return AutoModelForSequenceClassification.from_pretrained(
-            pretrained_model_name_or_path=model_path,
-            num_labels=num_labels,
-            problem_type=config["problem_type"],
-        )
-    else:
-        return AutoModelForSequenceClassification.from_pretrained(
-            pretrained_model_name_or_path=model_path, num_labels=num_labels
-        )
+
+    return AutoModelForSequenceClassification.from_pretrained(
+        pretrained_model_name_or_path=model_path,
+        num_labels=num_labels,
+        problem_type=config["problem_type"],
+    )
 
 
 def load_training_args(
@@ -219,9 +214,7 @@ def compute_metrics_binary(model_predictions: EvalPrediction) -> dict:
     metrics = evaluate.combine(["accuracy", "recall", "precision", "f1"])
     logits, labels = model_predictions
     predictions = np.argmax(logits, axis=-1)
-    # flatten labels to list
-    # labels = np.concatenate(labels).ravel().tolist()
-    # print(labels)
+
     return metrics.compute(predictions=predictions, references=labels)
 
 
@@ -231,7 +224,6 @@ def load_trainer(
     train_dataset: Dataset,
     eval_dataset: Dataset,
     config: dict,
-    problem_type: bool = True,
 ) -> Trainer:
     """Load model trainer which can be used to train a model or make predictions
 
@@ -245,7 +237,7 @@ def load_trainer(
     Returns:
         Trainer object
     """
-    if problem_type:
+    if config["problem_type"] == "multi_label_classification":
         compute_metrics = compute_metrics_multilabel
     else:
         compute_metrics = compute_metrics_binary
@@ -255,7 +247,7 @@ def load_trainer(
         args=args,
         train_dataset=train_dataset,
         eval_dataset=eval_dataset,
-        tokenizer=load_tokenizer(config=config, problem_type=problem_type),
+        tokenizer=load_tokenizer(config=config),
         compute_metrics=compute_metrics,
         callbacks=[
             EarlyStoppingCallback(
