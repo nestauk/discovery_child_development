@@ -289,7 +289,6 @@ def load_trained_model(
     model: DistilBertForSequenceClassification,
     args: transformers.training_args.TrainingArguments,
     config: dict,
-    problem_type: bool = True,
 ) -> Trainer:
     """Load trained which can be used make predictions
 
@@ -303,7 +302,7 @@ def load_trained_model(
     Returns:
         Trainer object
     """
-    if problem_type:
+    if config["problem_type"] == "multi_label_classification":
         compute_metrics = compute_metrics_multilabel
     else:
         compute_metrics = compute_metrics_binary
