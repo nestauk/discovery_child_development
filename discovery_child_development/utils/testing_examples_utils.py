@@ -66,7 +66,6 @@ def testing_examples_huggingface(trainer, examples, config):
         config=config,
         non_label_cols=["text"],
         text_column="text",
-        problem_type=False,
     )
 
     # Predict on examples
