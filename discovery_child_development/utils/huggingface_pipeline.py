@@ -148,6 +148,7 @@ def load_training_args(
         save_strategy=config["save_strategy"],
         metric_for_best_model=config["metric_for_best_model"],
         load_best_model_at_end=config["load_best_model_at_end"],
+        seed=config["seed"],
     )
 
 
@@ -310,6 +311,6 @@ def load_trained_model(
     return Trainer(
         model=model,
         args=args,
-        tokenizer=load_tokenizer(config=config, problem_type=problem_type),
+        tokenizer=load_tokenizer(config=config),
         compute_metrics=compute_metrics,
     )
