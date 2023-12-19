@@ -11,7 +11,7 @@ def get_examples():
     """
     return S3.download_obj(
         bucket=S3_BUCKET,
-        path_from="data/openAlex/test_text/relevance_classifier_tests.csv",
+        path_from="data/labels/binary_classifier/test_text/relevance_classifier_tests.csv",
         download_as="dataframe",
         kwargs_reading={"engine": "python"},
     )
