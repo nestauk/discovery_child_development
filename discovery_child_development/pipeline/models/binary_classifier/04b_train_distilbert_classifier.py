@@ -39,6 +39,7 @@ from discovery_child_development import (
     binary_config,
     PROJECT_DIR,
 )
+from transformers import set_seed
 
 # Set up
 S3_PATH = "models/binary_classifier/"
@@ -47,7 +48,7 @@ VECTORS_FILE = "distilbert_sentence_vectors_384_labelled"
 SEED = config["seed"]
 NUM_SAMPLES = config["labelled_sample_size"]
 # Set the seed
-np.random.seed(SEED)
+set_seed(SEED)
 
 if __name__ == "__main__":
     # Set up the command line arguments

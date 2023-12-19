@@ -44,9 +44,8 @@ np.random.seed(SEED)
 # Paths
 S3_PATH = "models/binary_classifier/"
 PATH_TO = f"{PROJECT_DIR}/outputs/data/models/"
-SAVE_PATH = "data/openAlex/test_text/"
+SAVE_PATH = "data/labels/binary_classifier/test_text/"
 
-sample_size = binary_config["openalex_sample_size"]
 
 if __name__ == "__main__":
     # Set up the command line arguments
