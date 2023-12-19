@@ -80,7 +80,7 @@ if __name__ == "__main__":
                 "huggingface",
                 "binary_classifier",
                 "sentence_embeddings",
-                "openalex",
+                "crunchbase",
             ],
         )
 
