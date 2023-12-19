@@ -1,7 +1,7 @@
 from nesta_ds_utils.loading_saving import S3
 from discovery_child_development import config, S3_BUCKET
 
-PATH_FROM = "data/openAlex/test_text/"
+PATH_FROM = "data/labels/binary_classifier/test_text/"
 
 
 def get_openalex_results(
