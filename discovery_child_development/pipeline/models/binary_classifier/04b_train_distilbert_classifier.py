@@ -95,7 +95,7 @@ if __name__ == "__main__":
             project="ISS supervised ML",
             job_type="Binary classifier - huggingface",
             save_code=True,
-            tags=["huggingface", "binary_classifier", "sentence_embeddings"],
+            tags=["huggingface", "binary_classifier", "sentence_embeddings", "all"],
         )
 
     # Load the model
