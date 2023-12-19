@@ -1,11 +1,11 @@
 """
 To test this, create and activate a new prodigy env (using `prodigy_requirements.txt`) and run:
 ```
-prodigy oa_classification taxonomy_data discovery_child_development/notebooks/labelling/prodigy/test_sample.jsonl -F discovery_child_development/notebooks/labelling/prodigy/taxonomy_classifier_recipe.py
+prodigy oa_classification test_data discovery_child_development/notebooks/labelling/prodigy/test_sample.jsonl -F discovery_child_development/notebooks/labelling/prodigy/taxonomy_classifier_recipe.py
 ```
 or
 ```
-prodigy oa_classification taxonomy_data inputs/data/labelling/taxonomy/input/training_validation_data_patents_openalex.jsonl -F discovery_child_development/notebooks/labelling/prodigy/taxonomy_classifier_recipe.py
+prodigy oa_classification taxonomy_data inputs/data/labelling/taxonomy/input/training_validation_data_patents_openalex.jsonl -F discovery_child_development/pipeline/labelling/taxonomy/prodigy/taxonomy_classifier_recipe.py
 ```
 
 To export the data and have it saved locally, run:
@@ -76,12 +76,13 @@ def make_tasks(
     stream: Iterator[dict], existing_ids: set, model=MODEL
 ) -> Iterator[dict]:
     for eg in stream:
+        # Deduplication: if the OpenAlex/patent ID has already been labelled, skip it
         if eg.get("id") in existing_ids:
             continue
         else:
             task = copy.deepcopy(eg)
-            text = eg["text"]
-            source = eg["source"]
+            text = eg["text"]  # the raw text
+            source = eg["source"]  # openalex or patents
 
             # Format the prompt with the text to be classified
             prompt = tlu.build_prompt(text, categories_flat)
@@ -101,23 +102,21 @@ def make_tasks(
             options = [
                 {"id": category, "text": category} for category in categories_list
             ]
-
             output_as_list = tlu.get_labels_from_gpt_response(response)
+            task["options"] = options
+            task["accept"] = output_as_list
 
+            # These task components will not be displayed to the user, but they are available in the saved data for downstream analysis
+            task[
+                "model_output"
+            ] = output_as_list  # The choices made by GPT (before human labelling)
+            task["model"] = model  # GPT model used
+            task["source"] = source  # OpenAlex or patents
             task["tokens_input"] = response.usage.prompt_tokens
             task["tokens_output"] = response.usage.completion_tokens
-            task["model"] = model
-            task["source"] = source
-
             task["cost"] = (
                 MODEL_INPUT_COST * (response.usage.prompt_tokens / 1000)
             ) + (MODEL_OUTPUT_COST * (response.usage.completion_tokens / 1000))
-
-            task["options"] = options
-
-            task["accept"] = output_as_list
-
-            task["model_output"] = output_as_list
 
             yield task
 
