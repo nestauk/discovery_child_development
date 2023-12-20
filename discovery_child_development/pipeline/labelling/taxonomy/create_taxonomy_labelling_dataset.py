@@ -9,7 +9,7 @@ The construction of the patents sample is:
 * SAMPLE_SIZE * number of categories from the taxonomy. The patents are chosen totally at random.
 
 """
-
+import argparse
 import pandas as pd
 import re
 
@@ -24,9 +24,7 @@ from discovery_child_development.utils import jsonl_utils as jsonl
 SEED = config["seed"]
 KEYWORDS = config["openalex_keywords"]
 KEYWORDS = [term.replace("'", "") for term in KEYWORDS]
-SAMPLE_SIZE = 10
-# number of OpenAlex abstracts that do not have any concepts - these are "wildcards" in that they could be about anything!
-NO_CONCEPT_SAMPLE_SIZE = SAMPLE_SIZE * 10
+SAMPLE_SIZE = 100
 
 PATH_TO_PROMPTS = (
     PROJECT_DIR / "discovery_child_development/notebooks/labelling/prompts/taxonomy"
@@ -107,7 +105,7 @@ def prepare_patents(patent_sample_size, seed=SEED):
 
 
 def prepare_openalex(
-    sample_size=SAMPLE_SIZE, no_concept_sample_size=NO_CONCEPT_SAMPLE_SIZE, seed=SEED
+    sample_size=SAMPLE_SIZE, no_concept_sample_size=SAMPLE_SIZE * 10, seed=SEED
 ):
     openalex_data = oa.get_abstracts()
     openalex_data = clean_openalex_id(openalex_data, "id")
@@ -196,15 +194,33 @@ def prepare_openalex(
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+        description="Parameters for creating a balanced dataset for the taxonomy classifier"
+    )
+
+    parser.add_argument(
+        "--sample_size",
+        type=int,
+        dest="sample_size",
+        help="How many datapoints do you want to sample per taxonomy category per data source (OpenAlex/patents)? The number of patents sampled will be sample_size*<number of taxonomy categories>",
+        default=SAMPLE_SIZE,
+    )
+
+    args, unknown = parser.parse_known_args()
+
     logging.info("Preparing OpenAlex sample...")
+
+    # number of OpenAlex abstracts that do not have any concepts - these are "wildcards" in that they could be about anything!
+    NO_CONCEPT_SAMPLE_SIZE = args.sample_size * 10
+
     openalex_sample = prepare_openalex(
-        sample_size=SAMPLE_SIZE,
+        sample_size=args.sample_size,
         no_concept_sample_size=NO_CONCEPT_SAMPLE_SIZE,
         seed=SEED,
     )
 
     categories_flat = tlu.load_categories()
-    PATENT_SAMPLE_SIZE = len(categories_flat.keys()) * SAMPLE_SIZE
+    PATENT_SAMPLE_SIZE = len(categories_flat.keys()) * args.sample_size
     logging.info("Preparing Google patents sample...")
     patent_sample = prepare_patents(PATENT_SAMPLE_SIZE)
 
