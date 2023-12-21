@@ -1,15 +1,13 @@
 """
-[WORK IN PROGRESS]
 Run the binary classifier using distilbert-base-uncased.
 
 Usage:
 
-python discovery_child_development/pipeline/openalex/binary_classifier/05b_train_distilbert_classifier.py
+python discovery_child_development/pipeline/models/binary_classifier/04b_train_distilbert_classifier.py
 
 Optional arguments:
 --production : Determines whether to create the embeddings for the full dataset or a test sample (default: True)
 --wandb : Determines whether a run gets logged on wandb (default: False)
---identifier : Choose which split of the training data you want (default: 50, 50/50 relevant/non-relevant). Options are "20", "50", "all".
 
 """
 import wandb
@@ -25,8 +23,15 @@ from discovery_child_development.utils.huggingface_pipeline import (
     load_trainer,
     saving_huggingface_model,
 )
+from discovery_child_development.utils.general_utils import replace_binary_labels
 from discovery_child_development.utils import wandb as wb
 from discovery_child_development.utils import classification_utils
+from discovery_child_development.getters.binary_classifier.gpt_labelled_datasets import (
+    get_labelled_data_for_classifier,
+)
+from discovery_child_development.utils.testing_examples_utils import (
+    testing_examples_huggingface,
+)
 from discovery_child_development import (
     logging,
     S3_BUCKET,
@@ -34,13 +39,15 @@ from discovery_child_development import (
     binary_config,
     PROJECT_DIR,
 )
+from transformers import set_seed
 
 # Set up
 S3_PATH = "models/binary_classifier/"
+VECTORS_PATH = "data/labels/binary_classifier/vectors/"
+VECTORS_FILE = "distilbert_sentence_vectors_384_labelled"
 SEED = config["seed"]
-NUM_SAMPLES = config["embedding_sample_size"]
 # Set the seed
-np.random.seed(SEED)
+set_seed(SEED)
 
 if __name__ == "__main__":
     # Set up the command line arguments
@@ -61,36 +68,41 @@ if __name__ == "__main__":
         default=False,
         help="Do you want to log this as a run on wandb? (default: False)",
     )
-
-    parser.add_argument(
-        "--identifier",
-        type=str,
-        default="50",
-        help="Choose which split of the training data you want (default: 50, 50/50 relevant/non-relevant)",
-    )
     # Parse the arguments
     args = parser.parse_args()
     logging.info(args)
 
+    if not args.production:
+        VECTORS_FILE = VECTORS_FILE + "_test"
+
     # Loading the training and validation embeddings
     embeddings_training = get_embeddings(
-        identifier=args.identifier, production=args.production, set_type="train"
+        identifier="",
+        production=args.production,
+        set_type="train",
+        vectors_path=VECTORS_PATH,
+        vectors_file=VECTORS_FILE,
     )
     embeddings_validation = get_embeddings(
-        identifier=args.identifier, production=args.production, set_type="validation"
+        identifier="",
+        production=args.production,
+        set_type="validation",
+        vectors_path=VECTORS_PATH,
+        vectors_file=VECTORS_FILE,
     )
 
     if args.wandb:
         logging.info("Logging run on wandb")
         run = wandb.init(
+            reinit=True,
             project="ISS supervised ML",
             job_type="Binary classifier - huggingface",
             save_code=True,
-            tags=["huggingface", "binary_classifier", "sentence_embeddings"],
+            tags=["gpt-labelled", "distilbert", "openealex/patents"],
         )
 
     # Load the model
-    model = load_model(onfig=binary_config, num_labels=2)
+    model = load_model(config=binary_config, num_labels=2)
 
     # Train model with early stopping
     training_args = load_training_args(output_dir=S3_PATH, config=binary_config)
@@ -122,7 +134,7 @@ if __name__ == "__main__":
     SAVE_TRAINING_RESULTS_PATH = PROJECT_DIR / "outputs/data/models/"
     saving_huggingface_model(
         trainer,
-        f"binary_classifier_distilbert_{args.identifier}_production_{args.production}",
+        f"gpt_labelled_binary_classifier_distilbert_production_{args.production}",
         save_path=SAVE_TRAINING_RESULTS_PATH,
         s3_path=S3_PATH,
     )
@@ -137,10 +149,10 @@ if __name__ == "__main__":
         # Adding reference to this model in wandb
         wb.add_ref_to_data(
             run=run,
-            name=f"binary_classifier_{model}_" + args.identifier,
-            description=f"{model} model trained on binary classifier training data",
+            name=f"gpt_labelled_binary_classifier_distilbert_production_{args.production}",
+            description=f"Distilbert model trained on binary classifier training data",
             bucket=S3_BUCKET,
-            filepath=f"{S3_PATH}binary_classifier_{model}_{args.identifier}.pkl",
+            filepath=f"{S3_PATH}gpt_labelled_binary_classifier_distilbert_production_{args.production}.tar.gz",
         )
 
         # Log confusion matrix
@@ -151,3 +163,43 @@ if __name__ == "__main__":
 
         # End the weights and biases run
         wandb.finish()
+
+    # Checking results by source
+    validation_data = get_labelled_data_for_classifier(set_type="validation")
+    openalex_val = replace_binary_labels(
+        validation_data.query("source == 'openalex'"),
+        replace_cat=["Relevant", "Not-relevant"],
+    )
+    patents_val = replace_binary_labels(
+        validation_data.query("source == 'patents'"),
+        replace_cat=["Relevant", "Not-relevant"],
+    )
+
+    # Get results
+    for data, names in zip([openalex_val, patents_val], ["openalex", "patents"]):
+        predictions, metrics = testing_examples_huggingface(
+            trainer, data[["labels", "text"]], binary_config
+        )
+        if args.wandb:
+            logging.info("Logging source breakdown on wandb")
+            run = wandb.init(
+                reinit=True,
+                project="ISS supervised ML",
+                job_type="Binary classifier - huggingface",
+                save_code=True,
+                tags=["gpt-labelled", "distilbert", "openealex/patents", names],
+            )
+            # Log metrics
+            wandb.run.summary["f1"] = metrics["test_f1"]
+            wandb.run.summary["accuracy"] = metrics["test_accuracy"]
+            wandb.run.summary["precision"] = metrics["test_precision"]
+            wandb.run.summary["recall"] = metrics["test_recall"]
+
+            # Log confusion matrix
+            wb_confusion_matrix = wandb.Table(
+                data=confusion_matrix, columns=confusion_matrix.columns
+            )
+            run.log({f"confusion_matrix_{names}": wb_confusion_matrix})
+
+            # End the weights and biases run
+            wandb.finish()

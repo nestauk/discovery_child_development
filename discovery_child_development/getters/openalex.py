@@ -134,6 +134,7 @@ def get_sentence_embeddings(
     s3_bucket: str = S3_BUCKET,
     filepath: str = VECTORS_FILEPATH,
     filename: str = VECTORS_FILENAME,
+    id: str = "openalex_id",
 ) -> pd.DataFrame:
     # Load embeddings
     embeddings = S3.download_obj(
@@ -142,5 +143,5 @@ def get_sentence_embeddings(
         download_as="dataframe",
     )
 
-    embeddings = embeddings.set_index("openalex_id")
+    embeddings = embeddings.set_index(id)
     return embeddings

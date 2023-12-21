@@ -62,3 +62,4 @@ patents_data_path: "data/patents/"
 patents_data_version: "GooglePatents_20231106_175151"
 
 embedding_sample_size: 1000
+labelled_sample_size: 50

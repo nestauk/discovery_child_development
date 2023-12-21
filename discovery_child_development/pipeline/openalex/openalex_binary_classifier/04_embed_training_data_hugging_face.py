@@ -13,12 +13,10 @@ python discovery_child_development/pipeline/openalex/binary_classifier/04_embed_
 
 Optional arguments:
     --production : Determines whether to create the embeddings for the full dataset or a test sample (default: True)
-    --wandb : Determines whether a run gets logged on wandb (default: False)
     --identifier : Choose which split of the training data you want (default: 50, 50/50 relevant/non-relevant). Options are 20, 50, all.
 
 """
 
-import wandb
 import numpy as np
 import argparse
 from nesta_ds_utils.loading_saving import S3
@@ -54,13 +52,6 @@ if __name__ == "__main__":
     )
 
     parser.add_argument(
-        "--wandb",
-        type=lambda x: (str(x).lower() == "true"),
-        default=False,
-        help="Do you want to log this as a run on wandb? (default: False)",
-    )
-
-    parser.add_argument(
         "--identifier",
         type=str,
         default="50",
@@ -81,14 +72,6 @@ if __name__ == "__main__":
     # Rename the label column to 0/1
     openalex_text_training = replace_binary_labels(openalex_text_training)
     openalex_text_validation = replace_binary_labels(openalex_text_validation)
-
-    if args.wandb:
-        run = wandb.init(
-            project="ISS supervised ML",
-            job_type="Binary classifier - huggingface",
-            save_code=True,
-            tags=["huggingface", "binary_classifier", "sentence_embeddings"],
-        )
 
     # Small sample for testing
     if not args.production:

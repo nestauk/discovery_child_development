@@ -148,6 +148,7 @@ def load_training_args(
         save_strategy=config["save_strategy"],
         metric_for_best_model=config["metric_for_best_model"],
         load_best_model_at_end=config["load_best_model_at_end"],
+        seed=config["seed"],
     )
 
 
@@ -281,4 +282,34 @@ def saving_huggingface_model(
         path_from=str(model_path) + ".tar.gz",
         bucket=S3_BUCKET,
         path_to=f"{s3_path}{output_filename}.tar.gz",
+    )
+
+
+def load_trained_model(
+    model: DistilBertForSequenceClassification,
+    args: transformers.training_args.TrainingArguments,
+    config: dict,
+) -> Trainer:
+    """Load trained which can be used make predictions
+
+    Args:
+        model: Model to train
+        args: Training arguments
+        train_dataset: Training dataset
+        eval_dataset: Evaluation dataset
+        config: Dictionary of training arguments
+
+    Returns:
+        Trainer object
+    """
+    if config["problem_type"] == "multi_label_classification":
+        compute_metrics = compute_metrics_multilabel
+    else:
+        compute_metrics = compute_metrics_binary
+
+    return Trainer(
+        model=model,
+        args=args,
+        tokenizer=load_tokenizer(config=config),
+        compute_metrics=compute_metrics,
     )
