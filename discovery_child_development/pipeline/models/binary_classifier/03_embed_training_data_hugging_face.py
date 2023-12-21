@@ -13,11 +13,9 @@ python discovery_child_development/pipeline/models/binary_classifier/03_embed_tr
 
 Optional arguments:
     --production : Determines whether to create the embeddings for the full dataset or a test sample (default: True)
-    --wandb : Determines whether a run gets logged on wandb (default: False)
 
 """
 
-import wandb
 import numpy as np
 import argparse
 from nesta_ds_utils.loading_saving import S3
@@ -50,13 +48,6 @@ if __name__ == "__main__":
         help="Do you want to run the code in production? (default: True)",
     )
 
-    parser.add_argument(
-        "--wandb",
-        type=lambda x: (str(x).lower() == "true"),
-        default=False,
-        help="Do you want to log this as a run on wandb? (default: False)",
-    )
-
     # Parse the arguments
     args = parser.parse_args()
     logging.info(args)
@@ -72,14 +63,6 @@ if __name__ == "__main__":
     labelled_text_validation = replace_binary_labels(
         labelled_text_validation, replace_cat=["Relevant", "Not-relevant"]
     )
-
-    if args.wandb:
-        run = wandb.init(
-            project="ISS supervised ML",
-            job_type="Binary classifier - huggingface",
-            save_code=True,
-            tags=["huggingface", "binary_classifier", "sentence_embeddings"],
-        )
 
     # Small sample for testing
     if not args.production:

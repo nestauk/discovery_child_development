@@ -74,14 +74,9 @@ if __name__ == "__main__":
         logging.info("Logging run on wandb")
         run = wandb.init(
             project="ISS supervised ML",
-            job_type="Binary classifier - huggingface",
+            job_type="Binary classifier - testing on crunchbase data",
             save_code=True,
-            tags=[
-                "huggingface",
-                "binary_classifier",
-                "sentence_embeddings",
-                "crunchbase",
-            ],
+            tags=["distilbert", "gpt-labelled", "openealex/patents"],
         )
 
     # Output filename

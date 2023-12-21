@@ -46,7 +46,6 @@ S3_PATH = "models/binary_classifier/"
 VECTORS_PATH = "data/labels/binary_classifier/vectors/"
 VECTORS_FILE = "distilbert_sentence_vectors_384_labelled"
 SEED = config["seed"]
-NUM_SAMPLES = config["labelled_sample_size"]
 # Set the seed
 set_seed(SEED)
 
@@ -73,6 +72,9 @@ if __name__ == "__main__":
     args = parser.parse_args()
     logging.info(args)
 
+    if not args.production:
+        VECTORS_FILE = VECTORS_FILE + "_test"
+
     # Loading the training and validation embeddings
     embeddings_training = get_embeddings(
         identifier="",
@@ -96,7 +98,7 @@ if __name__ == "__main__":
             project="ISS supervised ML",
             job_type="Binary classifier - huggingface",
             save_code=True,
-            tags=["huggingface", "binary_classifier", "sentence_embeddings", "all"],
+            tags=["gpt-labelled", "distilbert", "openealex/patents"],
         )
 
     # Load the model
@@ -148,7 +150,7 @@ if __name__ == "__main__":
         wb.add_ref_to_data(
             run=run,
             name=f"gpt_labelled_binary_classifier_distilbert_production_{args.production}",
-            description=f"{model} model trained on binary classifier training data",
+            description=f"Distilbert model trained on binary classifier training data",
             bucket=S3_BUCKET,
             filepath=f"{S3_PATH}gpt_labelled_binary_classifier_distilbert_production_{args.production}.tar.gz",
         )
@@ -185,7 +187,7 @@ if __name__ == "__main__":
                 project="ISS supervised ML",
                 job_type="Binary classifier - huggingface",
                 save_code=True,
-                tags=["huggingface", "binary_classifier", "sentence_embeddings", names],
+                tags=["gpt-labelled", "distilbert", "openealex/patents", names],
             )
             # Log metrics
             wandb.run.summary["f1"] = metrics["test_f1"]

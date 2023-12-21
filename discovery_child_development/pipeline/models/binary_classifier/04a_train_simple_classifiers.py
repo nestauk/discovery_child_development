@@ -98,10 +98,11 @@ if __name__ == "__main__":
         if args.wandb:
             # Initialize a wandb run
             run = wandb.init(
+                reinit=True,
                 project="ISS supervised ML",
                 job_type="Binary classifier - base models",
                 save_code=True,
-                tags=[model, "gpt_labelled"],
+                tags=["gpt-labelled", "all-MiniLM-L6-v2", model, "openealex/patents"],
             )
             # Add reference to this data in wandb
             wb.add_ref_to_data(
