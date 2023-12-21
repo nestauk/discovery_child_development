@@ -31,10 +31,10 @@ This script creates 3 training sets with different proportions of relevant and i
 
 `python discovery_child_development/pipeline/openalex/binary_classifier/04_embed_training_data_hugging_face.py`
 
-6. (a) Training the simple classifier:
+6. (a) Training the simple classifier (using the "all-MiniLM-L6-v2" model):
 
 `python discovery_child_development/pipeline/openalex/binary_classifier/05a_train_simple_classifiers.py`
 
-6. (b) Training the DistilBERT classifier:
+6. (b) Training the DistilBERT classifier (using the "distilbert-base-uncased" model):
 
 `python discovery_child_development/pipeline/binary_classifier/05b_train_distilbert_classifier.py`
