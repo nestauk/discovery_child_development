@@ -85,10 +85,23 @@ def get_labelling_sample(
     s3_bucket=S3_BUCKET, s3_file=S3_LABELLED_DATA, local_file=LOCAL_FILE
 ):
     """
-    Get balanced sample of OpenAlex and patents data for labelling.
+    Balanced sample of OpenAlex and patents data for labelling.
+
+    There should be:
+    * 100 * <n_categories> OpenAlex abstracts; the 100 are taken by matching concepts metadata to the taxonomy.
+        For example, the 100 samples for the taxonomy category "Nutrition and weights"
+        might be tagged with the concepts "Childhood obesity", "Gut flora", "Healthy eating",
+        "Malnutrition", as these are some of the concepts that this taxonomy category was derived from.
+    * 100 * <n_categories> patents
+    * 100 * 10 OpenAlex abstracts that do not have any concepts metadata
+
     """
     return jsonl.download_file_from_s3(s3_bucket, s3_file, local_file)
 
 
 def get_gpt_labelled_sample(s3_bucket=S3_BUCKET, s3_file=GPT_LABELLED_DATA):
+    """Relatively balanced dataset of OpenAlex abstracts and patents, labelled with GPT.
+
+    The output of the above function `get_labelling_sample()` was fed to GPT for labelling.
+    """
     return nesta_s3.download_obj(s3_bucket, s3_file, download_as="dataframe")

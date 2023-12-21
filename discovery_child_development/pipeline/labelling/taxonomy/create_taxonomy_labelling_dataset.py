@@ -39,8 +39,11 @@ OUTPUT_FILENAME = "training_validation_data_patents_openalex.jsonl"
 S3_OUTPUT_PATH = f"data/labels/taxonomy_classifier/{OUTPUT_FILENAME}"
 
 
-def clean_openalex_id(df, column_name="id"):
-    """Cleans the OpenAlex ID to remove the prefix"""
+def clean_openalex_id(df: pd.DataFrame, column_name: str = "id") -> pd.DataFrame:
+    """
+    Clean the OpenAlex ID to remove the prefix: you get just the last few characters eg 'W3154976785',
+    not the full URL.
+    """
     df[column_name] = df[column_name].str.extract(r"/(W\d+)$")
     return df
 
@@ -77,7 +80,7 @@ def filter_abstracts(df, keywords=KEYWORDS):
     return filtered_df
 
 
-def prepare_patents(patent_sample_size, seed=SEED):
+def prepare_patents(patent_sample_size: int, seed: int = SEED) -> pd.DataFrame:
     keywords = patents.get_keywords_from_s3()
 
     # Load patent data
@@ -96,48 +99,85 @@ def prepare_patents(patent_sample_size, seed=SEED):
     patent_sample = data_df.sample(n=patent_sample_size, random_state=seed)
 
     patent_sample = patent_sample[["publication_number", "text"]].rename(
-        columns={"publication_number": "id"}
+        columns={
+            "publication_number": "id"
+        }  # We are using publication_number as the unique identifier for patents
     )
-    patent_sample["label"] = ""
+    patent_sample[
+        "label"
+    ] = ""  # This data has no labels, but we need a 'label' column so that the dataframes can be concatenated
     patent_sample["source"] = "patents"
 
     return patent_sample
 
 
 def prepare_openalex(
-    sample_size=SAMPLE_SIZE, no_concept_sample_size=SAMPLE_SIZE * 10, seed=SEED
-):
+    sample_size: int = SAMPLE_SIZE,
+    no_concept_sample_size: int = SAMPLE_SIZE * 10,
+    seed: int = SEED,
+    score_threshold: float = 0.6,
+) -> pd.DataFrame:
+    """
+    This function prepares a dataset of OpenAlex data to be labelled by GPT.
+
+    It joins the OpenAlex abstracts with the taxonomy from Google Sheets (using the concepts metadata to make this join),
+    meaning that <sample_size> abstracts from each taxonomy category go into the sample.
+
+    In addition, some concept-free OpenAlex data is included: this comprises 10 * <sample_size> abstracts.
+
+    The function performs the following steps:
+    1. Retrieves OpenAlex abstracts and cleans their IDs.
+    2. Filters out abstracts that are part of a test set to avoid data leakage.
+    3. Further filters abstracts to include only those that contain both child-related and taxonomy-related terms.
+    4. Retrieves and processes OpenAlex concepts metadata, to include only concepts that are in the taxonomy, and only concepts with a score over <score_threshold>
+    5. Merges the taxonomy data with concepts metadata.
+    6. Performs an outer join with the abstracts to include abstracts without concept metadata.
+    7. Samples <sample_size> abstracts from each taxonomy category.
+    7. Samples <no_concept_sample_size> abstracts that have no concept metadata.
+    8. Concatenates these two datasets and adds a source label.
+
+    Parameters:
+    - sample_size (int): Size of the sample to be drawn from each category.
+    - no_concept_sample_size (int): Size of the sample for abstracts with no associated concepts.
+    - seed (int): Random seed for sample generation to ensure reproducibility.
+    - score_threshold (float): Minimum score threshold for including concepts in the dataset.
+
+    Returns:
+    - pd.DataFrame: A DataFrame containing the prepared OpenAlex data, suitable for further analysis and modeling.
+    """
+
     openalex_data = oa.get_abstracts()
+    # For all the datasets, we want just the last set of characters from the ID, not the full URL.
+    # No particular reason for this but it just seems a bit neater
     openalex_data = clean_openalex_id(openalex_data, "id")
 
+    # Make sure none of the data for our labelling dataset comes from the test set.
+    # With hindsight, maybe this isn't necessary because we will need to label our test set at some point too I think
     test_data, _ = oa.get_labelled_data(score_threshold=0.0, train=False)
     test_data = clean_openalex_id(test_data, "openalex_id")
-
     test_ids = test_data["openalex_id"].unique()
-
     openalex_data_subset = openalex_data[~openalex_data["id"].isin(test_ids)]
 
+    # Filter the data to only abstracts that contain both a child-related word AND a taxonomy word
     openalex_data_filtered = filter_abstracts(openalex_data_subset)
-
     abstract_ids = openalex_data_filtered["id"].unique()
+
+    # Find the concepts metadata for the abstracts that we have filtered. We only include:
+    # * concepts that are in the taxonomy
+    # * concepts with a score above the threshold
+    taxonomy_data = taxonomy.get_taxonomy()
+    taxonomy_concept_ids = taxonomy_data["concept_id"].unique()
 
     openalex_concepts = oa.get_concepts_metadata()
     openalex_concepts = clean_openalex_id(openalex_concepts, "openalex_id")
-    openalex_concepts = openalex_concepts[
-        openalex_concepts["openalex_id"].isin(abstract_ids)
-    ]
-
-    taxonomy_data = taxonomy.get_taxonomy()
-
-    taxonomy_concept_ids = taxonomy_data["concept_id"].unique()
-
     openalex_concepts_subset = openalex_concepts[
         openalex_concepts["concept_id"].isin(taxonomy_concept_ids)
+        & openalex_concepts["openalex_id"].isin(abstract_ids)
         & openalex_concepts["score"]
-        >= 0.6
+        >= score_threshold
     ].copy()
 
-    # merge taxonomy
+    # Merge the taxonomy and the concepts metadata...
     openalex_concepts_subset = pd.merge(
         openalex_concepts_subset,
         taxonomy_data[["sub_category", "concept_id"]],
@@ -145,6 +185,7 @@ def prepare_openalex(
         on="concept_id",
     )
 
+    # ... and then merge the taxonomy/concepts metadata with the abstracts
     openalex_data_merged = openalex_concepts_subset[
         [
             "openalex_id",
@@ -158,13 +199,15 @@ def prepare_openalex(
         openalex_data[["id", "text"]],
         left_on="openalex_id",
         right_on="id",
-        how="outer",
+        how="outer",  # It's an outer join because we want to keep the abstracts that don't have any concepts metadata
     )
 
+    # Some OpenAlex abstracts have no concepts. We want to make sure these are represented in our sample too.
     openalex_data_no_concepts = openalex_data_merged[
         openalex_data_merged["concept_id"].isna()
     ].sample(n=no_concept_sample_size, random_state=seed)
 
+    # Take a sample from each category ("sub_category")
     openalex_sample = openalex_data_merged.groupby(
         "sub_category", group_keys=False
     ).apply(sample_per_category, sample_size)
@@ -188,7 +231,9 @@ def prepare_openalex(
     )
 
     openalex_sample = pd.concat([openalex_sample, openalex_data_no_concepts])
-    openalex_sample["source"] = "openalex"
+    openalex_sample[
+        "source"
+    ] = "openalex"  # in the overall dataset, this column identifies whether the text is OpenAlex or patents
 
     return openalex_sample
 
@@ -220,6 +265,7 @@ if __name__ == "__main__":
     )
 
     categories_flat = tlu.load_categories()
+    # The number of patents sampled will be sample_size * <number of taxonomy categories>
     PATENT_SAMPLE_SIZE = len(categories_flat.keys()) * args.sample_size
     logging.info("Preparing Google patents sample...")
     patent_sample = prepare_patents(PATENT_SAMPLE_SIZE)

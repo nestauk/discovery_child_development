@@ -1,3 +1,18 @@
+"""
+
+Download the dataset to be labelled from S3, and send examples to GPT to be labelled. Export the output to S3.
+
+# Usage #
+To test the script on 30 examples:
+```
+python discovery_child_development/pipeline/labelling/taxonomy/create_labelled_data_with_gpt.py --production=False
+```
+To run the script on the full dataset:
+```
+python discovery_child_development/pipeline/labelling/taxonomy/create_labelled_data_with_gpt.py --production=True
+```
+
+"""
 from discovery_child_development import config, PROJECT_DIR, S3_BUCKET, logging
 from discovery_child_development.getters import taxonomy
 from discovery_child_development.utils import jsonl_utils as jsonl
@@ -10,6 +25,7 @@ import argparse
 import pandas as pd
 import random
 import tiktoken
+import time
 import warnings
 
 MODEL = "gpt-3.5-turbo-1106"  # "gpt-4"
@@ -85,6 +101,7 @@ if __name__ == "__main__":
             + (MODEL_OUTPUT_COST * (r.usage.completion_tokens / 1000)),
         }
         labelled_data.append(output)
+        time.sleep(2)
 
     labelled_data = pd.DataFrame(labelled_data)
 
