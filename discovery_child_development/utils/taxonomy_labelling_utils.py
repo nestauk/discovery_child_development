@@ -70,6 +70,28 @@ def format_categories_for_prompt(categories_flat):
     return category_list
 
 
+def make_keyword_dict(categories_flat):
+    new_category_dict = {}
+
+    for key, value in categories_flat.items():
+        all_terms = [key] + [key.lower()] + [item.strip() for item in value.split(",")]
+        for term in all_terms:
+            new_category_dict[term] = key
+
+    return new_category_dict
+
+
+def map_keywords_to_categories(test_string, new_category_dict, category_names):
+    if test_string in category_names:
+        label = test_string
+    elif test_string in new_category_dict.keys():
+        label = new_category_dict[test_string]
+    else:
+        label = "no label"
+
+    return label
+
+
 def format_function(categories_flat, path=PATH_FUNCTION):
     if isinstance(path, Path):
         path = str(path)
@@ -146,3 +168,14 @@ def num_tokens_from_messages(messages, model):
                 num_tokens += tokens_per_name
     num_tokens += 3  # every reply is primed with <|start|>assistant<|message|>
     return num_tokens
+
+
+def get_model_cost(model):
+    # based on https://openai.com/pricing
+    if model == "gpt-3.5-turbo-1106":
+        input = 0.001
+        output = 0.002
+    elif model == "gpt-4":
+        input = 0.03
+        output = 0.06
+    return input, output

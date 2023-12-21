@@ -11,7 +11,7 @@ prodigy oa_classification taxonomy_data inputs/data/labelling/taxonomy/input/tra
 To export the data and have it saved locally, run:
 ```
 prodigy db-out taxonomy_data > inputs/data/labelling/taxonomy/output/training_validation_data_patents_openalex_LABELLED.jsonl
-aws s3 cp inputs/data/labelling/taxonomy/output/training_validation_data_patents_openalex_LABELLED.jsonl s3://discovery-iss/data/labels/taxonomy_classifier/training_validation_data_patents_openalex_LABELLED.jsonl
+aws s3 cp inputs/data/labelling/taxonomy/output/training_validation_data_patents_openalex_LABELLED.jsonl s3://discovery-iss/data/labels/taxonomy_classifier/labelled_with_prodigy/training_validation_data_patents_openalex_LABELLED.jsonl
 
 ```
 
@@ -38,25 +38,15 @@ from discovery_child_development.utils.openai_utils import client
 
 MODEL = "gpt-3.5-turbo-1106"
 
-
-def get_model_cost(model):
-    # based on https://openai.com/pricing
-    if model == "gpt-3.5-turbo-1106":
-        input = 0.001
-        output = 0.002
-    elif model == "gpt-4":
-        input = 0.03
-        output = 0.06
-    return input, output
-
-
-MODEL_INPUT_COST, MODEL_OUTPUT_COST = get_model_cost(MODEL)
+MODEL_INPUT_COST, MODEL_OUTPUT_COST = tlu.get_model_cost(MODEL)
 TEMPERATURE = 0.0
 encoding = tiktoken.encoding_for_model(MODEL)
 
 categories_flat = tlu.load_categories()
 
 categories_list = sorted(list(categories_flat.keys()))
+
+new_category_dict = tlu.make_keyword_dict(categories_flat)
 
 
 def get_existing_ids(dataset_name, id_field="id"):
@@ -102,14 +92,17 @@ def make_tasks(
             options = [
                 {"id": category, "text": category} for category in categories_list
             ]
-            output_as_list = tlu.get_labels_from_gpt_response(response)
+            output_as_list = [
+                tlu.map_keywords_to_categories(x, new_category_dict, categories_list)
+                for x in tlu.get_labels_from_gpt_response(response)
+            ]
             task["options"] = options
             task["accept"] = output_as_list
 
             # These task components will not be displayed to the user, but they are available in the saved data for downstream analysis
-            task[
-                "model_output"
-            ] = output_as_list  # The choices made by GPT (before human labelling)
+            task["model_output"] = tlu.get_labels_from_gpt_response(
+                response
+            )  # The choices made by GPT (before human labelling)
             task["model"] = model  # GPT model used
             task["source"] = source  # OpenAlex or patents
             task["tokens_input"] = response.usage.prompt_tokens

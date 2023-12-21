@@ -1,5 +1,7 @@
 import pandas as pd
 
+from nesta_ds_utils.loading_saving import S3 as nesta_s3
+
 from discovery_child_development import PROJECT_DIR, logging, config, S3_BUCKET
 from discovery_child_development.utils import google_utils
 from discovery_child_development.utils import jsonl_utils as jsonl
@@ -15,6 +17,8 @@ S3_LABELLED_DATA = (
 LOCAL_PATH = PROJECT_DIR / "inputs/data/labelling/taxonomy/input"
 LOCAL_FILE = f"{LOCAL_PATH}/training_validation_data_patents_openalex.jsonl"
 create_directory_if_not_exists(LOCAL_PATH)
+
+GPT_LABELLED_DATA = "data/labels/taxonomy_classifier/labelled_with_gpt/training_validation_data_patents_openalex_GPT_LABELLED.parquet"
 
 
 def clean_string(s: str):
@@ -84,3 +88,7 @@ def get_labelling_sample(
     Get balanced sample of OpenAlex and patents data for labelling.
     """
     return jsonl.download_file_from_s3(s3_bucket, s3_file, local_file)
+
+
+def get_gpt_labelled_sample(s3_bucket=S3_BUCKET, s3_file=GPT_LABELLED_DATA):
+    return nesta_s3.download_obj(s3_bucket, s3_file, download_as="dataframe")
