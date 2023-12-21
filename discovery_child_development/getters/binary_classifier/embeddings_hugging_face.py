@@ -33,9 +33,15 @@ def get_embeddings(
             - label (int): the label of the paper
     """
     if production:
-        embedding_filename = f"{vectors_file}_{identifier}_{set_type}.pkl"
+        if identifier in ["20", "50", "all"]:
+            embedding_filename = f"{vectors_file}_{identifier}_{set_type}.pkl"
+        else:
+            embedding_filename = f"{vectors_file}_{set_type}.pkl"
     else:
-        embedding_filename = f"{vectors_file}_test_{identifier}_{set_type}.pkl"
+        if identifier in ["20", "50", "all"]:
+            embedding_filename = f"{vectors_file}_test_{identifier}_{set_type}.pkl"
+        else:
+            embedding_filename = f"{vectors_file}_test_{set_type}.pkl"
 
     openalex_data = S3.download_obj(
         bucket, path_from=f"{vectors_path}{embedding_filename}"
