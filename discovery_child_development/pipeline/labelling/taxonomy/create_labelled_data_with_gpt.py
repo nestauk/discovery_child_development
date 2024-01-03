@@ -5,7 +5,7 @@ Download the dataset to be labelled from S3, and send examples to GPT to be labe
 # Usage #
 To test the script on 30 examples:
 ```
-python discovery_child_development/pipeline/labelling/taxonomy/create_labelled_data_with_gpt.py --production=False
+python discovery_child_development/pipeline/labelling/taxonomy/create_labelled_data_with_gpt.py --production=False --sample_size=1000
 ```
 To run the script on the full dataset:
 ```
@@ -57,6 +57,13 @@ if __name__ == "__main__":
         help="Do you want to run the code in production? (default: False)",
     )
 
+    parser.add_argument(
+        "--sample_size",
+        type=int,
+        default=100,
+        help="How big a sample do you want?",
+    )
+
     args = parser.parse_args()
 
     data_to_be_labelled = pd.DataFrame(taxonomy.get_labelling_sample())
@@ -66,8 +73,12 @@ if __name__ == "__main__":
         warnings.warn("There may be duplicate texts in the dataset")
 
     if args.production == False:
-        logging.info("Running in test mode - only labelling 30 examples")
-        data_to_be_labelled = data_to_be_labelled.head(30)
+        logging.info(
+            f"Running in test mode - only labelling {args.sample_size} examples"
+        )
+        data_to_be_labelled = data_to_be_labelled.sample(
+            args.sample_size, replace=False, random_state=SEED
+        )
     else:
         logging.info("Running in production mode - labelling all examples")
 
