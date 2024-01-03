@@ -11,7 +11,7 @@ N_WORKS = config["taxonomy"]["n_works"]
 SHEET_ID = config["taxonomy"]["sheet_id"]
 SHEET_NAME = config["taxonomy"]["sheet_name"]
 
-S3_LABELLED_DATA = (
+S3_LABELLING_DATA = (
     "data/labels/taxonomy_classifier/training_validation_data_patents_openalex.jsonl"
 )
 LOCAL_PATH = PROJECT_DIR / "inputs/data/labelling/taxonomy/input"
@@ -19,6 +19,18 @@ LOCAL_FILE = f"{LOCAL_PATH}/training_validation_data_patents_openalex.jsonl"
 create_directory_if_not_exists(LOCAL_PATH)
 
 GPT_LABELLED_DATA = "data/labels/taxonomy_classifier/labelled_with_gpt/training_validation_data_patents_openalex_GPT_LABELLED.parquet"
+PRODIGY_LABELLED_DATA_FILENAME = (
+    "training_validation_data_patents_openalex_LABELLED_prodigy.jsonl"
+)
+PRODIGY_LABELLED_DATA_FILENAME_LOCAL = (
+    "training_validation_data_patents_openalex_LABELLED_prodigy_downloaded.jsonl"
+)
+S3_PRODIGY_DATA_PATH = (
+    f"data/labels/taxonomy_classifier/{PRODIGY_LABELLED_DATA_FILENAME}"
+)
+LOCAL_PATH_LABELLED_DATA = PROJECT_DIR / "inputs/data/labelling/taxonomy/output"
+create_directory_if_not_exists(LOCAL_PATH_LABELLED_DATA)
+LOCAL_PRODIGY_DATA = LOCAL_PATH_LABELLED_DATA / PRODIGY_LABELLED_DATA_FILENAME_LOCAL
 
 
 def clean_string(s: str):
@@ -82,7 +94,7 @@ def get_taxonomy(
 
 
 def get_labelling_sample(
-    s3_bucket=S3_BUCKET, s3_file=S3_LABELLED_DATA, local_file=LOCAL_FILE
+    s3_bucket=S3_BUCKET, s3_file=S3_LABELLING_DATA, local_file=LOCAL_FILE
 ):
     """
     Balanced sample of OpenAlex and patents data for labelling.
@@ -105,3 +117,11 @@ def get_gpt_labelled_sample(s3_bucket=S3_BUCKET, s3_file=GPT_LABELLED_DATA):
     The output of the above function `get_labelling_sample()` was fed to GPT for labelling.
     """
     return nesta_s3.download_obj(s3_bucket, s3_file, download_as="dataframe")
+
+
+def get_prodigy_labelled_data(
+    s3_bucket=S3_BUCKET,
+    s3_file=S3_PRODIGY_DATA_PATH,
+    local_file=str(LOCAL_PRODIGY_DATA),
+):
+    return jsonl.download_file_from_s3(s3_bucket, s3_file, local_file)
