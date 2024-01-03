@@ -3,6 +3,7 @@ Utils functions for training a classifier
 """
 
 import matplotlib.pyplot as plt
+import itertools
 import numpy as np
 import pandas as pd
 from sklearn.preprocessing import MultiLabelBinarizer
@@ -153,7 +154,22 @@ def plot_confusion_matrix(y_true, y_pred, label_index, label_name):
     plt.title(f"Confusion Matrix for {label_name}")
     plt.xlabel("Predicted")
     plt.ylabel("True")
-    plt.show()
+    plt.show(block=False)
+
+    # Create a DataFrame with the data
+    confusion_matrix_values = [
+        "True Negatives",
+        "False Negatives",
+        "False Positives",
+        "True Positives",
+    ]
+    df = pd.DataFrame(
+        {
+            "confusion_matrix": confusion_matrix_values,
+            "values": list(itertools.chain.from_iterable(cm)),
+        },
+    )
+    return df
 
 
 def plot_roc_curve(y_true, y_pred_proba, label_index, label_name):

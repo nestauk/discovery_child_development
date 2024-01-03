@@ -39,3 +39,10 @@ base_config = get_yaml_config(_base_config_path)
 
 _config_path = Path(__file__).parent.resolve() / "config/config.yaml"
 config = get_yaml_config(_config_path)
+
+# classifier yamls
+_taxonomy_path = Path(__file__).parent.resolve() / "config/taxonomy_classifier.yaml"
+taxonomy_config = get_yaml_config(_taxonomy_path)
+
+_binary_path = Path(__file__).parent.resolve() / "config/binary_classifier.yaml"
+binary_config = get_yaml_config(_binary_path)
