@@ -162,7 +162,7 @@ def prepare_openalex(
     openalex_data_filtered = filter_abstracts(openalex_data_subset)
     abstract_ids = openalex_data_filtered["id"].unique()
 
-    # Find the concepts metadata for the abstracts that we have filtered. We only include:
+    # Find the concepts metadata for the abstracts that we have filtered (but NB not all abstracts will have concepts!). We only include:
     # * concepts that are in the taxonomy
     # * concepts with a score above the threshold
     taxonomy_data = taxonomy.get_taxonomy()
@@ -207,7 +207,7 @@ def prepare_openalex(
         openalex_data_merged["concept_id"].isna()
     ].sample(n=no_concept_sample_size, random_state=seed)
 
-    # Take a sample from each category ("sub_category")
+    # Take a sample from each taxonomy category ("sub_category")
     openalex_sample = openalex_data_merged.groupby(
         "sub_category", group_keys=False
     ).apply(sample_per_category, sample_size)
@@ -216,6 +216,7 @@ def prepare_openalex(
     openalex_sample = (
         openalex_sample[["id", "text", "label"]]
         .groupby(["id", "text"])["label"]
+        # Squish the unique labels together into one cell as a list
         .agg(lambda x: list(set(x)))
         .reset_index()
     )
@@ -226,6 +227,7 @@ def prepare_openalex(
     openalex_data_no_concepts = (
         openalex_data_no_concepts[["id", "text", "label"]]
         .groupby(["id", "text"])["label"]
+        # Squish the unique labels together into one cell as a list
         .agg(lambda x: list(set(x)))
         .reset_index()
     )
@@ -280,11 +282,19 @@ if __name__ == "__main__":
         .split("\n")
     )
 
+    data_for_labelling = [
+        line for line in data_for_labelling if line != ""
+    ]  # the code above leaves an empty string at the end of the list
+
     logging.info(f"Saving data sample to {DATA_LABELLING_PATH}/{OUTPUT_FILENAME}...")
     utils.create_directory_if_not_exists(DATA_LABELLING_PATH)
     with open(DATA_LABELLING_PATH / OUTPUT_FILENAME, "w") as f:
-        for line in data_for_labelling:
-            f.write(line + "\n")
+        last_index = len(data_for_labelling) - 1
+        for index, line in enumerate(data_for_labelling):
+            if index == last_index:
+                f.write(line)  # Don't add a newline at the end of the last line
+            else:
+                f.write(line + "\n")  # Add newline after each line except the last
 
     logging.info("Uploading prepared sample to S3...")
     jsonl.upload_file_to_s3(
