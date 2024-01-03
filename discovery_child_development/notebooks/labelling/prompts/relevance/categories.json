@@ -1,5 +1,0 @@
-{
-  "Relevant": "Text that mentions human child development. The child must be between 0 and 5 years old (including 5 year olds). The text must mention children (of the relevant age) explicitly! If the age is not specified, texts about infants, babies, toddlers, child care, preschool, early-years and early childhood education are also relevant.",
-  "Not-relevant": "Text about any other topic than child development, or if the children mentioned in the text are too old (older than 5 years old and/or already going to school). Texts about non-human children are also non-relevant (for example, monkeys, piglets, mice, rats and other anmials).",
-  "Not-specified": "Text that describes human child development, but the age of the children has not been explicitly specified and cannot be inferred from the context."
-}
