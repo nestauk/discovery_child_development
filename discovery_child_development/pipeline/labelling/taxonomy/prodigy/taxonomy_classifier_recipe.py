@@ -1,7 +1,7 @@
 """
 To test this, create and activate a new prodigy env (using `prodigy_requirements.txt`) and run:
 ```
-prodigy oa_classification test_data discovery_child_development/notebooks/labelling/prodigy/test_sample.jsonl -F discovery_child_development/notebooks/labelling/prodigy/taxonomy_classifier_recipe.py
+prodigy oa_classification test_data discovery_child_development/pipeline/labelling/taxonomy/prodigy/test_sample.jsonl -F discovery_child_development/pipeline/labelling/taxonomy/prodigy/taxonomy_classifier_recipe.py
 ```
 or
 ```
@@ -11,8 +11,6 @@ prodigy oa_classification taxonomy_data inputs/data/labelling/taxonomy/input/tra
 To export the data and have it saved locally, run:
 ```
 prodigy db-out taxonomy_data > inputs/data/labelling/taxonomy/output/training_validation_data_patents_openalex_LABELLED.jsonl
-aws s3 cp inputs/data/labelling/taxonomy/output/training_validation_data_patents_openalex_LABELLED.jsonl s3://discovery-iss/data/labels/taxonomy_classifier/labelled_with_prodigy/training_validation_data_patents_openalex_LABELLED.jsonl
-
 ```
 
 If you have labelled your test examples and want to scrap those labels and start again (eg if you've switched to a different GPT model),
