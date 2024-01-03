@@ -1,3 +1,7 @@
+"""
+Run this script before attempting to run the Prodigy app, so that the data for labelling is stored locally.
+"""
+
 import pandas as pd
 
 from discovery_child_development.getters import taxonomy

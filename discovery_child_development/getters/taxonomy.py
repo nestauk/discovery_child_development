@@ -124,4 +124,5 @@ def get_prodigy_labelled_data(
     s3_file=S3_PRODIGY_DATA_PATH,
     local_file=str(LOCAL_PRODIGY_DATA),
 ):
+    """Get data that has been labelled with Prodigy and stored on S3."""
     return jsonl.download_file_from_s3(s3_bucket, s3_file, local_file)
