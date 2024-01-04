@@ -11,7 +11,8 @@ import asyncio
 import time
 from pathlib import Path
 
-from discovery_child_development import logging, PROJECT_DIR
+from nesta_ds_utils.loading_saving import S3
+from discovery_child_development import logging, PROJECT_DIR, S3_BUCKET
 from discovery_child_development.getters import openalex, patents
 from discovery_child_development.utils.openai_utils import (
     MessageTemplate,
@@ -39,7 +40,6 @@ PATH_TO_FUNCTION = PATH_TO_PROMPTS / "function.json"
 PATH_TO_EXAMPLES = PATH_TO_PROMPTS / "examples.jsonl"
 # Define paths to the outputs
 OUTPUT_FILEPATH = PROJECT_DIR / "outputs/labels/relevance"
-OUTPUT_FILENAME = CONFIG["output_filename"]
 
 
 async def main(
@@ -47,6 +47,9 @@ async def main(
     num_samples: int,
     model: str,
     temperature: float,
+    output_filename: str,
+    s3_path: str,
+    use_s3: bool,
 ) -> None:
     """Fetch prompts and run the classifier"""
 
@@ -57,10 +60,17 @@ async def main(
         texts_df = patents.get_and_process_patents_from_s3()
     # Remove texts that are already labelled
     try:
-        labelled = load_jsonl(str(OUTPUT_FILEPATH / OUTPUT_FILENAME) + ".jsonl")
+        if use_s3:
+            # Update the outputs file with the S3 version
+            S3.download_file(
+                path_from=s3_path,
+                bucket=S3_BUCKET,
+                path_to=str(OUTPUT_FILEPATH / output_filename) + ".jsonl",
+            )
+        labelled = load_jsonl(str(OUTPUT_FILEPATH / output_filename) + ".jsonl")
         labelled_ids = pd.DataFrame(labelled).id.to_list()
         texts_df = texts_df[~texts_df.id.isin(labelled_ids)]
-    except FileNotFoundError:
+    except:
         logging.info("No labelled data found")  # noqa: T001
     # Subsample for testing
     texts_df = texts_df.sample(num_samples).reset_index(drop=True)
@@ -108,10 +118,18 @@ async def main(
             await Classifier.write_line_to_file(
                 result,
                 OUTPUT_FILEPATH,
-                OUTPUT_FILENAME,
+                output_filename,
             )
 
         time.sleep(2)
+
+    # Upload to S3
+    if use_s3:
+        S3.upload_file(
+            path_from=str(OUTPUT_FILEPATH / output_filename) + ".jsonl",
+            bucket=S3_BUCKET,
+            path_to=s3_path,
+        )
 
 
 def parse_arguments():
@@ -120,9 +138,10 @@ def parse_arguments():
 
     # Add the arguments
     parser.add_argument("--dataset", type=str, help="The dataset")
-    parser.add_argument("--num_samples", type=int, help="The number of samples")
     parser.add_argument("--model", type=str, help="The model")
-
+    parser.add_argument("--num_samples", type=int, help="The number of samples")
+    parser.add_argument("--output_filename", type=str, help="The output filename")
+    parser.add_argument("--use_s3", type=bool, help="Whether to use S3")
     # Parse the arguments
     return parser.parse_args()
 
@@ -137,9 +156,16 @@ if "__main__" == __name__:
     num_samples = args.num_samples if args.num_samples else CONFIG["num_samples"]
     model = args.model if args.model else CONFIG["model"]
     temperature = CONFIG["temperature"]
+    output_filename = (
+        args.output_filename if args.output_filename else CONFIG["output_filename"]
+    )
+    use_s3 = args.use_s3 if args.use_s3 else True
 
     # Create outputs directory if it doesn't exist
-    create_directory_if_not_exists(OUTPUT_FILENAME)
+    create_directory_if_not_exists(OUTPUT_FILEPATH)
+    # Define paths
+    output_filepath = OUTPUT_FILEPATH / output_filename
+    s3_path = CONFIG["s3_directory"] + output_filename + ".jsonl"
 
     # Label the data
     start = time.time()
@@ -147,7 +173,17 @@ if "__main__" == __name__:
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
     try:
-        loop.run_until_complete(main(dataset, num_samples, model, temperature))
+        loop.run_until_complete(
+            main(
+                dataset,
+                num_samples,
+                model,
+                temperature,
+                output_filename,
+                s3_path,
+                use_s3,
+            )
+        )
     finally:
         loop.close()
     e = time.perf_counter()
