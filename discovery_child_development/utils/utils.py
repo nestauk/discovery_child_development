@@ -1,6 +1,7 @@
 import boto3
 from botocore.exceptions import NoCredentialsError, PartialCredentialsError
 import datetime
+import os
 import re
 from typing import Optional, List, Union
 
@@ -129,3 +130,9 @@ def copy_s3_object(bucket_name: str, source_key: str, destination_key: str) -> N
         print("Incomplete credentials")
     except Exception as e:
         print(f"Error occurred: {e}")
+
+
+def create_directory_if_not_exists(dir_path: str) -> None:
+    """Create a directory if it doesn't exist."""
+    if not os.path.exists(dir_path):
+        os.makedirs(dir_path)
