@@ -33,12 +33,9 @@ from nesta_ds_utils.loading_saving import S3
 ## project code
 from discovery_child_development import PROJECT_DIR, logging, config, S3_BUCKET
 from discovery_child_development.getters import openalex as oa
-from discovery_child_development.pipeline.models.taxonomy_classifier import (
-    baseline_model as bm,
-)
 from discovery_child_development.utils import classification_utils
-from discovery_child_development.utils import cluster_analysis_utils as cau
 from discovery_child_development.utils import wandb as wb
+from discovery_child_development.utils.general_utils import ensure_path_exists
 
 load_dotenv()
 
@@ -51,11 +48,6 @@ MODEL_PATH = PROJECT_DIR / "outputs/models/"
 SEED = 42
 # Set the seed
 np.random.seed(SEED)
-
-
-def ensure_path_exists(path):
-    if not path.exists():
-        path.mkdir(parents=True, exist_ok=True)
 
 
 for path in [DATA_PATH_LOCAL, FIG_PATH, MODEL_PATH]:
