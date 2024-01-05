@@ -139,5 +139,4 @@ node_modules/
 discovery_child_development/notebooks/wandb/
 wandb/
 
-discovery_child_development/notebooks/labelling/data/*
 outputs/labels/*
