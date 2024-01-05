@@ -3,4 +3,4 @@ temperature: 0.0
 num_samples: 250
 output_filename: relevance_labels
 local_output_directory: outputs/labels/relevance
-s3_directory: data/labels/afs_relevance/
+s3_directory: data/labels/child_development/
