@@ -22,7 +22,7 @@ The labelled data is saved on S3 as a jsonl file, and new labels are being appen
   "id": "unique ID of the data point",
   "source": "dataset name",
   "model": "LLM used for labelling",
-  "timestamp": "YYYYMMDDHHMMSS",
+  "timestamp": "YYYYmmddHHMMSS",
   "text": "the text that was used as input for labelling"
 }
 ```
