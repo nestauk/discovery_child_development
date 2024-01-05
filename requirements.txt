@@ -21,3 +21,4 @@ df2gspread
 nltk
 openai
 aiofiles
+tiktoken

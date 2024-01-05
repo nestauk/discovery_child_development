@@ -1,0 +1,57 @@
+{
+  "development": {
+    "Cognitive development": "cognition, memory, problem-solving, executive function",
+    "SEND": "special needs, disabilities, learning difficulties, autism, dyslexia, attention-deficit hyperactivity disorder",
+    "Communication and language": "language acquisition, language development, communication skills, speech",
+    "Physical": "motor skills, physical development, spatial awareness",
+    "Expressive arts and design": "creativity, arts, design, imagination, singing, music",
+    "Prenatal": "prenatal development, maternal health, fetal development, pregnancy, birth",
+    "Literacy": "reading, writing, letters, handwriting, literacy development, phonics",
+    "Infancy": "age 0-2, infancy, newborns, early infancy",
+    "Mathematics": "math, numbers, numeracy, mathematical skills",
+    "Sleep": "sleep patterns, sleep quality, sleep duration, bedtime routines",
+    "Personal social emotional": "social development, emotional development, self-awareness, relationships",
+    "Early childhood development (general)": "ages 0-5, early childhood development, early years, early childhood"
+  },
+  "Safety and security": {
+    "Child protection": "child abuse, child safety, protection policies"
+  },
+  "Technology or innovation": {
+    "Non-tech assessments": "non-tech assessments, questionnaires, surveys, diagnostic tools",
+    "Data": "data analysis, data collection, research data",
+    "Internet": "internet usage, online safety, digital literacy, online learning",
+    "Mobile": "mobile devices, mobile learning, apps for children or parents, tablets",
+    "Statistical methods": "statistics, statistical analysis",
+    "Games": "educational games, learning through play, game-based learning",
+    "Data Science and AI": "artificial intelligence, machine learning, data science, automated speech recognition, computer vision",
+    "AR VR": "augmented reality, virtual reality, immersive technology",
+    "RCTs": "randomised controlled trials",
+    "Genetics": "genetics, heredity, genetic factors",
+    "Robotics": "robotics",
+    "Neuroscience": "neuroscience, brain development, cognitive neuroscience, brain imaging",
+    "Media": "media influence, media literacy, screen time",
+    "Operations": "program operations, logistics, program management, administrative tasks, paperwork",
+    "Social media": "social media, social networking, online communities",
+    "Assessment (general)": "assessments, evaluation, measurement, monitoring, evaluation",
+    "Technology (general)": "technology, digital, ICT, edtech, tech"
+  },
+  "Socioeconomic context": {
+    "Income": "family income, socioeconomic status, economic factors, cash transfers",
+    "Inequalities": "educational inequalities, socio-economic disparities",
+    "Labour market": "parental employment, work-life balance, parental leave, gender pay gap",
+    "Social services": "social services, support programs",
+    "Social environment": "social environment, community influence",
+    "Policy": "early childhood education policy, child development policy, government policy"
+  },
+  "Health": {
+    "Health": "child health, well-being, healthcare",
+    "Mental health": "child mental health, emotional well-being, mental health interventions",
+    "Nutrition and weight": "nutrition, weight, dietary habits, breastfeeding, obesity, malnutrition",
+    "Oral health": "oral health, dental care, dental hygiene"
+  },
+  "Enabling environment": {
+    "Culture and communities": "cultural diversity, community involvement, multiculturalism",
+    "Family environment": "family dynamics, parenting, family support, home learning environment",
+    "Education": "early childhood education, early learning, early education, preschool, pre-primary, kindergarten"
+  }
+}
