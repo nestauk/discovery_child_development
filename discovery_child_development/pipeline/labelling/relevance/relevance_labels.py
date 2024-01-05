@@ -50,7 +50,16 @@ async def main(
     output_filename: str,
     s3_path: str,
 ) -> None:
-    """Fetch prompts and run the classifier"""
+    """Fetch data from S3, label it and upload the results to S3.
+
+    Args:
+        dataset (str): The dataset to be labelled
+        num_samples (int): The number of samples to be labelled
+        model (str): The model to be used
+        temperature (float): The temperature to be used
+        output_filename (str): The output filename
+        s3_path (str): The S3 path to upload the results to
+    """
 
     # Fetch the data to be categorised
     texts_df = get_dataset(dataset)
@@ -127,9 +136,9 @@ async def main(
 
 
 def parse_arguments():
+    """Parse the arguments passed to the script."""
     # Create the parser
     parser = argparse.ArgumentParser(description="Process the arguments for the script")
-
     # Add the arguments
     parser.add_argument("--dataset", type=str, help="The dataset")
     parser.add_argument("--model", type=str, help="The model")
@@ -157,6 +166,7 @@ if "__main__" == __name__:
 
     # Create outputs directory if it doesn't exist
     create_directory_if_not_exists(OUTPUT_FILEPATH)
+
     # Define paths
     output_filepath = OUTPUT_FILEPATH / output_filename
     s3_path = CONFIG["s3_directory"] + output_filename + ".jsonl"
