@@ -2,7 +2,7 @@ import pandas as pd
 
 from nesta_ds_utils.loading_saving import S3 as nesta_s3
 
-from discovery_child_development import PROJECT_DIR, logging, config, S3_BUCKET
+from discovery_child_development import PROJECT_DIR, config, S3_BUCKET
 from discovery_child_development.utils import google_utils
 from discovery_child_development.utils import jsonl_utils as jsonl
 from discovery_child_development.utils.utils import create_directory_if_not_exists

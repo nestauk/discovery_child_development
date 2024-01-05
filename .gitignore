@@ -140,3 +140,5 @@ discovery_child_development/notebooks/wandb/
 wandb/
 
 outputs/labels/*
+discovery_child_development/pipeline/labelling/taxonomy_v2/training_validation_data_patents_openalex.jsonl
+discovery_child_development/pipeline/labelling/taxonomy_v2/taxonomy_labelled_data_test.parquet
