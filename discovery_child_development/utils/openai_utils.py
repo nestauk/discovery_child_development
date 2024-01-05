@@ -330,6 +330,7 @@ class Classifier:
             if parsed_response:
                 parsed_response["id"] = message_kwargs["id"]
                 parsed_response["source"] = message_kwargs["source"]
+                parsed_response["text"] = message_kwargs["text"]
                 parsed_response["model"] = model
                 parsed_response["timestamp"] = current_time()
                 return parsed_response
