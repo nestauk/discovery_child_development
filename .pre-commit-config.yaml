@@ -20,6 +20,7 @@ repos:
         entry: end-of-file-fixer
         language: system
         types: [text]
+        exclude: '\.jsonl$'
         stages: [commit, push, manual]
       - id: trailing-whitespace
         name: Trim Trailing Whitespace

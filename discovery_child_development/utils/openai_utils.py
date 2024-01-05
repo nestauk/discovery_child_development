@@ -28,6 +28,12 @@ aclient = AsyncOpenAI(api_key=os.environ["OPENAI_API_KEY"])
 logger = logging.getLogger(__name__)
 
 
+def print_prompt(prompt: list):
+    """Neatly prints your prompt messages"""
+    for m in prompt:
+        print(f"{m['role']}: {m['content']}\n")
+
+
 @dataclass
 class BasePromptTemplate(ABC):
     """Base template prompts flexibly."""

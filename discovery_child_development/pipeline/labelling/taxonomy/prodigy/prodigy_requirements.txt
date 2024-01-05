@@ -1,0 +1,7 @@
+ipykernel
+openai
+pandas==1.5.1
+pyaml
+spacy==3.7.2
+spacy-llm==0.6.4
+tiktoken==0.5.2
