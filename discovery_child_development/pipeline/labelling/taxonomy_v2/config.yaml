@@ -4,4 +4,3 @@ num_samples: 5
 output_filename: taxonomy_labels
 local_output_directory: outputs/labels/taxonomy
 s3_directory: data/labels/
-dataset: taxonomy_labelling_sample
