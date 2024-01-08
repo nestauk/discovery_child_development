@@ -24,11 +24,11 @@ S3_PATH = "data/taxonomy_classifier/"
 
 
 def stratified_split(df, col="labels", val=VAL_PROP, test=TEST_PROP, train=TRAIN_PROP):
-    # Step 1: One-hot encode the 'labels' column
+    # One-hot encode the 'labels' column
     mlb = MultiLabelBinarizer()
     labels = mlb.fit_transform(df[col])
 
-    # Stratify and split the dataset into train and test/val
+    # Stratify and split the dataset into train and test/val by *labels*
     stratifier = IterativeStratification(
         n_splits=2, order=1, sample_distribution_per_fold=[(val + test), train]
     )
@@ -65,6 +65,9 @@ if __name__ == "__main__":
     # Step 1: create 50/50 split where each split is stratified by source.
     # At the next step, we'll stratify just by labels, so it helps if we're doing that on a dataset
     # that is already evenly distributed by 'source'.
+    # Splitting it 50/50 is arbitrary - the important thing is that you stratify by source, and then as
+    # a separate step, stratify by labels (so I think it would also be fine if in this next bit of code,
+    # you set test_size to 0.7, 0.4 or whatever value you want).
     df_a, df_b = train_test_split(
         labelled_data,
         test_size=0.5,
