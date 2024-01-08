@@ -166,9 +166,7 @@ if "__main__" == __name__:
 
     # Create outputs directory if it doesn't exist
     create_directory_if_not_exists(OUTPUT_FILEPATH)
-
-    # Define paths
-    output_filepath = OUTPUT_FILEPATH / output_filename
+    # Define s3 path
     s3_path = CONFIG["s3_directory"] + output_filename + ".jsonl"
 
     # Label the data
