@@ -1,17 +1,16 @@
 {
   "development": {
-    "Cognitive development": "cognition, memory, problem-solving, executive function",
+    "Prenatal": "prenatal development, maternal health, fetal development, pregnancy, birth",
+    "Infancy": "age 0-2, infancy, newborns, early infancy",
+    "Sleep": "sleep patterns, sleep quality, sleep duration, bedtime routines",
     "SEND": "special needs, disabilities, learning difficulties, autism, dyslexia, attention-deficit hyperactivity disorder",
+    "Cognitive development": "cognition, memory, problem-solving, executive function",
     "Communication and language": "language acquisition, language development, communication skills, speech",
     "Physical": "motor skills, physical development, spatial awareness",
     "Expressive arts and design": "creativity, arts, design, imagination, singing, music",
-    "Prenatal": "prenatal development, maternal health, fetal development, pregnancy, birth",
     "Literacy": "reading, writing, letters, handwriting, literacy development, phonics",
-    "Infancy": "age 0-2, infancy, newborns, early infancy",
     "Mathematics": "math, numbers, numeracy, mathematical skills",
-    "Sleep": "sleep patterns, sleep quality, sleep duration, bedtime routines",
-    "Personal social emotional": "social development, emotional development, self-awareness, relationships",
-    "Early childhood development (general)": "ages 0-5, early childhood development, early years, early childhood"
+    "Personal social emotional": "social development, emotional development, self-awareness, relationships"
   },
   "Safety and security": {
     "Child protection": "child abuse, child safety, protection policies"
@@ -19,20 +18,20 @@
   "Technology or innovation": {
     "Non-tech assessments": "non-tech assessment, questionnaire, survey, diagnostic tool",
     "Data": "data collection, research data, database",
+    "Data science and AI": "data science, data analysis, artificial intelligence, machine learning, automated speech recognition, computer vision",
+    "Statistical methods": "statistics, statistical analysis",
+    "RCTs": "randomised controlled trial",
     "Internet": "internet usage, online safety, digital literacy, online learning",
     "Mobile": "mobile device, mobile learning, app for children or parents, tablet",
     "Wearables": "wearable technology, wearable device, smart watch",
-    "Statistical methods": "statistics, statistical analysis",
     "Games": "educational games, learning through play, game-based learning",
-    "Data Science and AI": "data science, data analysis, artificial intelligence, machine learning, automated speech recognition, computer vision",
-    "AR VR": "augmented reality, virtual reality, immersive technology",
-    "RCTs": "randomised controlled trial",
-    "Genetics": "genetics, heredity, genetic factor",
-    "Robotics": "robotics",
-    "Neuroscience": "neuroscience, brain development, cognitive neuroscience, brain imaging",
     "Media": "media influence, media literacy, screen time",
-    "Operations": "program operations, logistics, program management, administrative tasks, paperwork, childcare setting software platform",
     "Social media": "social media, social networking, online communities",
+    "AR VR": "augmented reality, virtual reality, immersive technology",
+    "Robotics": "robotics",
+    "Genetics": "genetics, heredity, genetic factor",
+    "Neuroscience": "neuroscience, brain development, cognitive neuroscience, brain imaging",
+    "Operations": "program operations, logistics, program management, administrative tasks, paperwork, childcare setting software platform",
     "Assessment (general)": "assessments, evaluation, measurement, monitoring, evaluation",
     "Technology (general)": "technology, digital, ICT, edtech, tech"
   },
@@ -40,8 +39,7 @@
     "Income": "family income, socioeconomic status, economic factors, cash transfers",
     "Inequalities": "educational inequalities, socio-economic disparities",
     "Labour market": "parental employment, work-life balance, parental leave, gender pay gap",
-    "Policy": "early childhood education policy, child development policy, government policy",
-    "Inclusion": "inclusion, equity, equality, diversity, racism, structural racism, colonialism"
+    "Policy": "early childhood education policy, child development policy, government policy"
   },
   "Health": {
     "Health": "child health, well-being, healthcare",
@@ -50,9 +48,10 @@
     "Oral health": "oral health, dental care, dental hygiene"
   },
   "Enabling environment": {
-    "Culture and communities": "cultural diversity, community involvement, multiculturalism",
     "Family environment": "family dynamics, parenting, family support, home learning environment",
-    "Education": "early childhood education, early learning, early education, preschool, pre-primary, kindergarten",
-    "Social services": "social services, support programs"
+    "Education setting": "preschool, pre-primary, kindergarten",
+    "Social services": "social services, support programs",
+    "Community": "community involvement, community support, peer support, peer group",
+    "Inclusion": "cultural diversity, multiculturalism, inclusion, equity, equality, diversity, racism, structural racism, colonialism"
   }
 }

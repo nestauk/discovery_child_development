@@ -114,7 +114,7 @@ async def main(
                 },
                 functions=[function.to_prompt()],
                 function_call={"name": "predict_labels"},
-                max_tokens=100,
+                max_tokens=500,
                 concurrency=5,
             )
             for tup in batched_results.itertuples()

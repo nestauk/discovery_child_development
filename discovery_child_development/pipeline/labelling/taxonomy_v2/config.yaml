@@ -1,4 +1,5 @@
 model: gpt-3.5-turbo-1106
+# model: gpt-4-1106-preview
 temperature: 0.0
 num_samples: 5 # set to 0 to label the full dataset
 output_filename: taxonomy_labels

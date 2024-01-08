@@ -352,6 +352,7 @@ class Classifier:
         response = await aclient.chat.completions.create(
             messages=messages, model=model, temperature=temperature, **kwargs
         )
+        print(response)
 
         return response  # type: ignore
 
