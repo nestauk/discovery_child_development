@@ -1,3 +1,8 @@
+# Train, test, validation
+train_prop: 0.7
+val_prop: 0.15
+test_prop: 0.15
+
 # Training arguments
 learning_rate: 0.00002
 per_device_train_batch_size: 16

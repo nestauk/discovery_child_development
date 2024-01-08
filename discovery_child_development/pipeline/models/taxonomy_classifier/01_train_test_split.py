@@ -1,4 +1,4 @@
-from discovery_child_development import logging, config, S3_BUCKET
+from discovery_child_development import logging, config, taxonomy_config, S3_BUCKET
 from discovery_child_development.getters import taxonomy
 
 from nesta_ds_utils.loading_saving import S3 as nesta_s3
@@ -16,9 +16,9 @@ random.seed(SEED)
 np.random.seed(SEED)
 
 # For now we're splitting 70% train, 15% validation, and 15% hold-out test set.
-TRAIN_PROP = 0.7
-TEST_PROP = 0.15
-VAL_PROP = 0.15
+TRAIN_PROP = taxonomy_config["train_prop"]
+TEST_PROP = taxonomy_config["test_prop"]
+VAL_PROP = taxonomy_config["val_prop"]
 
 S3_PATH = "data/taxonomy_classifier/"
 
