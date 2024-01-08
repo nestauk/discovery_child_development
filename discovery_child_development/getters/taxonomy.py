@@ -4,17 +4,37 @@ import pandas as pd
 from nesta_ds_utils.loading_saving import S3 as nesta_s3
 
 from discovery_child_development import PROJECT_DIR, logging, config, S3_BUCKET
+from nesta_ds_utils.loading_saving import S3 as nesta_s3
+
+from discovery_child_development import PROJECT_DIR, logging, config, S3_BUCKET
 from discovery_child_development.utils import google_utils
+from discovery_child_development.utils import jsonl_utils as jsonl
 from discovery_child_development.utils.utils import create_directory_if_not_exists
 
 N_WORKS = config["taxonomy"]["n_works"]
 SHEET_ID = config["taxonomy"]["sheet_id"]
 SHEET_NAME = config["taxonomy"]["sheet_name"]
 
-GPT_LABELLED_DATA = "data/labels/taxonomy_classifier/labelled_with_gpt/training_validation_data_patents_openalex_GPT_LABELLED_test.parquet"
+S3_LABELLING_DATA = (
+    "data/labels/taxonomy_classifier/training_validation_data_patents_openalex.jsonl"
+)
+LOCAL_PATH = PROJECT_DIR / "inputs/data/labelling/taxonomy/input"
+LOCAL_FILE = f"{LOCAL_PATH}/training_validation_data_patents_openalex.jsonl"
+create_directory_if_not_exists(LOCAL_PATH)
 
+GPT_LABELLED_DATA = "data/labels/taxonomy_classifier/labelled_with_gpt/training_validation_data_patents_openalex_GPT_LABELLED.parquet"
+PRODIGY_LABELLED_DATA_FILENAME = (
+    "training_validation_data_patents_openalex_LABELLED_prodigy.jsonl"
+)
+PRODIGY_LABELLED_DATA_FILENAME_LOCAL = (
+    "training_validation_data_patents_openalex_LABELLED_prodigy_downloaded.jsonl"
+)
+S3_PRODIGY_DATA_PATH = (
+    f"data/labels/taxonomy_classifier/{PRODIGY_LABELLED_DATA_FILENAME}"
+)
 LOCAL_PATH_LABELLED_DATA = PROJECT_DIR / "inputs/data/labelling/taxonomy/output"
 create_directory_if_not_exists(LOCAL_PATH_LABELLED_DATA)
+LOCAL_PRODIGY_DATA = LOCAL_PATH_LABELLED_DATA / PRODIGY_LABELLED_DATA_FILENAME_LOCAL
 
 TAXONOMY_CLASSIFIER_S3_PATH = "data/taxonomy_classifier/"
 
@@ -139,3 +159,30 @@ def get_training_data(
     s3_file = s3_path + filename
 
     return nesta_s3.download_obj(s3_bucket, s3_file, download_as="dataframe")
+
+
+def get_labelling_sample(
+    s3_bucket=S3_BUCKET, s3_file=S3_LABELLING_DATA, local_file=LOCAL_FILE
+):
+    """
+    Balanced sample of OpenAlex and patents data for labelling.
+
+    There should be:
+    * 100 * <n_categories> OpenAlex abstracts; the 100 are taken by matching concepts metadata to the taxonomy.
+        For example, the 100 samples for the taxonomy category "Nutrition and weights"
+        might be tagged with the concepts "Childhood obesity", "Gut flora", "Healthy eating",
+        "Malnutrition", as these are some of the concepts that this taxonomy category was derived from.
+    * 100 * <n_categories> patents
+    * 100 * 10 OpenAlex abstracts that do not have any concepts metadata
+
+    """
+    return jsonl.download_file_from_s3(s3_bucket, s3_file, local_file)
+
+
+def get_prodigy_labelled_data(
+    s3_bucket=S3_BUCKET,
+    s3_file=S3_PRODIGY_DATA_PATH,
+    local_file=str(LOCAL_PRODIGY_DATA),
+):
+    """Get data that has been labelled with Prodigy and stored on S3."""
+    return jsonl.download_file_from_s3(s3_bucket, s3_file, local_file)

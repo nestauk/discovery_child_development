@@ -22,3 +22,4 @@ nltk
 openai
 aiofiles
 scikit-multilearn
+tiktoken
