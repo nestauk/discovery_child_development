@@ -1,4 +1,5 @@
 import pandas as pd
+from typing import Any, Dict, List, Optional
 
 from nesta_ds_utils.loading_saving import S3 as nesta_s3
 
@@ -94,8 +95,10 @@ def get_taxonomy(
 
 
 def get_labelling_sample(
-    s3_bucket=S3_BUCKET, s3_file=S3_LABELLING_DATA, local_file=LOCAL_FILE
-):
+    s3_bucket: str = S3_BUCKET,
+    s3_file: str = S3_LABELLING_DATA,
+    local_file: str = LOCAL_FILE,
+) -> List[Dict[str, Any]]:
     """
     Balanced sample of OpenAlex and patents data for labelling.
 
@@ -107,22 +110,77 @@ def get_labelling_sample(
     * 100 * <n_categories> patents
     * 100 * 10 OpenAlex abstracts that do not have any concepts metadata
 
+    Returns:
+    - List[Dict[str, Any]]: A list of records where each record contains the following fields:
+        - id: A unique identifier for the text.
+        - text: The text content that was labelled.
+        - source: The source of the text content (OpenAlex or patents)
+
     """
     return jsonl.download_file_from_s3(s3_bucket, s3_file, local_file)
 
 
-def get_gpt_labelled_sample(s3_bucket=S3_BUCKET, s3_file=GPT_LABELLED_DATA):
+def get_gpt_labelled_sample(
+    s3_bucket: str = S3_BUCKET, s3_file: str = GPT_LABELLED_DATA
+) -> pd.DataFrame:
     """Relatively balanced dataset of OpenAlex abstracts and patents, labelled with GPT.
 
     The output of the above function `get_labelling_sample()` was fed to GPT for labelling.
+
+    The resulting DataFrame contains the following columns:
+    - 'id': A unique identifier for the text.
+    - 'text': The text content that was labelled.
+    - 'source': The source of the text content (e.g., 'patents').
+    - 'cost': The cost associated with the labelling.
+    - 'labels_raw': The raw labels assigned by GPT.
+    - 'labels': The cleaned labels. For more info on the cleaning that was done, see the function `map_keywords_to_categories()` in `taxonomy_labelling_utils`.
+
+    Parameters:
+    - s3_bucket (str): The name of the S3 bucket where the data is stored.
+    - s3_file (str): The file path in the S3 bucket.
+
+    Returns:
+    - pd.DataFrame: A Pandas DataFrame containing the GPT-labelled data (see above)
     """
     return nesta_s3.download_obj(s3_bucket, s3_file, download_as="dataframe")
 
 
 def get_prodigy_labelled_data(
-    s3_bucket=S3_BUCKET,
-    s3_file=S3_PRODIGY_DATA_PATH,
-    local_file=str(LOCAL_PRODIGY_DATA),
-):
-    """Get data that has been labelled with Prodigy and stored on S3."""
-    return jsonl.download_file_from_s3(s3_bucket, s3_file, local_file)
+    s3_bucket: str = S3_BUCKET,
+    s3_file: str = S3_PRODIGY_DATA_PATH,
+    local_file: str = str(LOCAL_PRODIGY_DATA),
+) -> pd.DataFrame:
+    """
+    Get data that has been labelled with Prodigy and stored on S3. It also saves the Prodigy
+    data locally as a jsonl file at the path specified by `local_file`.
+
+    Parameters:
+    - s3_bucket (str): The name of the S3 bucket where the data is stored.
+    - s3_file (str): The file path in the S3 bucket.
+    - local_file (str): The local file path where the data will be downloaded.
+
+    Returns:
+    - DataFrame: A Pandas DataFrame containing the data from the specified S3 file.
+
+    The resulting DataFrame contains the following columns:
+    - 'id': A unique identifier for the text.
+    - 'text': The text content that was labelled.
+    - 'source': The source of the text content (OpenAlex or patents)
+    - 'tokens_input': Number of GPT tokens in the input.
+    - 'tokens_output': Number of GPT tokens in the output.
+    - 'model': The model used for labelling.
+    - 'cost': The cost associated with the labelling.
+    - 'options': The options provided for labelling.
+    - 'accept': The labels accepted during labelling.
+    - 'model_output': The output of the model -> Evaluate the model by checking how many of these labels match the 'accept' labels.
+    - '_input_hash': A hash of the input data.
+    - '_task_hash': A hash of the task.
+    - '_view_id': The view ID of the task.
+    - 'config': Configuration used for the labelling task.
+    - 'answer': 'accept' or 'ignore' - 'ignore' indicates that the text would have been filtered out by the relevance classifier in the eventual pipeline
+    - '_timestamp': The timestamp when the labelling was done.
+    - '_annotator_id': The ID of the annotator.
+    - '_session_id': The session ID for the labelling task.
+
+    """
+    return pd.DataFrame(jsonl.download_file_from_s3(s3_bucket, s3_file, local_file))
