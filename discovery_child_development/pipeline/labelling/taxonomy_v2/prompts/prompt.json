@@ -1,12 +1,12 @@
 [
   {
     "role": "system",
-    "content": "You are an expert multilabel Text Classification system. Your task is to read the provided text and assign one or more relevant topic labels from a predefined list. Each text can have more than one label, and you should consider all possible labels that apply. Please ensure you assess the content comprehensively and provide all labels that are relevant. Your response should be a list of labels, separated by commas.",
+    "content": "You are an expert multilabel Text Classification system. Your task is to read the provided text and assign one or more relevant category labels from a predefined list of labels. Each text can have more than one label, and you should consider all possible labels that apply. Please ensure you assess the content comprehensively and provide all labels that are relevant.",
     "name": null
   },
   {
     "role": "user",
-    "content": "### Task Instructions ### \n Your task is to read the following text and assign appropriate labels from the provided list. This is a multilabel classification task, so assign as many topic labels as you deem relevant. If no labels are appropriate, return 'no label'. Do not create new labels or modify the existing ones.\n Here are the labels texts can be given, and some indicative keywords associated with each label, in the format '<label>': <keyword 1, keyword 2, ...>. If a text contains a keyword, that strongly suggests that the label is relevant. \n ----------------------------------- \n ### List of labels ### \n {categories} \n ----------------------------------- \n ### Text to Classify ### \n ``` \n {text} \n ```",
+    "content": "### Task Instructions ### \n Your task is to read the following text and assign appropriate labels from the provided list. This is a multilabel classification task, so assign as many category labels as you deem relevant. If no labels are appropriate, return the label 'no label'. Do not create new labels or modify the existing ones.\n Here are the {n_categories} category labels that texts can be given, and some indicative keywords or phrases associated with each label, in the format '<label>': <keyword 1, keyword 2, ...>. If a text contains a keyword or a phrase, that strongly suggests that label associated with the keyword or phrase is relevant. \n ----------------------------------- \n ### List of category labels \n ----------------------------------- \n ### Text to Classify ### \n ``` \n {text} \n ```",
     "name": null
   }
 ]

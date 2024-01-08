@@ -8,6 +8,7 @@ from discovery_child_development.utils.openai_utils import (
     FunctionTemplate,
     MessageTemplate,
 )
+from pandas import DataFrame
 
 PATH_TO_PROMPTS = (
     PROJECT_DIR / "discovery_child_development/pipeline/labelling/taxonomy/prompts"
@@ -286,3 +287,41 @@ def get_model_cost(model):
         input = 0.03
         output = 0.06
     return input, output
+
+
+def unique_list(series):
+    """Return a list of unique values in a series."""
+    return list(set(series))
+
+
+def clean_labelled_data(labelled_data: DataFrame, categories: dict) -> DataFrame:
+    """Clean the labelled data
+
+    Fixes the cases where LLM has labelled the text with keywords rather than categories,
+    and removes the datapoints that have no label.
+
+    Args:
+        labelled_data (pd.DataFrame): A DataFrame containing the labelled data
+        categories (dict): A dictionary containing the categories
+
+    Returns:
+        pd.DataFrame: A DataFrame containing the cleaned labelled data
+    """
+    category_names = list(categories.keys())
+    keyword_to_category_dict = make_keyword_dict(categories)
+    return (
+        DataFrame(labelled_data)
+        .explode("prediction")
+        .rename(columns={"prediction": "prediction_raw"})
+        .assign(
+            prediction=lambda df: df["prediction_raw"].apply(
+                lambda x: map_keywords_to_categories(
+                    x, keyword_to_category_dict, category_names
+                )
+            )
+        )
+        .query("prediction != 'no label'")
+        .groupby(["id", "text", "source"])
+        .agg({"prediction_raw": unique_list, "prediction": unique_list})
+        .reset_index()
+    )

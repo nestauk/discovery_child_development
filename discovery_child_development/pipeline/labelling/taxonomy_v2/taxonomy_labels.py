@@ -2,7 +2,7 @@
 This script is used to test the relevancy labelling prompt and function.
 
 Example usage:
-    python discovery_child_development/pipeline/labelling/relevance/relevance_labels.py --dataset openalex --num_samples 5 --model gpt-3.5-turbo-1106 --output_filename testing
+    python discovery_child_development/pipeline/labelling/taxonomy_v2/taxonomy_labels.py --dataset openalex --num_samples 5 --model gpt-3.5-turbo-1106 --output_filename testing
 """
 import argparse
 import json
@@ -21,7 +21,6 @@ from discovery_child_development.utils.openai_utils import (
 )
 from discovery_child_development.utils.labelling_utils import (
     create_category_description_string,
-    create_examples_string,
 )
 from discovery_child_development.utils.utils import (
     load_jsonl,
@@ -29,6 +28,7 @@ from discovery_child_development.utils.utils import (
     batch,
     get_yaml_config,
 )
+from discovery_child_development.utils import taxonomy_labelling_utils as tlu
 
 # Get labelling config params
 CONFIG = get_yaml_config(Path(__file__).resolve().parent / "config.yaml")
@@ -77,19 +77,24 @@ async def main(
     except:
         logging.info("No labelled data found")  # noqa: T001
     # Subsample for testing
-    texts_df = texts_df.sample(num_samples).reset_index(drop=True)
-    texts_df["source"] = dataset
-    texts_df["timestamp"] = time.time()
+    if num_samples != 0:
+        texts_df = texts_df.sample(num_samples).reset_index(drop=True)
 
     # Fetch the categories
-    categories = json.loads(PATH_TO_CATEGORIES.read_text())
+    categories = tlu.load_categories(PATH_TO_CATEGORIES)
 
     logging.info(f"Number of texts to classify: {len(texts_df)}")  # noqa: T001
     logging.info(f"Number of distinct categories: {len(categories)}")  # noqa: T001
 
-    message = MessageTemplate.load(str(PATH_TO_MESSAGE_PROMPT))
-    function = FunctionTemplate.load(str(PATH_TO_FUNCTION))
-    examples = create_examples_string(load_jsonl(PATH_TO_EXAMPLES))
+    # Load instruction messages
+    messages = json.load(open(PATH_TO_MESSAGE_PROMPT, "r"))
+    messages = [MessageTemplate.load(m) for m in messages]
+    # Load function
+    function = json.loads(open(PATH_TO_FUNCTION).read())
+    function["parameters"]["properties"]["prediction"]["items"]["enum"] = list(
+        categories.keys()
+    )
+    function = FunctionTemplate.load(function)
 
     for i, batched_results in enumerate(batch(texts_df, 20)):
         logging.info(f"Batch {i} / {len(texts_df) // 20}")  # noqa: T001
@@ -97,24 +102,24 @@ async def main(
             Classifier.agenerate(
                 model=model,
                 temperature=temperature,
-                messages=[message],
+                messages=messages,
                 message_kwargs={
                     "category_description": create_category_description_string(
                         categories, randomise=True
                     ),
                     "n_categories": len(categories),
-                    "examples": examples,
                     "text": tup.text,
                     "id": tup.id,
                     "source": tup.source,
                 },
                 functions=[function.to_prompt()],
-                function_call={"name": "predict_relevance"},
+                function_call={"name": "predict_labels"},
                 max_tokens=100,
                 concurrency=5,
             )
             for tup in batched_results.itertuples()
         ]
+        time.sleep(5)
 
         for future in asyncio.as_completed(tasks):
             result = await future  # Get the result (waits if not ready)
@@ -144,7 +149,6 @@ def parse_arguments():
     parser.add_argument("--model", type=str, help="The model")
     parser.add_argument("--num_samples", type=int, help="The number of samples")
     parser.add_argument("--output_filename", type=str, help="The output filename")
-    parser.add_argument("--dataset", type=str, help="The name of the dataset")
     # Parse the arguments
     return parser.parse_args()
 
@@ -156,7 +160,7 @@ if "__main__" == __name__:
         dataset = args.dataset
     except ValueError as e:
         raise ValueError(
-            "Dataset must be one of 'patents', 'openalex' or 'openalex_broad'"
+            "Dataset must be one of 'taxonomy_labelling_data', 'patents', 'openalex'"
         )
     num_samples = args.num_samples if args.num_samples else CONFIG["num_samples"]
     model = args.model if args.model else CONFIG["model"]
@@ -164,14 +168,10 @@ if "__main__" == __name__:
     output_filename = (
         args.output_filename if args.output_filename else CONFIG["output_filename"]
     )
-    dataset = args.dataset if args.dataset else CONFIG["dataset"]
 
-    # Create outputs directory if it doesn't exist
+    # Deal with local and s3 paths
     create_directory_if_not_exists(OUTPUT_FILEPATH)
-
-    # Define paths
-    output_filepath = OUTPUT_FILEPATH / output_filename
-    s3_path = CONFIG["s3_directory"] + output_filename + ".jsonl"
+    s3_path = CONFIG["s3_directory"] + output_filename + "_raw.jsonl"
 
     # Label the data
     start = time.time()
@@ -185,7 +185,7 @@ if "__main__" == __name__:
                 num_samples,
                 model,
                 temperature,
-                output_filename,
+                output_filename + "_raw",
                 s3_path,
             )
         )
@@ -196,3 +196,16 @@ if "__main__" == __name__:
     logging.info(
         f"Concurrent execution completed in: {e - s:0.2f} seconds"
     )  # noqa: T001
+
+    # Extra step: Clean up the labelled dataset
+    cleaned_data = tlu.clean_labelled_data(
+        labelled_data=pd.DataFrame(
+            load_jsonl(str(OUTPUT_FILEPATH / output_filename) + "_raw.jsonl")
+        ),
+        categories=tlu.load_categories(PATH_TO_CATEGORIES),
+    )
+    S3.upload_obj(
+        obj=cleaned_data,
+        bucket=S3_BUCKET,
+        path_to=CONFIG["s3_directory"] + output_filename + ".parquet",
+    )

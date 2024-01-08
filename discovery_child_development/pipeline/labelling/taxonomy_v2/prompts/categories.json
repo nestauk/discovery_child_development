@@ -17,20 +17,21 @@
     "Child protection": "child abuse, child safety, protection policies"
   },
   "Technology or innovation": {
-    "Non-tech assessments": "non-tech assessments, questionnaires, surveys, diagnostic tools",
-    "Data": "data analysis, data collection, research data",
+    "Non-tech assessments": "non-tech assessment, questionnaire, survey, diagnostic tool",
+    "Data": "data collection, research data, database",
     "Internet": "internet usage, online safety, digital literacy, online learning",
-    "Mobile": "mobile devices, mobile learning, apps for children or parents, tablets",
+    "Mobile": "mobile device, mobile learning, app for children or parents, tablet",
+    "Wearables": "wearable technology, wearable device, smart watch",
     "Statistical methods": "statistics, statistical analysis",
     "Games": "educational games, learning through play, game-based learning",
-    "Data Science and AI": "artificial intelligence, machine learning, data science, automated speech recognition, computer vision",
+    "Data Science and AI": "data science, data analysis, artificial intelligence, machine learning, automated speech recognition, computer vision",
     "AR VR": "augmented reality, virtual reality, immersive technology",
-    "RCTs": "randomised controlled trials",
-    "Genetics": "genetics, heredity, genetic factors",
+    "RCTs": "randomised controlled trial",
+    "Genetics": "genetics, heredity, genetic factor",
     "Robotics": "robotics",
     "Neuroscience": "neuroscience, brain development, cognitive neuroscience, brain imaging",
     "Media": "media influence, media literacy, screen time",
-    "Operations": "program operations, logistics, program management, administrative tasks, paperwork",
+    "Operations": "program operations, logistics, program management, administrative tasks, paperwork, childcare setting software platform",
     "Social media": "social media, social networking, online communities",
     "Assessment (general)": "assessments, evaluation, measurement, monitoring, evaluation",
     "Technology (general)": "technology, digital, ICT, edtech, tech"
@@ -39,9 +40,8 @@
     "Income": "family income, socioeconomic status, economic factors, cash transfers",
     "Inequalities": "educational inequalities, socio-economic disparities",
     "Labour market": "parental employment, work-life balance, parental leave, gender pay gap",
-    "Social services": "social services, support programs",
-    "Social environment": "social environment, community influence",
-    "Policy": "early childhood education policy, child development policy, government policy"
+    "Policy": "early childhood education policy, child development policy, government policy",
+    "Inclusion": "inclusion, equity, equality, diversity, racism, structural racism, colonialism"
   },
   "Health": {
     "Health": "child health, well-being, healthcare",
@@ -52,6 +52,7 @@
   "Enabling environment": {
     "Culture and communities": "cultural diversity, community involvement, multiculturalism",
     "Family environment": "family dynamics, parenting, family support, home learning environment",
-    "Education": "early childhood education, early learning, early education, preschool, pre-primary, kindergarten"
+    "Education": "early childhood education, early learning, early education, preschool, pre-primary, kindergarten",
+    "Social services": "social services, support programs"
   }
 }

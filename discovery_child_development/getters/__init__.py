@@ -22,4 +22,4 @@ def get_dataset(dataset: str) -> DataFrame:
     elif dataset == "openalex_broad":
         return get_abstracts_broad()
     elif dataset == "taxonomy_labelling_sample":
-        return get_labelling_sample()
+        return DataFrame(get_labelling_sample())

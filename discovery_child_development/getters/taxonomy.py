@@ -108,7 +108,8 @@ def get_labelling_sample(
     * 100 * 10 OpenAlex abstracts that do not have any concepts metadata
 
     """
-    return jsonl.download_file_from_s3(s3_bucket, s3_file, local_file)
+    jsonl.download_file_from_s3(s3_bucket, s3_file, local_file)
+    return jsonl.load_jsonl(local_file)
 
 
 def get_gpt_labelled_sample(s3_bucket=S3_BUCKET, s3_file=GPT_LABELLED_DATA):
