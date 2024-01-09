@@ -37,7 +37,10 @@ LOCAL_PATH_LABELLED_DATA = PROJECT_DIR / "inputs/data/labelling/taxonomy/output"
 create_directory_if_not_exists(LOCAL_PATH_LABELLED_DATA)
 LOCAL_PRODIGY_DATA = LOCAL_PATH_LABELLED_DATA / PRODIGY_LABELLED_DATA_FILENAME_LOCAL
 
-TAXONOMY_CLASSIFIER_S3_PATH = "data/taxonomy_classifier/"
+TAXONOMY_CLASSIFIER_S3_PATH = "data/taxonomy_classifier/input/"
+
+VECTORS_PATH = "data/taxonomy_classifier/sentence_embeddings/"
+VECTORS_FILE = "vectors_384_SPLIT.parquet"
 
 
 def clean_string(s: str):
@@ -98,36 +101,6 @@ def get_taxonomy(
     )
 
     return taxonomy_data
-
-
-def get_training_data(
-    split: str = "train",
-    s3_bucket: str = S3_BUCKET,
-    s3_path: str = TAXONOMY_CLASSIFIER_S3_PATH,
-) -> pd.DataFrame:
-    """
-    Downloads and returns labelled data for the taxonomy classifier, either the training/test/validation set.
-    This data was created with `discovery_child_development/pipeline/models/taxonomy_classifier/01_train_test_split.py`.
-
-    Parameters:
-    - split (str): The dataset split type. Allowed values are 'train', 'test', 'val'.
-    - s3_bucket (str): The name of the S3 bucket.
-    - s3_path (str): The path within the S3 bucket where the data is located.
-
-    Returns:
-    - DataFrame: The downloaded data as a pandas DataFrame.
-    """
-
-    if split not in ["train", "test", "val"]:
-        raise ValueError(
-            f"Invalid value for 'split': {split}. Allowed values are 'train', 'test', 'val'."
-        )
-
-    filename = f"taxonomy_labelled_data_{split}.parquet"
-
-    s3_file = s3_path + filename
-
-    return nesta_s3.download_obj(s3_bucket, s3_file, download_as="dataframe")
 
 
 def get_labelling_sample(
@@ -220,3 +193,73 @@ def get_prodigy_labelled_data(
 
     """
     return pd.DataFrame(jsonl.download_file_from_s3(s3_bucket, s3_file, local_file))
+
+
+def get_training_data(
+    split: str = "train",
+    s3_bucket: str = S3_BUCKET,
+    s3_path: str = TAXONOMY_CLASSIFIER_S3_PATH,
+) -> pd.DataFrame:
+    """
+    Downloads and returns labelled data for the taxonomy classifier, either the training/test/validation set.
+    This data was created with `discovery_child_development/pipeline/models/taxonomy_classifier/01_train_test_split.py`.
+
+    Parameters:
+    - split (str): The dataset split type. Allowed values are 'train', 'test', 'val'.
+    - s3_bucket (str): The name of the S3 bucket.
+    - s3_path (str): The path within the S3 bucket where the data is located.
+
+    Returns:
+    - DataFrame: The downloaded data as a pandas DataFrame.
+
+    The resulting DataFrame contains the following columns:
+    - 'id': A unique identifier for the text.
+    - 'text': The text content that was labelled.
+    - 'source': The source of the text content (OpenAlex or patents)
+    - 'cost': The cost associated with the labelling.
+    - 'labels_raw': The raw labels assigned by GPT.
+    - 'labels': The cleaned labels. For more info on the cleaning that was done, see the function `map_keywords_to_categories()` in `taxonomy_labelling_utils`.
+    """
+
+    if split not in ["train", "test", "val"]:
+        raise ValueError(
+            f"Invalid value for 'split': {split}. Allowed values are 'train', 'test', 'val'."
+        )
+
+    filename = f"taxonomy_labelled_data_{split}.parquet"
+
+    s3_file = s3_path + filename
+
+    return nesta_s3.download_obj(s3_bucket, s3_file, download_as="dataframe"), s3_file
+
+
+def get_sentence_embeddings(
+    split: str = "train",
+    s3_bucket: str = S3_BUCKET,
+    vectors_path: str = VECTORS_PATH,
+    vectors_file: str = VECTORS_FILE,
+) -> pd.DataFrame:
+    """
+    Download sentence embeddings from an S3 bucket and return them as a pandas DataFrame.
+
+    Parameters:
+    split (str): The data split to use:'train', 'test', or 'val'.
+    s3_bucket (str): The name of the S3 bucket where the sentence embeddings are stored.
+    vectors_path (str): The path within the S3 bucket where the vectors files are located.
+    vectors_file (str): The filename template for the vectors file. It must contain 'SPLIT' which will be replaced by the 'split' parameter.
+
+    Returns:
+    pd.DataFrame: A pandas DataFrame containing the sentence embeddings.
+
+    The dataframe has the columns:
+    - 'id': A unique identifier for the text.
+    - 'miniLM_384_vector': Each element is a Series of 384 floats, representing the sentence embedding.
+    """
+
+    filepath = f"{vectors_path}{vectors_file.replace('SPLIT', split)}"
+
+    return nesta_s3.download_obj(
+        s3_bucket,
+        path_from=filepath,
+        download_as="dataframe",
+    )
