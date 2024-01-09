@@ -6,7 +6,7 @@
   },
   {
     "role": "user",
-    "content": "### Instructions:\nYour task is to determine whether the text falls in one, both or none of the following to categories (1) measuring, detecting, predicting or anticipating the level of child development, or (2) managing or directly impacting child development.\n\n### Predefined categories\n\nTexts can be categorised in the following {n_categories} categories.\n{category_description}\n\n###Examples\n{examples}\n\n### Text input:\n{text}",
+    "content": "### Instructions:\nYour task is to determine which of the predefined categories best fit the text input. The two main categories are: (1) Detection, where text is about measuring, detecting, predicting or anticipating the level of child development, or (2) Management, where text is about managing or directly impacting child development. Texts sometimes can also be about both Detection and Management, that it is less likely than being only about one of these categories. Some rare texts might be outside this scope.\n\n### Predefined categories\n\nTexts can be categorised in the following {n_categories} categories.\n{category_description}\n\n###Examples\n{examples}\n\n### Text input:\n{text}",
     "name": null
   }
 ]

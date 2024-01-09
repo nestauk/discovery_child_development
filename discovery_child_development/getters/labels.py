@@ -97,6 +97,6 @@ def get_detection_management_labels() -> pd.DataFrame:
     data = jsonl_utils.download_file_from_s3(
         bucket_name=S3_BUCKET,
         s3_file_name=f'{config["s3_directory"]}{config["output_filename"]}.jsonl',
-        local_file=local_path,
+        local_file=f"{str(PROJECT_DIR)}/{local_path}",
     )
     return pd.DataFrame(data)

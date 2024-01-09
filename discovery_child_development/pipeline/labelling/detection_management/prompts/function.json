@@ -1,15 +1,12 @@
 {
   "name": "predict_detection_management",
-  "description": "Predict whether the text is about detecting/anticipating child development or managing it, or both",
+  "description": "Predict whether the text is about detection/anticipation of child development or the management of it, or both",
   "parameters": {
     "type": "object",
     "properties": {
       "prediction": {
-        "type": "array",
-        "items": {
-          "type": "string",
-          "enum": ["Detecting", "Managing"]
-        },
+        "type": "string",
+        "enum": ["Detection", "Management", "Both", "None"],
         "description": "The predicted categories. Infer this from the provided category descriptions."
       }
     },
