@@ -2,6 +2,7 @@ from .openalex import get_abstracts
 from .openalex_broad_concepts import get_abstracts_broad
 from .patents import get_and_process_patents_from_s3
 from .taxonomy import get_labelling_sample
+from .labels import get_relevance_labels
 from pandas import DataFrame
 
 
@@ -23,3 +24,5 @@ def get_dataset(dataset: str) -> DataFrame:
         return get_abstracts_broad()
     elif dataset == "taxonomy_labelling_sample":
         return DataFrame(get_labelling_sample())
+    elif dataset == "test_relevant_data":
+        return get_relevance_labels().query("prediction == 'Relevant'")
