@@ -70,10 +70,10 @@ def get_and_process_patents_from_s3(
     # Process and filter the data
     return (
         data_raw_df
+        # Remove patents without text
+        .dropna(subset=["abstract"])
         # Combine title and abstract
         .assign(text=lambda df: df["title"] + ". " + df["abstract"])
-        # Remove patents without text
-        .dropna(subset=["text"])
         # Check which patents have keyword hits in the same sentence
         .assign(has_hits=lambda df: check_keyword_hits(df.text, keywords))
         .query("has_hits == True")

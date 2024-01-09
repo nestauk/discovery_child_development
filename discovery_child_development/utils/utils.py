@@ -137,13 +137,6 @@ def copy_s3_object(bucket_name: str, source_key: str, destination_key: str) -> N
         print(f"Error occurred: {e}")
 
 
-def load_jsonl(path: str):
-    """Load a jsonl file into a list of dicts."""
-    with open(path, "r") as f:
-        results = [json.loads(line) for line in f.readlines()]  # noqa: F841
-    return results
-
-
 def batch(lst: list, n: int) -> Generator:
     """Yield successive n-sized chunks from lst."""
     for i in range(0, len(lst), n):
@@ -154,13 +147,6 @@ def create_directory_if_not_exists(dir_path: str) -> None:
     """Create a directory if it doesn't exist."""
     if not os.path.exists(dir_path):
         os.makedirs(dir_path)
-
-
-def get_yaml_config(file_path: Path) -> Optional[dict]:
-    """Fetch yaml config and return as dict if it exists."""
-    if file_path.exists():
-        with open(file_path, "rt") as f:
-            return yaml.load(f.read(), Loader=yaml.FullLoader)
 
 
 def current_time() -> str:

@@ -12,7 +12,7 @@ import time
 from pathlib import Path
 
 from nesta_ds_utils.loading_saving import S3
-from discovery_child_development import logging, PROJECT_DIR, S3_BUCKET
+from discovery_child_development import logging, PROJECT_DIR, S3_BUCKET, get_yaml_config
 from discovery_child_development.getters import get_dataset
 from discovery_child_development.utils.openai_utils import (
     MessageTemplate,
@@ -24,11 +24,11 @@ from discovery_child_development.utils.labelling_utils import (
     create_examples_string,
 )
 from discovery_child_development.utils.utils import (
-    load_jsonl,
     create_directory_if_not_exists,
     batch,
-    get_yaml_config,
 )
+
+from discovery_child_development.utils.jsonl_utils import load_jsonl
 
 # Get labelling config params
 CONFIG = get_yaml_config(Path(__file__).resolve().parent / "config.yaml")
