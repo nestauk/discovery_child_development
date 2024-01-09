@@ -3,7 +3,7 @@ import pandas as pd
 from pathlib import Path
 from discovery_child_development import S3_BUCKET, PROJECT_DIR
 from discovery_child_development.utils import jsonl_utils
-from discovery_child_development.utils.utils import get_yaml_config
+from discovery_child_development import get_yaml_config
 
 
 def get_relevance_labels() -> pd.DataFrame:
