@@ -1,0 +1,10 @@
+model: gpt-4-1106-preview
+temperature: 0.0
+num_samples: 250
+output_filename: relevance_labels
+local_output_directory: outputs/labels/relevance
+s3_directory: data/labels/child_development/
+allowed_datasets:
+  - openalex # Pre-selected OpenAlex research papers
+  - openalex_broad # Random sample of OpenAlex research papers
+  - patents # Pre-selected Google Patents sample

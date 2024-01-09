@@ -3,7 +3,12 @@ from botocore.exceptions import NoCredentialsError, PartialCredentialsError
 import datetime
 import os
 import re
-from typing import Optional, List, Union
+from typing import Optional, List
+import json
+import os
+from typing import Generator
+import yaml
+from pathlib import Path
 
 
 def list_subfolders_in_s3(bucket_name: str, parent_folder: str) -> List[str]:
@@ -132,7 +137,24 @@ def copy_s3_object(bucket_name: str, source_key: str, destination_key: str) -> N
         print(f"Error occurred: {e}")
 
 
+def batch(lst: list, n: int) -> Generator:
+    """Yield successive n-sized chunks from lst."""
+    for i in range(0, len(lst), n):
+        yield lst[i : i + n]
+
+
 def create_directory_if_not_exists(dir_path: str) -> None:
     """Create a directory if it doesn't exist."""
     if not os.path.exists(dir_path):
         os.makedirs(dir_path)
+
+
+def current_time() -> str:
+    """Return the current time as a string. Used as part of the session UUID."""
+    # Get current date and time
+    current_datetime = datetime.datetime.now()
+
+    # Convert to a long number format
+    datetime_string = current_datetime.strftime("%Y%m%d%H%M%S")
+
+    return datetime_string

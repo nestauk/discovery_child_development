@@ -19,6 +19,8 @@ import dotenv
 import aiofiles
 from openai import OpenAI, AsyncOpenAI
 
+from discovery_child_development.utils.utils import current_time
+
 dotenv.load_dotenv()
 client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
 aclient = AsyncOpenAI(api_key=os.environ["OPENAI_API_KEY"])
@@ -333,6 +335,10 @@ class Classifier:
             parsed_response = await cls._parse_json(response)
             if parsed_response:
                 parsed_response["id"] = message_kwargs["id"]
+                parsed_response["source"] = message_kwargs["source"]
+                parsed_response["text"] = message_kwargs["text"]
+                parsed_response["model"] = model
+                parsed_response["timestamp"] = current_time()
                 return parsed_response
 
             return message_kwargs["id"]
@@ -367,11 +373,13 @@ class Classifier:
         return result
 
     @staticmethod
-    async def write_line_to_file(item: dict, filename: str) -> None:
+    async def write_line_to_file(
+        item: dict, path: str, filename: str = "parsed_json"
+    ) -> None:
         """Write the item to a file."""
-        file = f"{filename}/invalid_json.txt"
+        file = f"{path}/{filename}_invalid.txt"
         if isinstance(item, dict):
-            file = f"{filename}/parsed_json.jsonl"
+            file = f"{path}/{filename}.jsonl"
 
         async with aiofiles.open(file, "a") as f:
             await f.write(f"{json.dumps(item)}\n")
