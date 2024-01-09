@@ -3,7 +3,7 @@
     "Prenatal": "prenatal development, maternal health, fetal development, pregnancy, birth",
     "Infancy": "age 0-2, infancy, newborns, early infancy",
     "Sleep": "sleep patterns, sleep quality, sleep duration, bedtime routines",
-    "SEND": "special needs, disabilities, learning difficulties, autism, dyslexia, attention-deficit hyperactivity disorder",
+    "Special needs": "special needs, disabilities, learning difficulties, autism, spectrum disorder, dyslexia, attention-deficit hyperactivity disorder",
     "Cognitive development": "cognition, memory, problem-solving, executive function",
     "Communication and language": "language acquisition, language development, communication skills, speech",
     "Physical": "motor skills, physical development, spatial awareness",
@@ -13,10 +13,10 @@
     "Personal social emotional": "social development, emotional development, self-awareness, relationships"
   },
   "Safety and security": {
-    "Child protection": "child abuse, child safety, protection policies"
+    "Child protection": "safeguarding, child abuse, child protection policies"
   },
   "Technology or innovation": {
-    "Non-tech assessments": "non-tech assessment, questionnaire, survey, diagnostic tool",
+    "Non-tech assessments": "non-technical assessment, questionnaire, survey, diagnostic tool",
     "Data": "data collection, research data, database",
     "Data science and AI": "data science, data analysis, artificial intelligence, machine learning, automated speech recognition, computer vision",
     "Statistical methods": "statistics, statistical analysis",
@@ -48,10 +48,10 @@
     "Oral health": "oral health, dental care, dental hygiene"
   },
   "Enabling environment": {
-    "Family environment": "family dynamics, parenting, family support, home learning environment",
-    "Education setting": "preschool, pre-primary, kindergarten",
+    "Family and home": "home learning environment, family dynamics, parenting, parents, caregivers, family support",
+    "Preschool": "preschool, pre-primary, kindergarten",
     "Social services": "social services, support programs",
     "Community": "community involvement, community support, peer support, peer group",
-    "Inclusion": "cultural diversity, multiculturalism, inclusion, equity, equality, diversity, racism, structural racism, colonialism"
+    "Inclusion": "cultural diversity, multiculturalism, inclusion, equity, equality, diversity, ethnicity, race, racism, colonialism"
   }
 }

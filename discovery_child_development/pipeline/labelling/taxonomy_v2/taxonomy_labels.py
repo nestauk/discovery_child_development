@@ -77,8 +77,9 @@ async def main(
     except:
         logging.info("No labelled data found")  # noqa: T001
     # Subsample for testing
-    if num_samples != 0:
-        texts_df = texts_df.sample(num_samples).reset_index(drop=True)
+    if (num_samples == 0) or (num_samples > len(texts_df)):
+        num_samples = len(texts_df)
+    texts_df = texts_df.sample(num_samples).reset_index(drop=True)
 
     # Fetch the categories
     categories = tlu.load_categories(PATH_TO_CATEGORIES)
@@ -115,11 +116,11 @@ async def main(
                 functions=[function.to_prompt()],
                 function_call={"name": "predict_labels"},
                 max_tokens=500,
-                concurrency=5,
+                concurrency=3,
             )
             for tup in batched_results.itertuples()
         ]
-        time.sleep(5)
+        time.sleep(10)
 
         for future in asyncio.as_completed(tasks):
             result = await future  # Get the result (waits if not ready)

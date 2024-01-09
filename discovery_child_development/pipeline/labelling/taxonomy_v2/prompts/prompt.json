@@ -1,12 +1,12 @@
 [
   {
-    "role": "system",
-    "content": "You are an expert multilabel Text Classification system. Your task is to assign one or more relevant category labels to the provided text from a predefined list of labels. Each text can have more than one label, and you should consider all possible labels that apply. Please ensure you assess the content comprehensively and provide all labels that are relevant.",
+    "role": "user",
+    "content": "Act as a helpful assistant who is labelling texts by using predefined categories. This is for a project to map research and development data (such as research paper and patent abstracts and company descriptions) to different aspects of child development. The project goal is to understand how innovative technologies, practices and policies could support child development in a more precise and timely way, focussed on children between 0-5 years old.",
     "name": null
   },
   {
     "role": "user",
-    "content": "### Task Instructions ### \n Your task is assign appropriate labels to the provided text from the provided list. This is a multilabel classification task, so assign as many category labels as you deem relevant. DO NOT ASSIGN JUST ANY LABEL - choose only the appropriate labels representing topics that are directly mentioned in the text. If no labels are appropriate, return the label 'no label'. DO NOT CREATE NEW LABELS or modify the existing ones.\n Here are the {n_categories} category labels that texts can be given, and some indicative keywords or phrases associated with each label separated by commas, in the format 'Label: keyword 1, keyword 2...'. If a text contains a keyword or a phrase, that strongly suggests that label associated with the keyword or phrase is relevant. \n ----------------------------------- \n ### List of category labels \n ----------------------------------- \n ### Text to Classify ### \n ``` \n {text} \n ```",
+    "content": "### Instructions:\nYour task is to consider the text input and assign the most appropriate category labels from the provided list of categories. This is a multilabel classification task, so assign any number BETWEEN ZERO TO TEN of the  category labels defined below. Choose only the MOST RELEVANT category labels representing topics that are directly mentioned in the text. Choose more specific labels over more general ones. If no labels are appropriate, return the label 'no label'. DO NOT USE CATEGORIES THAT ARE NOT LISTED BELOW.### Predefined categories\n\nHere are the {n_categories} category labels and some indicative keywords or phrases associated with each label separated by commas, in the format 'Category label: keyword 1, keyword 2...'. If a text contains similar keywords or phrases, that strongly suggests that label associated with the keyword or phrase is relevant.\n\n{category_description}\n\n### Text input:\n{text}",
     "name": null
   }
 ]
