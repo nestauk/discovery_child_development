@@ -150,6 +150,10 @@ def map_keywords_to_categories(
     """
     Map a string to its corresponding category label.
 
+    GPT had a tendency to assign keywords rather than actual labels, so this function
+    and `make_keyword_dict()` were written to identify any keywords in the GPT output
+    and map them to the actual category names.
+
     This function checks if the input string is a category name or is a keyword that needs to be converted to the appropriate
     category name:
     - If it is already category name, it returns the test string itself as the label.
