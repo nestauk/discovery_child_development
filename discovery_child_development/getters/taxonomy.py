@@ -4,7 +4,13 @@ from typing import Any, Dict, List, Optional
 
 from nesta_ds_utils.loading_saving import S3 as nesta_s3
 
-from discovery_child_development import PROJECT_DIR, logging, config, S3_BUCKET
+from discovery_child_development import (
+    PROJECT_DIR,
+    logging,
+    config,
+    taxonomy_config,
+    S3_BUCKET,
+)
 from nesta_ds_utils.loading_saving import S3 as nesta_s3
 
 from discovery_child_development import PROJECT_DIR, logging, config, S3_BUCKET
@@ -37,7 +43,8 @@ LOCAL_PATH_LABELLED_DATA = PROJECT_DIR / "inputs/data/labelling/taxonomy/output"
 create_directory_if_not_exists(LOCAL_PATH_LABELLED_DATA)
 LOCAL_PRODIGY_DATA = LOCAL_PATH_LABELLED_DATA / PRODIGY_LABELLED_DATA_FILENAME_LOCAL
 
-TAXONOMY_CLASSIFIER_S3_PATH = "data/taxonomy_classifier/input/"
+TAXONOMY_CLASSIFIER_S3_PATH = taxonomy_config["s3_data_path"]
+TAXONOMY_CLASSIFIER_INPUT_FILENAME = taxonomy_config["s3_filename"]
 
 VECTORS_PATH = "data/taxonomy_classifier/sentence_embeddings/"
 VECTORS_FILE = "vectors_384_SPLIT.parquet"
@@ -199,6 +206,7 @@ def get_training_data(
     split: str = "train",
     s3_bucket: str = S3_BUCKET,
     s3_path: str = TAXONOMY_CLASSIFIER_S3_PATH,
+    s3_filename: str = TAXONOMY_CLASSIFIER_INPUT_FILENAME,
 ) -> pd.DataFrame:
     """
     Downloads and returns labelled data for the taxonomy classifier, either the training/test/validation set.
@@ -211,6 +219,7 @@ def get_training_data(
 
     Returns:
     - DataFrame: The downloaded data as a pandas DataFrame.
+    - The file path in the S3 bucket where the data was downloaded from (this is useful for logging on wandb)
 
     The resulting DataFrame contains the following columns:
     - 'id': A unique identifier for the text.
@@ -226,9 +235,7 @@ def get_training_data(
             f"Invalid value for 'split': {split}. Allowed values are 'train', 'test', 'val'."
         )
 
-    filename = f"taxonomy_labelled_data_{split}.parquet"
-
-    s3_file = s3_path + filename
+    s3_file = s3_path + s3_filename.replace("SPLIT", split)
 
     return nesta_s3.download_obj(s3_bucket, s3_file, download_as="dataframe"), s3_file
 

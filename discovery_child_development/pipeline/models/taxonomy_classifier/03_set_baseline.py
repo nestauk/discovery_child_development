@@ -25,12 +25,20 @@ import wandb
 from nesta_ds_utils.loading_saving import S3 as nesta_s3
 
 ## project code
-from discovery_child_development import PROJECT_DIR, logging, S3_BUCKET, config
+from discovery_child_development import (
+    PROJECT_DIR,
+    logging,
+    S3_BUCKET,
+    config,
+    taxonomy_config,
+)
 from discovery_child_development.getters import taxonomy
 from discovery_child_development.utils import classification_utils
 from discovery_child_development.utils import wandb as wb
+from discovery_child_development.utils import utils
 
-MODEL_PATH = PROJECT_DIR / "outputs/models/"
+MODEL_PATH = PROJECT_DIR / taxonomy_config["models_path"]
+utils.create_directory_if_not_exists(MODEL_PATH)
 SEED = config["seed"]
 # Set the seed
 np.random.seed(SEED)

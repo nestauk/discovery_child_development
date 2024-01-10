@@ -1,22 +1,38 @@
-# Train, test, validation
+## File paths ##
+# Step 1: locations for saving train, validation and test splits of the labelled data
+s3_data_path: data/taxonomy_classifier/input/
+s3_filename: taxonomy_labelled_data_SPLIT.parquet
+# Step 2: locations for saving the sentence embeddings
+s3_vectors_path: data/taxonomy_classifier/sentence_embeddings/
+s3_vectors_name: vectors_384_SPLIT.parquet
+# Step 3: locations for saving the HF datasets
+s3_hf_ds_path: data/taxonomy_classifier/hf_datasets/
+s3_hf_ds_file: hf_ds_SPLIT.pkl
+# Step 4: locations for saving trained models
+models_path: outputs/models/taxonomy_classifier/
+
+## Sentence embeddings model ##
+sentence_embeddings_model: all-MiniLM-L6-v2
+
+## Train, test, validation ##
 train_prop: 0.7
 val_prop: 0.15
 test_prop: 0.15
 
-# Training arguments
+## Training arguments ##
 learning_rate: 0.00002
 per_device_train_batch_size: 16
 per_device_eval_batch_size: 16
 gradient_accumulation_steps: 2
 num_train_epochs: 30
 weight_decay: 0
-evaluation_strategy: "epoch"
-save_strategy: "epoch"
-metric_for_best_model: "f1"
+evaluation_strategy: epoch
+save_strategy: epoch
+metric_for_best_model: f1
 load_best_model_at_end: True
 early_stopping_patience: 2
-report_to: "none"
+report_to: none
 seed: 42
 
-# Type of problem for the classifier
-problem_type: "multi_label_classification"
+## Type of problem for the HF classifier ##
+problem_type: multi_label_classification

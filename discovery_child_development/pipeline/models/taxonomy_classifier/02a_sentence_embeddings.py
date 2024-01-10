@@ -16,15 +16,14 @@ import pandas as pd
 from sentence_transformers import SentenceTransformer
 from time import time
 
-from discovery_child_development import logging, S3_BUCKET
+from discovery_child_development import logging, S3_BUCKET, config, taxonomy_config
 from discovery_child_development.getters import taxonomy
 
-model = SentenceTransformer("all-MiniLM-L6-v2")
+model = SentenceTransformer(taxonomy_config["sentence_embeddings_model"])
 
-INPUT_DATA_PATH = "data/taxonomy_classifier/input/"
-VECTORS_OUT_PATH = "data/taxonomy_classifier/sentence_embeddings/"
-VECTORS_FILENAME = "vectors_384_"
-VECTORS_EXTENSION = "parquet"
+INPUT_DATA_PATH = taxonomy_config["s3_data_path"]
+VECTORS_OUT_PATH = taxonomy_config["s3_vectors_path"]
+VECTORS_FILENAME = taxonomy_config["s3_vectors_name"]
 
 
 def embed_texts(
@@ -32,7 +31,6 @@ def embed_texts(
     s3_bucket=S3_BUCKET,
     vectors_out_path=VECTORS_OUT_PATH,
     vectors_filename=VECTORS_FILENAME,
-    vectors_extension=VECTORS_EXTENSION,
 ):
     labelled_text_df = taxonomy.get_training_data(split=split)
 
@@ -56,10 +54,10 @@ def embed_texts(
     nesta_s3.upload_obj(
         vector_df,
         s3_bucket,
-        f"{vectors_out_path}{vectors_filename}{split}.{vectors_extension}",
+        f"{vectors_out_path}{vectors_filename.replace('SPLIT', split)}",
     )
     logging.info(
-        f"Successfully uploaded '{vectors_filename}{split}.{vectors_extension}' to S3"
+        f"Successfully uploaded '{vectors_filename.replace('SPLIT', split)}' to S3"
     )
 
 

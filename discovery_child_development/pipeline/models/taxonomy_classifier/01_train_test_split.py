@@ -20,9 +20,8 @@ TRAIN_PROP = taxonomy_config["train_prop"]
 TEST_PROP = taxonomy_config["test_prop"]
 VAL_PROP = taxonomy_config["val_prop"]
 
-S3_PATH = "data/taxonomy_classifier/input/"
-OUTPUT_FILENAME = "taxonomy_labelled_data_"
-OUTPUT_EXTENSION = "parquet"
+S3_PATH = taxonomy_config["s3_data_path"]
+OUTPUT_FILENAME = taxonomy_config["s3_filename"]
 
 
 def stratified_split(df, col="labels", val=VAL_PROP, test=TEST_PROP, train=TRAIN_PROP):
@@ -99,10 +98,10 @@ if __name__ == "__main__":
     # write to s3
     logging.info("Uploading to S3...")
     datasets = {"train": train_df, "val": validation_df, "test": test_df}
-    for key, value in datasets.items():
+    for split, value in datasets.items():
         nesta_s3.upload_obj(
             value,
             S3_BUCKET,
-            f"{S3_PATH}{OUTPUT_FILENAME}{key}.{OUTPUT_EXTENSION}",
+            f"{S3_PATH}{OUTPUT_FILENAME.replace('SPLIT', split)}",
         )
     logging.info("Complete!")

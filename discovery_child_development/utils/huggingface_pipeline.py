@@ -75,7 +75,7 @@ def tokenize_dataset(
 def df_to_hf_ds(
     df: pd.DataFrame,
     config: dict,
-    non_label_cols: list = ["text", "id"],
+    non_label_cols: list = ["text", "id", "source"],
     text_column: str = "text",
 ) -> Dataset:
     """Converts a dataframe into a huggingface dataset.
@@ -85,7 +85,7 @@ def df_to_hf_ds(
         df: Dataframe to convert into a dataset
         config: Dictionary containing model config
         non_label_cols: Columns that are not labels. This not needed for binary classification.
-            Defaults to ["text", "id"].
+            Defaults to ["text", "id", "source"].
         text_column: Column in dataframe that contain text to tokenize.
             Defaults to "text".
 
@@ -95,7 +95,21 @@ def df_to_hf_ds(
     dataset = Dataset.from_pandas(df, preserve_index=False)
     if config["problem_type"] == "multi_label_classification":
         dataset = create_labels(dataset, cols_to_skip=non_label_cols)
-    return tokenize_dataset(dataset, text_column=text_column, config=config)
+
+    tokenized_data = tokenize_dataset(dataset, text_column=text_column, config=config)
+
+    # Prepare the final dataset with only the required columns
+    def select_required_columns(example, index):
+        # Select only the required keys
+        required_keys = non_label_cols + ["labels", "input_ids", "attention_mask"]
+        return {
+            key: example[key] if key in example else tokenized_data[index][key]
+            for key in required_keys
+        }
+
+    final_dataset = dataset.map(select_required_columns, with_indices=True)
+
+    return final_dataset
 
 
 def load_model(
