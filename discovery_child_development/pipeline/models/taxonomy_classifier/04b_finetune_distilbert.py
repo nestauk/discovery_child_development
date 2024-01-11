@@ -4,16 +4,19 @@ import wandb
 
 from nesta_ds_utils.loading_saving import S3
 
-from discovery_child_development import PROJECT_DIR, S3_BUCKET, taxonomy_config, logging
+from discovery_child_development import S3_BUCKET, taxonomy_config, logging
 from discovery_child_development.utils import classification_utils
 from discovery_child_development.utils import huggingface_pipeline as hf
+from discovery_child_development.utils import utils
 
 HF_PATH = taxonomy_config["s3_hf_ds_path"]
 HF_FILE = taxonomy_config["s3_hf_ds_file"]
 
 # Path to save intermediary training results and best model
-SAVE_TRAINING_RESULTS_PATH = PROJECT_DIR / "outputs/data/models/"
-SAVE_TRAINING_RESULTS_PATH.mkdir(parents=True, exist_ok=True)
+SAVE_TRAINING_RESULTS_PATH = taxonomy_config["models_path"]
+utils.create_directory_if_not_exists(SAVE_TRAINING_RESULTS_PATH)
+
+S3_PATH = taxonomy_config["s3_models_path"]
 
 
 def get_hf_ds(
@@ -49,7 +52,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--wandb",
         type=lambda x: (str(x).lower() == "true"),
-        default=False,
+        default=True,
         help="Do you want to run an experiment on weights and biases? (default: True)",
     )
 
@@ -62,7 +65,7 @@ if __name__ == "__main__":
             project="ISS supervised ML",
             job_type="Taxonomy classifier",
             save_code=True,
-            tags=["finetuning"],
+            tags=["finetuning", f"production_{args.production}"],
         )
 
     if args.production == False:
@@ -130,3 +133,12 @@ if __name__ == "__main__":
         run.log({"confusion_matrix": wb_confusion_matrix})
 
         wandb.finish()
+
+    # Save model to S3
+    logging.info("Saving model to S3...")
+    hf.saving_huggingface_model(
+        trainer,
+        f"taxonomy_classifier_distilbert_production_{args.production}",
+        save_path=SAVE_TRAINING_RESULTS_PATH,
+        s3_path=S3_PATH,
+    )

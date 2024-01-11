@@ -10,6 +10,7 @@ s3_hf_ds_path: data/taxonomy_classifier/hf_datasets/
 s3_hf_ds_file: hf_ds_SPLIT.pkl
 # Step 4: locations for saving trained models
 models_path: outputs/models/taxonomy_classifier/
+s3_models_path: models/taxonomy_classifier/
 
 ## Sentence embeddings model ##
 sentence_embeddings_model: all-MiniLM-L6-v2

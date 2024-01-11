@@ -285,6 +285,8 @@ def saving_huggingface_model(
     Returns:
         None: Saves the model locally and uploads to S3
     """
+    if isinstance(save_path, str):
+        save_path = Path(save_path)
     # Saving the model locally as a folder
     save_path.mkdir(parents=True, exist_ok=True)
     model_path = Path.joinpath(save_path, output_filename)
