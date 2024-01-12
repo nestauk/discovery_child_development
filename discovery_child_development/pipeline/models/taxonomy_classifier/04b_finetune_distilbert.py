@@ -1,3 +1,8 @@
+"""
+Usage:
+
+python discovery_child_development/pipeline/models/taxonomy_classifier/04b_finetune_distilbert.py --production=False --wandb=True
+"""
 import argparse
 import torch
 import wandb

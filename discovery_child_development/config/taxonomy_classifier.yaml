@@ -26,15 +26,16 @@ per_device_train_batch_size: 32
 per_device_eval_batch_size: 32
 gradient_accumulation_steps: 1
 # AdamW optimizer parameters. Set to defaults
-learning_rate: 5e-5
+learning_rate: 0.00005
 weight_decay: 0
 adam_beta1: 0.9
 adam_beta2: 0.999
-adam_epsilon: 1e-8
+adam_epsilon: 0.00000001
 max_grad_norm: 1.0
 # epochs and metrics stuff
 num_train_epochs: 30
 evaluation_strategy: epoch
+save_strategy: epoch
 metric_for_best_model: f1
 load_best_model_at_end: True
 early_stopping_patience: 5

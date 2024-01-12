@@ -167,7 +167,6 @@ def load_training_args(
         save_strategy=config["save_strategy"],
         metric_for_best_model=config["metric_for_best_model"],
         load_best_model_at_end=config["load_best_model_at_end"],
-        early_stopping_patience=config["early_stopping_patience"],
         seed=config["seed"],
         optim=config["optim"],
     )
