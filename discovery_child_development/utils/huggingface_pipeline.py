@@ -151,6 +151,7 @@ def load_training_args(
 
     return TrainingArguments(
         output_dir=output_dir,
+        overwrite_output_dir=config["overwrite_output_dir"],
         report_to=config["report_to"],
         learning_rate=config["learning_rate"],
         per_device_train_batch_size=config["per_device_train_batch_size"],
@@ -158,11 +159,17 @@ def load_training_args(
         gradient_accumulation_steps=config["gradient_accumulation_steps"],
         num_train_epochs=config["num_train_epochs"],
         weight_decay=config["weight_decay"],
+        adam_beta1=config["adam_beta1"],
+        adam_beta2=config["adam_beta2"],
+        adam_epsilon=config["adam_epsilon"],
+        max_grad_norm=config["max_grad_norm"],
         evaluation_strategy=config["evaluation_strategy"],
         save_strategy=config["save_strategy"],
         metric_for_best_model=config["metric_for_best_model"],
         load_best_model_at_end=config["load_best_model_at_end"],
+        early_stopping_patience=config["early_stopping_patience"],
         seed=config["seed"],
+        optim=config["optim"],
     )
 
 
