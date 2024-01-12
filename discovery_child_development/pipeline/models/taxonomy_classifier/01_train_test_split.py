@@ -24,7 +24,31 @@ S3_PATH = taxonomy_config["s3_data_path"]
 OUTPUT_FILENAME = taxonomy_config["s3_filename"]
 
 
-def stratified_split(df, col="labels", val=VAL_PROP, test=TEST_PROP, train=TRAIN_PROP):
+def stratified_split(
+    df: pd.DataFrame,
+    col: str = "labels",
+    val: float = VAL_PROP,
+    test: float = TEST_PROP,
+    train: float = TRAIN_PROP,
+) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    """
+    Splits a dataframe into stratified training, testing, and validation sets.
+
+    This function uses iterative stratification to ensure each split has a representative distribution of labels.
+
+    Args:
+    df (pd.DataFrame): The dataframe to split.
+    col (str): The column name in the dataframe used for stratification (ie the column containing labels).
+    val (float): The proportion of the dataframe to be used for the validation set.
+    test (float): The proportion of the dataframe to be used for the test set.
+    train (float): The proportion of the dataframe to be used for the training set.
+
+    Returns:
+    tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]: A tuple containing the training, testing, and validation dataframes.
+    """
+    if val + test + train != 1:
+        raise ValueError("The sum of val, test, and train proportions must equal 1.")
+
     # One-hot encode the 'labels' column
     mlb = MultiLabelBinarizer()
     labels = mlb.fit_transform(df[col])
