@@ -32,7 +32,7 @@ from discovery_child_development import (
     config,
     taxonomy_config,
 )
-from discovery_child_development.getters import taxonomy
+from discovery_child_development.getters import taxonomy_classifier
 from discovery_child_development.utils import classification_utils
 from discovery_child_development.utils import wandb as wb
 from discovery_child_development.utils import utils
@@ -307,7 +307,7 @@ def run_baseline_model(
             f"Invalid input. Expected one of {valid_inputs}, got '{model_type}'"
         )
 
-    train_df, train_df_filename = taxonomy.get_training_data("train")
+    train_df, train_df_filename = taxonomy_classifier.get_training_data("train")
     train_df = train_df[["id", "text", "labels"]]
 
     if wandb_run:
@@ -332,7 +332,7 @@ def run_baseline_model(
     # Load embeddings
     # These are not actually used for prediction, but this is the form our input data will take
     # in future when we're using an actual classifier instead of a dummy one.
-    embeddings_train = taxonomy.get_sentence_embeddings("train")
+    embeddings_train = taxonomy_classifier.get_sentence_embeddings("train")
 
     # This dataframe gers
     if model_type == "most_probable":

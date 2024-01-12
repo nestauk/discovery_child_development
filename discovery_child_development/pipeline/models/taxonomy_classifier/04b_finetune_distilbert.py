@@ -14,32 +14,11 @@ from discovery_child_development.utils import classification_utils
 from discovery_child_development.utils import huggingface_pipeline as hf
 from discovery_child_development.utils import utils
 
-HF_PATH = taxonomy_config["s3_hf_ds_path"]
-HF_FILE = taxonomy_config["s3_hf_ds_file"]
-
 # Path to save intermediary training results and best model
 SAVE_TRAINING_RESULTS_PATH = taxonomy_config["models_path"]
 utils.create_directory_if_not_exists(SAVE_TRAINING_RESULTS_PATH)
 
 S3_PATH = taxonomy_config["s3_models_path"]
-
-
-def get_hf_ds(
-    s3_bucket=S3_BUCKET,
-    s3_path=HF_PATH,
-    s3_file=HF_FILE,
-    set_type="train",
-    production=False,
-):
-    if production:
-        filepath = f"{s3_path}{s3_file.replace('SPLIT', set_type)}"
-    else:
-        filepath = f"{s3_path}test_{s3_file.replace('SPLIT', set_type)}"
-
-    hf_ds = S3.download_obj(s3_bucket, path_from=filepath)
-
-    return hf_ds
-
 
 if __name__ == "__main__":
     # Set up the command line arguments

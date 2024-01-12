@@ -1,5 +1,5 @@
 from discovery_child_development import logging, config, taxonomy_config, S3_BUCKET
-from discovery_child_development.getters import taxonomy
+from discovery_child_development.getters import taxonomy_classifier
 
 from nesta_ds_utils.loading_saving import S3 as nesta_s3
 
@@ -56,7 +56,7 @@ def stratified_split(df, col="labels", val=VAL_PROP, test=TEST_PROP, train=TRAIN
 
 
 if __name__ == "__main__":
-    labelled_data = taxonomy.get_gpt_labelled_sample()
+    labelled_data = taxonomy_classifier.get_gpt_labelled_sample()
 
     logging.info(labelled_data["source"].value_counts())
 

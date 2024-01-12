@@ -1,5 +1,7 @@
 # Taxonomy classifier training pipeline
 
+The input for this pipeline is labelled data generated with GPT. The output is a trained classifier that can be used to classify new texts into the taxonomy.
+
 Relevant filepaths and hyperparameters can be found in `discovery_child_development/config/taxonomy_classifier.yaml`.
 
 The scripts should be run in this order:

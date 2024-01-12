@@ -16,7 +16,7 @@ Optional arguments:
 
 """
 from discovery_child_development import S3_BUCKET, config, taxonomy_config, logging
-from discovery_child_development.getters import taxonomy
+from discovery_child_development.getters import taxonomy_classifier
 from discovery_child_development.utils import classification_utils
 from discovery_child_development.utils import huggingface_pipeline as hf
 
@@ -26,8 +26,6 @@ import argparse
 from datasets import DatasetDict
 import numpy as np
 import pandas as pd
-
-pd.set_option("max_colwidth", 400)
 
 HF_PATH = taxonomy_config["s3_hf_ds_path"]
 HF_FILE = taxonomy_config["s3_hf_ds_file"]
@@ -92,8 +90,8 @@ if __name__ == "__main__":
     logging.info(args)
 
     # Loading the training and validation data
-    train_df, _ = taxonomy.get_training_data("train")
-    val_df, _ = taxonomy.get_training_data("val")
+    train_df, _ = taxonomy_classifier.get_training_data("train")
+    val_df, _ = taxonomy_classifier.get_training_data("val")
 
     if not args.production:
         train_df = train_df.sample(NUM_SAMPLES)
@@ -130,28 +128,3 @@ if __name__ == "__main__":
         hf_file=HF_FILE,
         production=args.production,
     )
-
-    # Y_train = Y_train_val[train_val_df.index.isin(train_ids)]
-    # Y_val = Y_train_val[train_val_df.index.isin(val_ids)]
-
-    # # prepare the input: the texts
-    # X_train = train_val_df[train_val_df.index.isin(train_ids)][["source","text"]]
-    # X_val = train_val_df[train_val_df.index.isin(val_ids)][["source","text"]]
-
-    # train_dataset_df = pd.merge(X_train, Y_train, on="id").reset_index()
-    # val_dataset_df = pd.merge(X_val, Y_val, on="id").reset_index()
-
-    # train_ds = hf.df_to_hf_ds(train_dataset_df, config = taxonomy_config, non_label_cols=["id", "text","source"], text_column="text")
-    # val_ds = hf.df_to_hf_ds(val_dataset_df, config = taxonomy_config, non_label_cols=["id", "text","source"], text_column="text")
-    # # Save the datasets as a pickle files
-    # logging.info("Saving HF datasets...")
-    # nesta_s3.upload_obj(
-    #         train_ds,
-    #         S3_BUCKET,
-    #         f"{HF_PATH}{HF_FILE.replace('SPLIT', 'train')}",
-    #     )
-    # nesta_s3.upload_obj(
-    #         val_ds,
-    #         S3_BUCKET,
-    #         f"{HF_PATH}{HF_FILE.replace('SPLIT', 'val')}",
-    #     )

@@ -8,7 +8,7 @@ s3_vectors_name: vectors_384_SPLIT.parquet
 # Step 3: locations for saving the HF datasets
 s3_hf_ds_path: data/taxonomy_classifier/hf_datasets/
 s3_hf_ds_file: hf_ds_SPLIT.pkl
-# Step 4: locations for saving trained models
+# Step 4: locations for saving trained models, including HuggingFace checkpoints
 models_path: outputs/models/taxonomy_classifier/
 s3_models_path: models/taxonomy_classifier/
 
