@@ -3,15 +3,13 @@ Get predictions from a baseline model
 
 Usage:
 
-python discovery_child_development/pipeline/models/baseline_model.py --model_type most_probable --wandb True
+python discovery_child_development/pipeline/models/taxonomy_classifier/03_set_baseline.py --model_type most_probable --wandb True
 
 model_type can either be 'most_probable' or 'majority_combination' and determines the type of baseline classifier used:
 * majority_combination = predicts the same combination of labels for every single new datapoint
 * most_probable = generates predictions based on the distribution of labels in the training set
 
 wandb determines whether a run gets logged on wandb when the script is run.
-
-Further variables can be amended in the script (these are in the script because we anticipate they won't need to be changed often)
 """
 import argparse
 import numpy as np

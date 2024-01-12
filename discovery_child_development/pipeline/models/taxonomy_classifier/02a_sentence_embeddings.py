@@ -8,7 +8,7 @@ For the existing dataset of GPT labelled docs
 
 Usage:
 
-python discovery_child_development/pipeline/models/binary_classifier/01_embed_gpt_labelled_data.py
+python discovery_child_development/pipeline/models/taxonomy_classifier/02a_sentence_embeddings.py
 
 """
 from nesta_ds_utils.loading_saving import S3 as nesta_s3

@@ -3,7 +3,7 @@ Prepare HuggingFace datasets
 
 Usage:
 
-python discovery_child_development/pipeline/models/binary_classifier/03_embed_training_data_hugging_face.py
+python discovery_child_development/pipeline/models/taxonomy_classifier/02b_prep_hf_dataset.py --production=False
 
 Optional arguments:
     --production : Determines whether to create a dataset from the full sample, or just a small sample (default: False)
