@@ -7,9 +7,8 @@ import argparse
 import torch
 import wandb
 
-from nesta_ds_utils.loading_saving import S3
-
-from discovery_child_development import S3_BUCKET, taxonomy_config, logging
+from discovery_child_development import taxonomy_config, logging
+from discovery_child_development.getters.taxonomy_classifier import get_hf_ds
 from discovery_child_development.utils import classification_utils
 from discovery_child_development.utils import huggingface_pipeline as hf
 from discovery_child_development.utils import utils
@@ -19,6 +18,8 @@ SAVE_TRAINING_RESULTS_PATH = taxonomy_config["models_path"]
 utils.create_directory_if_not_exists(SAVE_TRAINING_RESULTS_PATH)
 
 S3_PATH = taxonomy_config["s3_models_path"]
+
+THRESHOLD = taxonomy_config["predictions_threshold"]
 
 if __name__ == "__main__":
     # Set up the command line arguments
@@ -91,7 +92,7 @@ if __name__ == "__main__":
     predictions = trainer.predict(val_ds)
     hf.compute_metrics_multilabel(predictions)
 
-    y_pred = hf.binarise_predictions(predictions.predictions, threshold=0.5)
+    y_pred = hf.binarise_predictions(predictions.predictions, threshold=THRESHOLD)
     y_pred_proba = torch.sigmoid(torch.Tensor(predictions.predictions)).numpy()
     y_true = predictions.label_ids
 

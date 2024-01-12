@@ -44,5 +44,8 @@ seed: 42
 # default AdamW optimizer
 optim: adamw_torch
 
+## making predictions ##
+predictions_threshold: 0.5
+
 ## Type of problem for the HF classifier ##
 problem_type: multi_label_classification

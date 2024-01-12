@@ -1,18 +1,12 @@
 """
-Embed the GPT labelled abstracts using the distilbert-base-uncased transformer for the huggingface model.
---------------
-
-For the existing dataset of GPD labelled docs
-* create embeddings using HuggingFace distilbert-base-uncased model
-* create dataframe that is compatible with the huggingface model
-* save the dataframes to a pickle file
+Prepare HuggingFace datasets
 
 Usage:
 
 python discovery_child_development/pipeline/models/binary_classifier/03_embed_training_data_hugging_face.py
 
 Optional arguments:
-    --production : Determines whether to create the embeddings for the full dataset or a test sample (default: True)
+    --production : Determines whether to create a dataset from the full sample, or just a small sample (default: False)
 
 """
 from discovery_child_development import S3_BUCKET, config, taxonomy_config, logging
@@ -26,6 +20,7 @@ import argparse
 from datasets import DatasetDict
 import numpy as np
 import pandas as pd
+from typing import Any, Iterable
 
 HF_PATH = taxonomy_config["s3_hf_ds_path"]
 HF_FILE = taxonomy_config["s3_hf_ds_file"]
@@ -34,15 +29,32 @@ NUM_SAMPLES = 100
 
 
 def create_dataset(
-    train_val_df,
-    Y_train_val,
-    ids,
-    split="train",
-    s3_bucket=S3_BUCKET,
-    hf_path=HF_PATH,
-    hf_file=HF_FILE,
-    production=False,
-):
+    train_val_df: pd.DataFrame,
+    Y_train_val: pd.DataFrame,
+    ids: Iterable,
+    split: str = "train",
+    s3_bucket: str = S3_BUCKET,
+    hf_path: str = HF_PATH,
+    hf_file: str = HF_FILE,
+    production: bool = False,
+) -> None:
+    """
+    Creates a Hugging Face dataset from given dataframes, and uploads it to an S3 bucket.
+
+    Args:
+    train_val_df (pd.DataFrame): A dataframe containing training/validation data. Must contain columns "id", "text", "source".
+    Y_train_val (pd.DataFrame): A dataframe containing the labels for the training/validation data. Must contain a column "id". This should already be one-hot encoded using sklearn's MultilabelBinarizer.
+    ids (Iterable): An iterable of IDs to filter the dataframes by - the unique ID determines whether a datapoint is in the train or validation set.
+    split (str): The type of dataset split ('train' or 'validation').
+    s3_bucket (str): The name of the S3 bucket to upload the dataset.
+    hf_path (str): The path in the S3 bucket for the dataset.
+    hf_file (str): The file name in the S3 bucket.
+    production (bool): Flag to determine the filepath format for production or testing - if False, 'test_' gets pasted into the filename.
+
+    Returns:
+    None: This function does not return anything.
+    """
+
     Y = Y_train_val[train_val_df.index.isin(ids)]
 
     # prepare the input: the texts
@@ -82,7 +94,7 @@ if __name__ == "__main__":
         "--production",
         type=lambda x: (str(x).lower() == "true"),
         default=False,
-        help="Do you want to run the code in production? (default: True)",
+        help="Do you want to run the code in production? (default: False)",
     )
 
     # Parse the arguments
