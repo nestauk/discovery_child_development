@@ -1,7 +1,6 @@
 import pandas as pd
 from sklearn.preprocessing import MultiLabelBinarizer
-from typing import Dict, Generator
-import os
+from typing import Dict, List
 import random
 import argparse
 
@@ -39,7 +38,7 @@ def add_binarise_labels(
 
 
 def create_category_description_string(
-    categories: dict, randomise: bool = False
+    categories: Dict, randomise: bool = False
 ) -> str:
     """Create the category descriptions for the prompt
 
@@ -61,7 +60,7 @@ def create_category_description_string(
 
 
 def create_examples_string(
-    examples,
+    examples: List[Dict],
 ) -> str:
     """Create the example descriptions for the prompt
 
