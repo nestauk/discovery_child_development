@@ -1,7 +1,10 @@
 """
-This script is used to test the relevancy labelling prompt and function.
+Generate detection-management labels using OpenAI and prompt engineering
 
 Example usage:
+    python discovery_child_development/pipeline/labelling/detection_management/detection_management_labels.py
+
+Example usage when testing:
     python discovery_child_development/pipeline/labelling/detection_management/detection_management_labels.py --dataset test_relevant_data --num_samples 5 --output_filename testing
 """
 import argparse
