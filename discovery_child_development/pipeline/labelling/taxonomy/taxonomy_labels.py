@@ -2,7 +2,7 @@
 Generate taxonomy labels using OpenAI API and prompt engineering
 
 Example usage:
-    python discovery_child_development/pipeline/labelling/taxonomy_v2/taxonomy_labels.py --dataset taxonomy_labelling_sample --num_samples 5 --model gpt-3.5-turbo-1106 --output_filename testing
+    python discovery_child_development/pipeline/labelling/taxonomy/taxonomy_labels.py --dataset taxonomy_labelling_sample --num_samples 5 --model gpt-3.5-turbo-1106 --output_filename testing
 """
 import argparse
 import json
