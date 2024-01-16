@@ -347,13 +347,21 @@ class Classifier:
         messages: List[Dict],
         model: str = "gpt-3.5-turbo",
         temperature: float = 0.0,
+        max_retries: int = 5,
+        retry_delay: int = 10,
         **kwargs,
     ) -> Dict:
-        response = await aclient.chat.completions.create(
-            messages=messages, model=model, temperature=temperature, **kwargs
-        )
-
-        return response  # type: ignore
+        for attempt in range(max_retries):
+            try:
+                response = await aclient.chat.completions.create(
+                    messages=messages, model=model, temperature=temperature, **kwargs
+                )
+                return response  # type: ignore
+            except Exception as e:
+                if attempt < max_retries - 1:
+                    await asyncio.sleep(retry_delay)
+                else:
+                    raise e
 
     @staticmethod
     async def _try_parse_json(item: str) -> Union[dict, None]:

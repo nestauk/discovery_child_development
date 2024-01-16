@@ -1,14 +1,18 @@
 {
-  "name": "predict_category",
-  "description": "Assign category labels to the given text",
+  "name": "predict_labels",
+  "description": "Predict category labels to the given text",
   "parameters": {
     "type": "object",
     "properties": {
-      "label": {
-        "type": "string",
-        "description": "Labels to assign to the given text"
+      "prediction": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "enum": []
+        },
+        "description": "Predicted labels to the given text"
       }
     },
-    "required": ["label"]
+    "required": ["prediction"]
   }
 }

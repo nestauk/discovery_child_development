@@ -3,7 +3,7 @@ from typing import Any, Dict, List, Optional
 
 from nesta_ds_utils.loading_saving import S3 as nesta_s3
 
-from discovery_child_development import PROJECT_DIR, logging, config, S3_BUCKET
+from discovery_child_development import PROJECT_DIR, config, S3_BUCKET
 from discovery_child_development.utils import google_utils
 from discovery_child_development.utils import jsonl_utils as jsonl
 from discovery_child_development.utils.utils import create_directory_if_not_exists
@@ -117,7 +117,8 @@ def get_labelling_sample(
         - source: The source of the text content (OpenAlex or patents)
 
     """
-    return jsonl.download_file_from_s3(s3_bucket, s3_file, local_file)
+    jsonl.download_file_from_s3(s3_bucket, s3_file, local_file)
+    return jsonl.load_jsonl(local_file)
 
 
 def get_gpt_labelled_sample(
