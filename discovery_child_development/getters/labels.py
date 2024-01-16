@@ -35,7 +35,7 @@ def get_relevance_labels() -> pd.DataFrame:
 
 
 def get_taxonomy_labels(raw: bool = False) -> pd.DataFrame:
-    """Get relevance labels from S3
+    """Get taxonomy labels from S3
 
     If raw=True, then downloads the unprocessed outputs from OpenAI API.
     Otherwises, fetches the slighty cleaned prediction outptus. In each case,

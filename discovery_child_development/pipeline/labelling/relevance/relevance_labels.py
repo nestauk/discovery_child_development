@@ -1,5 +1,5 @@
 """
-This script is used to test the relevancy labelling prompt and function.
+Generate relevance labels using OpenAI API and prompt engineering
 
 Example usage:
     python discovery_child_development/pipeline/labelling/relevance/relevance_labels.py --dataset openalex --num_samples 5 --model gpt-3.5-turbo-1106 --output_filename testing
