@@ -2,7 +2,7 @@
 Generate detection-management labels using OpenAI and prompt engineering
 
 Example usage:
-    python discovery_child_development/pipeline/labelling/detection_management/detection_management_labels.py
+    python discovery_child_development/pipeline/labelling/detection_management/detection_management_labels.py --dataset test_relevant_data
 
 Example usage when testing:
     python discovery_child_development/pipeline/labelling/detection_management/detection_management_labels.py --dataset test_relevant_data --num_samples 5 --output_filename testing
@@ -79,7 +79,9 @@ async def main(
         texts_df = texts_df[~texts_df.id.isin(labelled_ids)]
     except:
         logging.info("No labelled data found")  # noqa: T001
-    # Subsample for testing
+    # Subsample
+    if (num_samples == 0) or (num_samples > len(texts_df)):
+        num_samples = len(texts_df)
     texts_df = texts_df.sample(num_samples).reset_index(drop=True)
 
     # Fetch the categories
