@@ -1,4 +1,0 @@
-{
-  "role": "user",
-  "content": "###Relevance criteria###\nTexts can be categorised in the following {n_categories} categories.\n{category_description}\n\n###Instructions###\nCategorise the following text to one relevance category.\n{text}\n"
-}

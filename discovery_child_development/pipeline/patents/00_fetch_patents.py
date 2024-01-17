@@ -7,7 +7,7 @@ get an estimate of the query size, or use BigQuery's query explorer.
 
 Usage:
 
-python discovery_child_development/pipeline/patents/fetch_patents.py
+python discovery_child_development/pipeline/patents/00_fetch_patents.py
 """
 from discovery_child_development.utils import google_utils, keywords as kw
 from discovery_child_development import PROJECT_DIR

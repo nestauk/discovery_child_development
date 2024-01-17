@@ -1,6 +1,7 @@
 import boto3
 from botocore.exceptions import NoCredentialsError
 import json
+from pathlib import Path
 
 from discovery_child_development import logging
 
@@ -53,6 +54,11 @@ def download_file_from_s3(bucket_name, s3_file_name, local_file):
     # Create an S3 client
     s3 = boto3.client("s3")
 
+    output_file = None
+
+    # Make sure that the directory where you want to store the file exists
+    Path(local_file).parent.mkdir(parents=True, exist_ok=True)
+
     try:
         # Download the file
         s3.download_file(bucket_name, s3_file_name, local_file)
@@ -60,10 +66,10 @@ def download_file_from_s3(bucket_name, s3_file_name, local_file):
             f"File {s3_file_name} downloaded from {bucket_name} to {local_file}"
         )
 
-        data = load_jsonl(local_file)
+        output_file = load_jsonl(local_file)
     except FileNotFoundError:
         print(f"The file {s3_file_name} was not found in {bucket_name}")
     except NoCredentialsError:
         print("Credentials not available")
 
-    return data
+    return output_file
