@@ -140,4 +140,3 @@ discovery_child_development/notebooks/wandb/
 wandb/
 
 outputs/labels/*
-discovery_child_development/pipeline/labelling/detection_management/testing.ipynb
