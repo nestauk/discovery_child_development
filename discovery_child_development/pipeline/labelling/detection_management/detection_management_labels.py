@@ -96,8 +96,8 @@ async def main(
     function = FunctionTemplate.load(str(PATH_TO_FUNCTION))
     examples = create_examples_string(load_jsonl(PATH_TO_EXAMPLES))
 
-    for i, batched_results in enumerate(batch(texts_df, 20)):
-        logging.info(f"Batch {i} / {len(texts_df) // 20}")  # noqa: T001
+    for i, batched_results in enumerate(batch(texts_df, 10)):
+        logging.info(f"Batch {i} / {len(texts_df) // 10}")  # noqa: T001
         tasks = [
             Classifier.agenerate(
                 model=model,
