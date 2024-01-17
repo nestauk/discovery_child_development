@@ -32,7 +32,7 @@ def embed_texts(
     vectors_out_path=VECTORS_OUT_PATH,
     vectors_filename=VECTORS_FILENAME,
 ):
-    labelled_text_df = taxonomy_classifier.get_training_data(split=split)
+    labelled_text_df, _ = taxonomy_classifier.get_training_data(split=split)
 
     labelled_docs = labelled_text_df["text"].tolist()
     labelled_ids = labelled_text_df["id"].tolist()
