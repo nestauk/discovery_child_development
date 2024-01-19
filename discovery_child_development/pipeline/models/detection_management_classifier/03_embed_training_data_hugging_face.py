@@ -29,7 +29,7 @@ from discovery_child_development import detection_management_config, config
 
 # Set up
 SEED = config["seed"]
-NUM_SAMPLES = config["embedding_sample_size"]
+NUM_SAMPLES = 100
 # Set the seed
 np.random.seed(SEED)
 VECTORS_PATH = "data/labels/detection_management_classifier/vectors/"
@@ -55,6 +55,14 @@ if __name__ == "__main__":
     # Loading the training and validation data
     labelled_text_training = get_training_data(set_type="train")
     labelled_text_validation = get_training_data(set_type="validation")
+
+    # Replace the labels with integer labels
+    labelled_text_training.labels = labelled_text_training.labels.replace(
+        {"Detection": 0, "Management": 1, "Both": 2, "None": 3}
+    )
+    labelled_text_validation.labels = labelled_text_validation.labels.replace(
+        {"Detection": 0, "Management": 1, "Both": 2, "None": 3}
+    )
 
     # Small sample for testing
     if not args.production:
