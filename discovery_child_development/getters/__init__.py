@@ -4,6 +4,8 @@ from .patents import get_and_process_patents_from_s3
 from .taxonomy import get_labelling_sample
 from .labels import get_relevance_labels
 from pandas import DataFrame
+from discovery_child_development import S3_BUCKET
+from nesta_ds_utils.loading_saving.S3 import download_obj
 
 
 def get_dataset(dataset: str) -> DataFrame:
@@ -26,3 +28,29 @@ def get_dataset(dataset: str) -> DataFrame:
         return DataFrame(get_labelling_sample())
     elif dataset == "test_relevant_data":
         return get_relevance_labels().query("prediction == 'Relevant'")
+
+
+def get_sentence_embeddings(
+    filepath: str,
+    filename: str,
+    id: str = "id",
+    s3_bucket: str = S3_BUCKET,
+) -> DataFrame:
+    """Get the sentence embeddings from S3
+
+    Args:
+        s3_bucket (str, optional): The S3 bucket where the embeddings are stored. Defaults to S3_BUCKET.
+        filepath (str): The filepath of the embeddings
+        filename (str): The filename of the embeddings
+        id (str): The column name of the id column
+
+    Returns:
+        DataFrame: A DataFrame containing the sentence embeddings
+    """
+    embeddings = download_obj(
+        s3_bucket,
+        path_from=f"{filepath}{filename}",
+        download_as="dataframe",
+    )
+    embeddings = embeddings.set_index(id)
+    return embeddings

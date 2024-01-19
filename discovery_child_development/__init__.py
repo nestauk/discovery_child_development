@@ -46,3 +46,8 @@ taxonomy_config = get_yaml_config(_taxonomy_path)
 
 _binary_path = Path(__file__).parent.resolve() / "config/binary_classifier.yaml"
 binary_config = get_yaml_config(_binary_path)
+
+_detection_management_path = (
+    Path(__file__).parent.resolve() / "config/detection_management_classifier.yaml"
+)
+detection_management_config = get_yaml_config(_detection_management_path)
