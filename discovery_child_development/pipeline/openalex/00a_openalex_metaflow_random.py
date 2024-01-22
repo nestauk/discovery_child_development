@@ -2,19 +2,22 @@
 Works pipeline
 --------------
 
-A pipeline that takes a list of years, and outputs a random sample of OpenAlex API results. 
+A pipeline that takes a list of years, and outputs a random sample of OpenAlex API results.
 You can specify the number of works you want to retrieve per year, with a maximum of 10,000.
 
 Usage:
 
 First, amend these variables:
+* PRODUCTION: whether you want to run in production or not (default: False)
 * YEARS: list of years you want to retrieve publications from
+* NUMBER_WORKS: number of works you want to retrieve per year (max 10,000)
+
 
 To test the flow with just the first year in the list:
-python discovery_child_development/pipeline/openalex/00a_openalex_metaflow.py run --production False 
+python discovery_child_development/pipeline/openalex/00a_openalex_metaflow_random.py run --production False
 
 To fetch the full dataset:
-python discovery_child_development/pipeline/openalex/00a_openalex_metaflow.py run --production True 
+python discovery_child_development/pipeline/openalex/00a_openalex_metaflow_random.py run --production True
 """
 import requests
 from metaflow import FlowSpec, S3, step, Parameter, retry, batch
@@ -117,8 +120,7 @@ class OpenAlexWorksFlowRandom(FlowSpec):
         print(self.input)
         # Define a filename and save to S3
         year = self.input.split("&")[0]
-        sample_size = self.input.split("=")[-1]
-        filename = f"openalex-works_production-{self.production}_year-{year}_samplesize-{sample_size}.json"
+        filename = f"openalex-works_production-{self.production}_year-{year}_samplesize-{self.number_works}.json"
 
         # Specify location to save the file within the bucket
         custom_path = f"{S3_PATH}/random_sample/{filename}"

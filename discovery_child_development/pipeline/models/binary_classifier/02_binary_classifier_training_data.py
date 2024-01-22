@@ -4,7 +4,7 @@ Prepare labelled data for training a binary classifier
 
 For the existing dataset of GPT labelled data
 * create a test set of 100 docs (50 patents, 50 openalex) for testing the classifier after validation
-* create 3 training/validation set for the classifier
+* create training/validation set for the classifier
 * save the training/validation/test set to S3
 
 Usage:

@@ -60,10 +60,12 @@ def tokenize_dataset(
     dataset: Dataset,
     text_column: str,
     config: dict,
+    prediction: bool = False,
 ) -> Dataset:
     """Tokenize text in dataset"""
     remove_cols = dataset.column_names
-    remove_cols.remove("labels")
+    if not prediction:
+        remove_cols.remove("labels")
     tokenizer = load_tokenizer(config=config)
     return dataset.map(
         lambda row: tokenizer(row[text_column], padding="max_length", truncation=True),
@@ -77,6 +79,7 @@ def df_to_hf_ds(
     config: dict,
     non_label_cols: list = ["text", "id"],
     text_column: str = "text",
+    prediction: bool = False,
 ) -> Dataset:
     """Converts a dataframe into a huggingface dataset.
     Adds labels and tokenizes the text.
@@ -95,7 +98,12 @@ def df_to_hf_ds(
     dataset = Dataset.from_pandas(df, preserve_index=False)
     if config["problem_type"] == "multi_label_classification":
         dataset = create_labels(dataset, cols_to_skip=non_label_cols)
-    return tokenize_dataset(dataset, text_column=text_column, config=config)
+    if prediction:
+        return tokenize_dataset(
+            dataset, text_column=text_column, config=config, prediction=prediction
+        )
+    else:
+        return tokenize_dataset(dataset, text_column=text_column, config=config)
 
 
 def load_model(
@@ -313,3 +321,33 @@ def load_trained_model(
         tokenizer=load_tokenizer(config=config),
         compute_metrics=compute_metrics,
     )
+
+
+def predictions_huggingface(trainer, examples, config):
+    """Output predictions from the huggingface classifier
+
+    Args:
+        trainer (transformers.Trainer): Trained huggingface trainer
+        examples (list): List of strings
+        config (dict): Dictionary containing model config
+
+    Returns:
+        predictions (list): List of predictions
+        metrics (dict): Dictionary of metrics
+    """
+    # Convert to HF dataset
+    examples_df = df_to_hf_ds(
+        examples,
+        config=config,
+        non_label_cols=["text"],
+        text_column="text",
+        prediction=True,
+    )
+
+    # Predict on examples
+    model_predictions = trainer.predict(examples_df)
+    # Binarise predictions
+    predictions = np.argmax(model_predictions.predictions, axis=-1)
+
+    examples["predictions"] = predictions
+    return examples

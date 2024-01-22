@@ -58,7 +58,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--production",
         type=bool,
-        default=True,
+        default=False,
         help="Do you want to run the code in production? (default: True)",
     )
 

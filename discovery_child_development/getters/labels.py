@@ -72,3 +72,22 @@ def get_taxonomy_labels(raw: bool = False) -> pd.DataFrame:
             path_from=f'{config["s3_directory"]}{config["output_filename"]}.parquet',
             download_as="dataframe",
         )
+
+
+def get_labelled_data(filename: str = "relevance_labels_20231212") -> pd.DataFrame:
+    """Get relevance labels from S3
+    Returns:
+        pd.DataFrame: A DataFrame containing the relevance labels.
+            Columns are:
+                - id: The ID of the work
+                - source: The source of the data (so far: openalex or patent)
+                - text: The text of the work (title + abstract)
+                - prediction: Relevant (is about preschool-age child development),
+                    Not-relevant, Not-specified (might be about child development but age unclear)
+    """
+    return S3.download_obj(
+        bucket=S3_BUCKET,
+        path_from=f"data/labels/afs_relevance/{filename}.csv",
+        download_as="dataframe",
+        kwargs_reading={"index_col": 0},
+    )
