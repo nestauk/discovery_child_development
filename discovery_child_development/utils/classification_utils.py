@@ -248,7 +248,7 @@ def create_confusion_matrix(y_true, y_pred, label_names, proportions=False):
             "False Negatives",
             "True Positives",
         ],
-    )
+    ).reset_index()
     return df
 
 
