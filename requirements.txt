@@ -21,4 +21,5 @@ df2gspread
 nltk
 openai
 aiofiles
+scikit-multilearn
 tiktoken

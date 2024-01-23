@@ -75,7 +75,7 @@ def tokenize_dataset(
 def df_to_hf_ds(
     df: pd.DataFrame,
     config: dict,
-    non_label_cols: list = ["text", "id"],
+    non_label_cols: list = ["text", "id", "source"],
     text_column: str = "text",
 ) -> Dataset:
     """Converts a dataframe into a huggingface dataset.
@@ -85,7 +85,7 @@ def df_to_hf_ds(
         df: Dataframe to convert into a dataset
         config: Dictionary containing model config
         non_label_cols: Columns that are not labels. This not needed for binary classification.
-            Defaults to ["text", "id"].
+            Defaults to ["text", "id", "source"].
         text_column: Column in dataframe that contain text to tokenize.
             Defaults to "text".
 
@@ -95,7 +95,21 @@ def df_to_hf_ds(
     dataset = Dataset.from_pandas(df, preserve_index=False)
     if config["problem_type"] == "multi_label_classification":
         dataset = create_labels(dataset, cols_to_skip=non_label_cols)
-    return tokenize_dataset(dataset, text_column=text_column, config=config)
+
+    tokenized_data = tokenize_dataset(dataset, text_column=text_column, config=config)
+
+    # Prepare the final dataset with only the required columns
+    def select_required_columns(example, index):
+        # Select only the required keys
+        required_keys = non_label_cols + ["labels", "input_ids", "attention_mask"]
+        return {
+            key: example[key] if key in example else tokenized_data[index][key]
+            for key in required_keys
+        }
+
+    final_dataset = dataset.map(select_required_columns, with_indices=True)
+
+    return final_dataset
 
 
 def load_model(
@@ -137,6 +151,7 @@ def load_training_args(
 
     return TrainingArguments(
         output_dir=output_dir,
+        overwrite_output_dir=config["overwrite_output_dir"],
         report_to=config["report_to"],
         learning_rate=config["learning_rate"],
         per_device_train_batch_size=config["per_device_train_batch_size"],
@@ -144,11 +159,16 @@ def load_training_args(
         gradient_accumulation_steps=config["gradient_accumulation_steps"],
         num_train_epochs=config["num_train_epochs"],
         weight_decay=config["weight_decay"],
+        adam_beta1=config["adam_beta1"],
+        adam_beta2=config["adam_beta2"],
+        adam_epsilon=config["adam_epsilon"],
+        max_grad_norm=config["max_grad_norm"],
         evaluation_strategy=config["evaluation_strategy"],
         save_strategy=config["save_strategy"],
         metric_for_best_model=config["metric_for_best_model"],
         load_best_model_at_end=config["load_best_model_at_end"],
         seed=config["seed"],
+        optim=config["optim"],
     )
 
 
@@ -271,6 +291,8 @@ def saving_huggingface_model(
     Returns:
         None: Saves the model locally and uploads to S3
     """
+    if isinstance(save_path, str):
+        save_path = Path(save_path)
     # Saving the model locally as a folder
     save_path.mkdir(parents=True, exist_ok=True)
     model_path = Path.joinpath(save_path, output_filename)

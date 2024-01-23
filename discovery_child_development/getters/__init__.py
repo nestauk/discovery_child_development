@@ -3,6 +3,7 @@ from .openalex_broad_concepts import get_abstracts_broad
 from .patents import get_and_process_patents_from_s3
 from .taxonomy import get_labelling_sample
 from .labels import get_relevance_labels
+from .taxonomy_classifier import get_labelling_sample
 from pandas import DataFrame
 
 
