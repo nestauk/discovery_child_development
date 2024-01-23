@@ -77,7 +77,7 @@ if __name__ == "__main__":
     sweep_config = binary_config["sweep_config"]
 
     logging.info("Logging run on wandb")
-    sweep_id = wandb.sweep(sweep_config, project='ISS supervised ML')
+    sweep_id = wandb.sweep(sweep_config, project="ISS supervised ML")
 
     # Load the model
     model = load_model(config=binary_config, num_labels=2)
@@ -86,21 +86,23 @@ if __name__ == "__main__":
         with wandb.init(config=config):
             # Train model with early stopping
             training_args = TrainingArguments(
-                    output_dir=S3_PATH,
-                    report_to=binary_config["report_to"],
-                    learning_rate=config.learning_rate,
-                    per_device_train_batch_size=config.per_device_train_batch_size,
-                    per_device_eval_batch_size=binary_config["per_device_eval_batch_size"],
-                    gradient_accumulation_steps=binary_config["gradient_accumulation_steps"],
-                    num_train_epochs=config.num_train_epochs,
-                    weight_decay=config.weight_decay,
-                    evaluation_strategy=binary_config["evaluation_strategy"],
-                    save_strategy=binary_config["save_strategy"],
-                    metric_for_best_model=binary_config["metric_for_best_model"],
-                    load_best_model_at_end=binary_config["load_best_model_at_end"],
-                    seed=binary_config["seed"],
-                )
-            
+                output_dir=S3_PATH,
+                report_to=binary_config["report_to"],
+                learning_rate=config.learning_rate,
+                per_device_train_batch_size=config.per_device_train_batch_size,
+                per_device_eval_batch_size=binary_config["per_device_eval_batch_size"],
+                gradient_accumulation_steps=binary_config[
+                    "gradient_accumulation_steps"
+                ],
+                num_train_epochs=config.num_train_epochs,
+                weight_decay=config.weight_decay,
+                evaluation_strategy=binary_config["evaluation_strategy"],
+                save_strategy=binary_config["save_strategy"],
+                metric_for_best_model=binary_config["metric_for_best_model"],
+                load_best_model_at_end=binary_config["load_best_model_at_end"],
+                seed=binary_config["seed"],
+            )
+
             trainer = load_trainer(
                 model=model,
                 args=training_args,
