@@ -97,7 +97,7 @@ if __name__ == "__main__":
                     "gradient_accumulation_steps"
                 ],
                 num_train_epochs=config.num_train_epochs,
-                weight_decay=config.weight_decay,
+                weight_decay=binary_config["weight_decay"],
                 evaluation_strategy=binary_config["evaluation_strategy"],
                 save_strategy=binary_config["save_strategy"],
                 metric_for_best_model=binary_config["metric_for_best_model"],
