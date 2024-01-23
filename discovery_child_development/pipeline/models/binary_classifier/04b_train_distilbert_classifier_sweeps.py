@@ -84,6 +84,8 @@ if __name__ == "__main__":
 
     def sweep_training(config=None):
         with wandb.init(config=config):
+            # Set up the config
+            config = wandb.config
             # Train model with early stopping
             training_args = TrainingArguments(
                 output_dir=S3_PATH,
