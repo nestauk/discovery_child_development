@@ -116,11 +116,15 @@ if __name__ == "__main__":
             trainer.train()
 
             # Evaluate the model
-            eval_result = trainer.evaluate()
+            eval_result = trainer.evaluate(embeddings_validation)
             # Log the results
-            wandb.run.summary["f1"] = eval_result["eval_f1"]
-            wandb.run.summary["accuracy"] = eval_result["eval_accuracy"]
-            wandb.run.summary["precision"] = eval_result["eval_precision"]
-            wandb.run.summary["recall"] = eval_result["eval_recall"]
+            wandb.log(
+                {
+                    "f1": eval_result["eval_f1"],
+                    "accuracy": eval_result["eval_accuracy"],
+                    "precision": eval_result["eval_precision"],
+                    "recall": eval_result["eval_recall"],
+                }
+            )
 
     wandb.agent(sweep_id, sweep_training, count=20)
