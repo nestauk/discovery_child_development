@@ -19,8 +19,8 @@ problem_type: "single_label_classification"
 # Sample size
 openalex_sample_size: 500
 
-# Sweep parameters options for method are random/grid/bayes 
-# (grid is exhaustive so needs list of values, 
+# Sweep parameters options for method are random/grid/bayes
+# (grid is exhaustive so needs list of values,
 # random is random search so can have min/max)
 sweep_config:
   method: "random"

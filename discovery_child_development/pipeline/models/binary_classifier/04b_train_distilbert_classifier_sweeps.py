@@ -136,6 +136,7 @@ if __name__ == "__main__":
                     "recall": eval_result["eval_recall"],
                 }
             )
+
     if sweep_config["method"] == "grid":
         wandb.agent(sweep_id, sweep_training, count=args.count)
     elif sweep_config["method"] == "random":
