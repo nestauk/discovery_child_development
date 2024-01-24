@@ -1,5 +1,5 @@
 """
-Evaluate the simple models ("log_regression", "knn", "random_forest", "sgd", "svm") and the distilbert-base-uncased models 
+Evaluate the simple models ("log_regression", "knn", "random_forest", "sgd", "svm") and the distilbert-base-uncased models
 on the test data (labelled data not involved in the training process).
 
 Usage:
@@ -71,7 +71,7 @@ if __name__ == "__main__":
     model = load_model(model_path=model_folder, config=binary_config, num_labels=2)
 
     # Train model with early stopping
-    training_args = load_training_args(output_dir=S3_PATH, config=binary_config)
+    training_args = load_training_args(**binary_config["training_args"])
     trainer = load_trained_model(
         model=model,
         args=training_args,
