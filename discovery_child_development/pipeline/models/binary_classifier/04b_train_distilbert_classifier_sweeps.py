@@ -7,7 +7,7 @@ python discovery_child_development/pipeline/models/binary_classifier/04b_train_d
 
 Optional arguments:
 --production : Determines whether to create the embeddings for the full dataset or a test sample (default: True)
-
+--count : Determines the number of runs (default: 20)
 """
 import wandb
 import numpy as np
@@ -49,6 +49,13 @@ if __name__ == "__main__":
         type=bool,
         default=False,
         help="Do you want to run the code in production? (default: False)",
+    )
+
+    parser.add_argument(
+        "--count",
+        type=bool,
+        default=False,
+        help="Choose number of runs (default: 20)",
     )
     # Parse the arguments
     args = parser.parse_args()
@@ -105,6 +112,9 @@ if __name__ == "__main__":
                 seed=binary_config["seed"],
             )
 
+            # If early stopping is included in the sweeps, uncomment the following line
+            binary_config["early_stopping_patience"] = config.early_stopping_patience
+
             trainer = load_trainer(
                 model=model,
                 args=training_args,
@@ -126,5 +136,9 @@ if __name__ == "__main__":
                     "recall": eval_result["eval_recall"],
                 }
             )
-
-    wandb.agent(sweep_id, sweep_training, count=20)
+    if sweep_config["method"] == "grid":
+        wandb.agent(sweep_id, sweep_training, count=args.count)
+    elif sweep_config["method"] == "random":
+        wandb.agent(sweep_id, sweep_training, count=args.count)
+    else:
+        raise ValueError("This sweep only supports grid and random methods.")
