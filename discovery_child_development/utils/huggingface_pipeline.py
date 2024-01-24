@@ -111,7 +111,10 @@ def df_to_hf_ds(
     # Prepare the final dataset with only the required columns
     def select_required_columns(example, index):
         # Select only the required keys
-        required_keys = non_label_cols + ["labels", "input_ids", "attention_mask"]
+        if prediction:
+            required_keys = non_label_cols + ["input_ids", "attention_mask"]
+        else:
+            required_keys = non_label_cols + ["labels", "input_ids", "attention_mask"]
         return {
             key: example[key] if key in example else tokenized_data[index][key]
             for key in required_keys
@@ -147,55 +150,18 @@ def load_model(
 
 
 def load_training_args(
-    output_dir: Union[str, Path], config: dict
+    **training_args: dict,
 ) -> transformers.training_args.TrainingArguments:
     """Load Training Arguments to be used to train the model
 
     Args:
-        output_dir: Path to save training results
-        config: Dictionary of training arguments
+        training_args: Dictionary of training arguments
 
     Returns:
         TrainingArguments object
     """
-    if config["problem_type"] == "multi_label_classification":
-        return TrainingArguments(
-            output_dir=output_dir,
-            overwrite_output_dir=config["overwrite_output_dir"],
-            report_to=config["report_to"],
-            learning_rate=config["learning_rate"],
-            per_device_train_batch_size=config["per_device_train_batch_size"],
-            per_device_eval_batch_size=config["per_device_eval_batch_size"],
-            gradient_accumulation_steps=config["gradient_accumulation_steps"],
-            num_train_epochs=config["num_train_epochs"],
-            weight_decay=config["weight_decay"],
-            adam_beta1=config["adam_beta1"],
-            adam_beta2=config["adam_beta2"],
-            adam_epsilon=config["adam_epsilon"],
-            max_grad_norm=config["max_grad_norm"],
-            evaluation_strategy=config["evaluation_strategy"],
-            save_strategy=config["save_strategy"],
-            metric_for_best_model=config["metric_for_best_model"],
-            load_best_model_at_end=config["load_best_model_at_end"],
-            seed=config["seed"],
-            optim=config["optim"],
-        )
-    elif config["problem_type"] == "single_label_classification":
-        return TrainingArguments(
-            output_dir=output_dir,
-            report_to=config["report_to"],
-            learning_rate=config["learning_rate"],
-            per_device_train_batch_size=config["per_device_train_batch_size"],
-            per_device_eval_batch_size=config["per_device_eval_batch_size"],
-            gradient_accumulation_steps=config["gradient_accumulation_steps"],
-            num_train_epochs=config["num_train_epochs"],
-            weight_decay=config["weight_decay"],
-            evaluation_strategy=config["evaluation_strategy"],
-            save_strategy=config["save_strategy"],
-            metric_for_best_model=config["metric_for_best_model"],
-            load_best_model_at_end=config["load_best_model_at_end"],
-            seed=config["seed"],
-        )
+
+    return TrainingArguments(**training_args)
 
 
 def binarise_predictions(predictions: np.ndarray, threshold: float = 0.5) -> np.ndarray:
@@ -305,7 +271,7 @@ def load_trainer(
 
 
 def saving_huggingface_model(
-    trainer, output_filename: str, save_path: str, s3_path: str
+    trainer: Trainer, output_filename: str, save_path: str, s3_path: str
 ):
     """Saves a huggingface model to S3
 
@@ -363,31 +329,33 @@ def load_trained_model(
     )
 
 
-def predictions_huggingface(trainer, examples, config):
+def predictions_huggingface(
+    trainer: Trainer, text_data: list, config: dict
+) -> pd.DataFrame:
     """Output predictions from the huggingface classifier
 
     Args:
         trainer (transformers.Trainer): Trained huggingface trainer
-        examples (list): List of strings
+        text_data (list): List of strings
         config (dict): Dictionary containing model config
 
     Returns:
-        predictions (list): List of predictions
-        metrics (dict): Dictionary of metrics
+        pd.DataFrame: Dataframe containing the text and predictions
+
     """
     # Convert to HF dataset
-    examples_df = df_to_hf_ds(
-        examples,
+    text_data_df = df_to_hf_ds(
+        text_data,
         config=config,
         non_label_cols=["text"],
         text_column="text",
         prediction=True,
     )
 
-    # Predict on examples
-    model_predictions = trainer.predict(examples_df)
+    # Predict the labels for the text data
+    model_predictions = trainer.predict(text_data_df)
     # Binarise predictions
     predictions = np.argmax(model_predictions.predictions, axis=-1)
 
-    examples["predictions"] = predictions
-    return examples
+    text_data["predictions"] = predictions
+    return text_data

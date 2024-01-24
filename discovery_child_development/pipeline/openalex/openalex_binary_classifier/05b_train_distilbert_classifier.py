@@ -89,10 +89,10 @@ if __name__ == "__main__":
         )
 
     # Load the model
-    model = load_model(onfig=binary_config, num_labels=2)
+    model = load_model(config=binary_config, num_labels=2)
 
     # Train model with early stopping
-    training_args = load_training_args(output_dir=S3_PATH, config=binary_config)
+    training_args = load_training_args(**binary_config["training_args"])
     trainer = load_trainer(
         model=model,
         args=training_args,

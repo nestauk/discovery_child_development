@@ -333,16 +333,15 @@ def categorise_predictions(
     return tp, tn, fp, fn
 
 
-def prediction_simple(classifier, text_data: list):
-    """Predicts the labels for a list of samples
+def prediction_simple(classifier, text_data: list) -> pd.DataFrame:
+    """Predicts the labels for a list of text data using a simple classifier
 
     Args:
         classifier (sklearn classifier): Trained classifier
-        examples (list): List of strings
+        text_data (list): List of strings
 
     Returns:
-        predictions (list): List of predictions
-        metrics (dict): Dictionary of metrics
+        predictions (pd.DataFrame): A DataFrame containing the predictions
     """
 
     model = SentenceTransformer("all-MiniLM-L6-v2")

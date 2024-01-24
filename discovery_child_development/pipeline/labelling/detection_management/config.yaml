@@ -1,0 +1,8 @@
+model: gpt-3.5-turbo-1106
+temperature: 0.0
+num_samples: 0
+output_filename: detection_management_labels
+local_output_directory: outputs/labels/detection_management
+s3_directory: data/labels/child_development/
+allowed_datasets:
+  - test_relevant_data # For now, run with labelled 'relevant' examples
