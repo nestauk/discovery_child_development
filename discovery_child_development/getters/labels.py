@@ -24,12 +24,15 @@ def get_relevance_labels() -> pd.DataFrame:
         PROJECT_DIR
         / "discovery_child_development/pipeline/labelling/relevance/config.yaml"
     )
-    local_path = f'{config["local_output_directory"]}/{config["output_filename"]}.jsonl'
+    local_path = str(
+        PROJECT_DIR
+        / f'{config["local_output_directory"]}/{config["output_filename"]}.jsonl'
+    )
     Path(local_path).parent.mkdir(parents=True, exist_ok=True)
     data = jsonl_utils.download_file_from_s3(
         bucket_name=S3_BUCKET,
         s3_file_name=f'{config["s3_directory"]}{config["output_filename"]}.jsonl',
-        local_file=f"{str(PROJECT_DIR)}/{local_path}",
+        local_file=local_path,
     )
     return pd.DataFrame(data)
 
@@ -54,16 +57,16 @@ def get_taxonomy_labels(raw: bool = False) -> pd.DataFrame:
     """
     config = get_yaml_config(
         PROJECT_DIR
-        / "discovery_child_development/pipeline/labelling/taxonomy_v2/config.yaml"
+        / "discovery_child_development/pipeline/labelling/taxonomy/config.yaml"
     )
     if raw:
         fname = config["output_filename"] + "_raw.jsonl"
-        local_path = f'{config["local_output_directory"]}/{fname}'
+        local_path = str(PROJECT_DIR / f'{config["local_output_directory"]}/{fname}')
         Path(local_path).parent.mkdir(parents=True, exist_ok=True)
         data = jsonl_utils.download_file_from_s3(
             bucket_name=S3_BUCKET,
             s3_file_name=f'{config["s3_directory"]}{fname}',
-            local_file=f"{str(PROJECT_DIR)}/{local_path}",
+            local_file=local_path,
         )
         return pd.DataFrame(data)
     else:

@@ -1,8 +1,11 @@
 """
-Generate relevance labels using OpenAI API and prompt engineering
+Generate detection-management labels using OpenAI and prompt engineering
 
 Example usage:
-    python discovery_child_development/pipeline/labelling/relevance/relevance_labels.py --dataset openalex --num_samples 5 --model gpt-3.5-turbo-1106 --output_filename testing
+    python discovery_child_development/pipeline/labelling/detection_management/detection_management_labels.py --dataset test_relevant_data
+
+Example usage when testing:
+    python discovery_child_development/pipeline/labelling/detection_management/detection_management_labels.py --dataset test_relevant_data --num_samples 5 --output_filename testing
 """
 import argparse
 import json
@@ -76,10 +79,10 @@ async def main(
         texts_df = texts_df[~texts_df.id.isin(labelled_ids)]
     except:
         logging.info("No labelled data found")  # noqa: T001
-    # Subsample for testing
+    # Subsample
+    if (num_samples == 0) or (num_samples > len(texts_df)):
+        num_samples = len(texts_df)
     texts_df = texts_df.sample(num_samples).reset_index(drop=True)
-    texts_df["source"] = dataset
-    texts_df["timestamp"] = time.time()
 
     # Fetch the categories
     categories = json.loads(PATH_TO_CATEGORIES.read_text())
@@ -87,7 +90,9 @@ async def main(
     logging.info(f"Number of texts to classify: {len(texts_df)}")  # noqa: T001
     logging.info(f"Number of distinct categories: {len(categories)}")  # noqa: T001
 
-    message = MessageTemplate.load(str(PATH_TO_MESSAGE_PROMPT))
+    # Load instruction messages
+    messages = json.load(open(PATH_TO_MESSAGE_PROMPT, "r"))
+    messages = [MessageTemplate.load(m) for m in messages]
     function = FunctionTemplate.load(str(PATH_TO_FUNCTION))
     examples = create_examples_string(load_jsonl(PATH_TO_EXAMPLES))
 
@@ -97,7 +102,7 @@ async def main(
             Classifier.agenerate(
                 model=model,
                 temperature=temperature,
-                messages=[message],
+                messages=messages,
                 message_kwargs={
                     "category_description": create_category_description_string(
                         categories, randomise=True
@@ -109,7 +114,7 @@ async def main(
                     "source": tup.source,
                 },
                 functions=[function.to_prompt()],
-                function_call={"name": "predict_relevance"},
+                function_call={"name": "predict_detection_management"},
                 max_tokens=100,
                 concurrency=5,
             )
@@ -125,7 +130,7 @@ async def main(
                 output_filename,
             )
 
-        time.sleep(2)
+        time.sleep(10)
 
     # Upload to S3
     S3.upload_file(
@@ -154,9 +159,7 @@ if "__main__" == __name__:
     try:
         dataset = args.dataset
     except ValueError as e:
-        raise ValueError(
-            "Dataset must be one of 'patents', 'openalex' or 'openalex_broad'"
-        )
+        raise ValueError(f"Dataset must be one of {CONFIG['allowed_datasets']}")
     num_samples = args.num_samples if args.num_samples else CONFIG["num_samples"]
     model = args.model if args.model else CONFIG["model"]
     temperature = CONFIG["temperature"]
