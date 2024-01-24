@@ -93,28 +93,22 @@ if __name__ == "__main__":
         with wandb.init(config=config):
             # Set up the config
             config = wandb.config
-            # Train model with early stopping
-            training_args = TrainingArguments(
-                output_dir=S3_PATH,
-                report_to=binary_config["report_to"],
-                learning_rate=config.learning_rate,
-                per_device_train_batch_size=config.per_device_train_batch_size,
-                per_device_eval_batch_size=binary_config["per_device_eval_batch_size"],
-                gradient_accumulation_steps=binary_config[
-                    "gradient_accumulation_steps"
-                ],
-                num_train_epochs=config.num_train_epochs,
-                weight_decay=binary_config["weight_decay"],
-                evaluation_strategy=binary_config["evaluation_strategy"],
-                save_strategy=binary_config["save_strategy"],
-                metric_for_best_model=binary_config["metric_for_best_model"],
-                load_best_model_at_end=binary_config["load_best_model_at_end"],
-                seed=binary_config["seed"],
-            )
 
-            # If early stopping is included in the sweeps, uncomment the following line
-            binary_config["early_stopping_patience"] = config.early_stopping_patience
+            # If early stopping is part of the sweep:
+            if "early_stopping_patience" in config.keys():
+                binary_config[
+                    "early_stopping_patience"
+                ] = config.early_stopping_patience
 
+            # Add the sweep config to the training args
+            for key in config.keys():
+                if key in binary_config["training_args"].keys():
+                    binary_config["training_args"][key] = config[key]
+
+            # Set up the training arguments
+            training_args = TrainingArguments(**binary_config["training_args"])
+
+            # Train the model
             trainer = load_trainer(
                 model=model,
                 args=training_args,
@@ -138,7 +132,7 @@ if __name__ == "__main__":
             )
 
     if sweep_config["method"] == "grid":
-        wandb.agent(sweep_id, sweep_training, count=args.count)
+        wandb.agent(sweep_id, sweep_training)
     elif sweep_config["method"] == "random":
         wandb.agent(sweep_id, sweep_training, count=args.count)
     else:
