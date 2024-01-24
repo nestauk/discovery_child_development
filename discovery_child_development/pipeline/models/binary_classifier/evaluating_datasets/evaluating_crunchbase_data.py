@@ -22,7 +22,7 @@ from discovery_child_development.utils.huggingface_pipeline import (
 from discovery_child_development.getters.binary_classifier.binary_classifier_model import (
     get_binary_classifier_models,
 )
-from discovery_child_development.getters.labels import get_relevance_labels
+from discovery_child_development.getters.labels import get_labelled_data
 from discovery_child_development.utils.testing_examples_utils import (
     testing_examples_huggingface,
 )
@@ -94,7 +94,7 @@ if __name__ == "__main__":
     model = load_model(model_path=model_folder, config=binary_config, num_labels=2)
 
     # Train model with early stopping
-    training_args = load_training_args(output_dir=S3_PATH, config=binary_config)
+    training_args = load_training_args(**binary_config["training_args"])
     trainer = load_trained_model(
         model=model,
         args=training_args,
@@ -105,7 +105,7 @@ if __name__ == "__main__":
 
     # Get labelled crunchbase data
     crunchbase_relevant = (
-        get_relevance_labels("relevant_crunchbase_investments_20230623")
+        get_labelled_data("relevant_crunchbase_investments_20230623")
         .dropna()
         .reset_index()
     )
