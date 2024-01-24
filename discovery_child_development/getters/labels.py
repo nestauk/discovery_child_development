@@ -91,3 +91,32 @@ def get_labelled_data(filename: str = "relevance_labels_20231212") -> pd.DataFra
         download_as="dataframe",
         kwargs_reading={"index_col": 0},
     )
+
+
+def get_detection_management_labels() -> pd.DataFrame:
+    """Get relevance labels from S3
+    Returns:
+        pd.DataFrame: A DataFrame containing detection-management labels.
+            Columns are:
+                - id: The ID of the work
+                - source: The source of the data (so far: openalex or patent)
+                - text: The text of the work (title + abstract)
+                - prediction: Detection, Management, Both or None
+                - model: The model used to make the prediction
+                - timestamp: The timestamp of the prediction
+    """
+    config = get_yaml_config(
+        PROJECT_DIR
+        / "discovery_child_development/pipeline/labelling/detection_management/config.yaml"
+    )
+    local_path = str(
+        PROJECT_DIR
+        / f'{config["local_output_directory"]}/{config["output_filename"]}.jsonl'
+    )
+    Path(local_path).parent.mkdir(parents=True, exist_ok=True)
+    data = jsonl_utils.download_file_from_s3(
+        bucket_name=S3_BUCKET,
+        s3_file_name=f'{config["s3_directory"]}{config["output_filename"]}.jsonl',
+        local_file=local_path,
+    )
+    return pd.DataFrame(data)
