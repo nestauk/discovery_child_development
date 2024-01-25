@@ -1,3 +1,9 @@
+"""
+Usage:
+
+python discovery_child_development/analysis/evaluate_labels/download_evals_data.py
+"""
+
 from discovery_child_development.utils.jsonl_utils import download_file_from_s3
 from discovery_child_development import PROJECT_DIR, S3_BUCKET
 
