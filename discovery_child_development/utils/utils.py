@@ -158,3 +158,21 @@ def current_time() -> str:
     datetime_string = current_datetime.strftime("%Y%m%d%H%M%S")
 
     return datetime_string
+
+
+def prepare_url(id: str, source: str) -> str:
+    """
+    Prepare the URL for the example to be displayed to the user.
+    """
+    if "http" in id:
+        return id
+    else:
+        if source == "patents":
+            # For Google patents remove all non alphanumeric characters
+            _id = "".join([c for c in id if c.isalnum()])
+            return f"https://patents.google.com/patent/{_id}"
+        elif source == "openalex":
+            # OpenAlex
+            return f"https://openalex.org/{id}"
+        else:
+            raise ValueError(f"Unknown source: {source}")

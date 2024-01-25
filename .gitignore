@@ -140,3 +140,4 @@ discovery_child_development/notebooks/wandb/
 wandb/
 
 outputs/labels/*
+discovery_child_development/analysis/evaluate_labels/eval_configs.yaml
