@@ -2,11 +2,11 @@
 Recipe for evaluating relevance labels
 
 ```
-python -m prodigy eval_labels test_data outputs/labels/evals_data/relevance_labels_eval.jsonl -p 8080 -F discovery_child_development/analysis/evaluate_labels/eval_relevance_recipe.py
+python -m prodigy eval_labels test_data outputs/labels/evals_data/relevance_labels_eval.jsonl -F discovery_child_development/analysis/evaluate_labels/eval_relevance_recipe.py
 ```
 or
 ```
-python -m prodigy eval_labels relevance_data outputs/labels/evals_data/relevance_labels_eval.jsonl -F discovery_child_development/analysis/evaluate_labels/eval_relevance_recipe.py --port 8080
+python -m prodigy eval_labels relevance_data outputs/labels/evals_data/relevance_labels_eval.jsonl -F discovery_child_development/analysis/evaluate_labels/eval_relevance_recipe.py
 ```
 
 To export the data and have it saved locally, run:
