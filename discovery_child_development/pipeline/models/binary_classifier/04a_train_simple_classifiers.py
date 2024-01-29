@@ -7,8 +7,6 @@ python discovery_child_development/pipeline/models/binary_classifier/04a_train_s
 
 Optional arguments:
 --wandb : Determines whether a run gets logged on wandb (default: False)
---identifier : Choose which split of the training data you want (default: 50, 50/50 relevant/non-relevant). Options are "20", "50", "all".
-
 """
 # Import packages
 import argparse
@@ -73,7 +71,7 @@ if __name__ == "__main__":
     # Embeddings from all-MiniLM-L6-v2
     # Not relevant
     embeddings_all = get_sentence_embeddings(
-        s3_bucket=S3_BUCKET, filepath=VECTORS_PATH, filename=VECTORS_FILE
+        s3_bucket=S3_BUCKET, filepath=VECTORS_PATH, filename=VECTORS_FILE, id="id"
     )
 
     # Create training and validation sets

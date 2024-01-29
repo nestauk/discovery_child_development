@@ -73,9 +73,7 @@ if __name__ == "__main__":
     model = hf.load_model(config=taxonomy_config, num_labels=NUM_LABELS)
 
     # Train model with early stopping
-    training_args = hf.load_training_args(
-        output_dir=SAVE_TRAINING_RESULTS_PATH, config=taxonomy_config
-    )
+    training_args = hf.load_training_args(**taxonomy_config["training_args"])
     trainer = hf.load_trainer(
         model=model,
         args=training_args,

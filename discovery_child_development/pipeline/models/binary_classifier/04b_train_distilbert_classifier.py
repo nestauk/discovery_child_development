@@ -58,7 +58,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--production",
         type=bool,
-        default=True,
+        default=False,
         help="Do you want to run the code in production? (default: True)",
     )
 
@@ -105,7 +105,7 @@ if __name__ == "__main__":
     model = load_model(config=binary_config, num_labels=2)
 
     # Train model with early stopping
-    training_args = load_training_args(output_dir=S3_PATH, config=binary_config)
+    training_args = load_training_args(**binary_config["training_args"])
     trainer = load_trainer(
         model=model,
         args=training_args,
