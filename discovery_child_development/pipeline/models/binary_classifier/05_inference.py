@@ -77,7 +77,7 @@ if __name__ == "__main__":
     # Get the predictions
     logging.info("Getting the predictions...")
     predictions = predictions_huggingface(
-        trainer=trainer, examples=data_for_labelling, config=binary_config
+        trainer=trainer, text_data=data_for_labelling, config=binary_config
     )
 
     # Save the predictions
