@@ -61,9 +61,6 @@ if __name__ == "__main__":
     args = parser.parse_args()
     logging.info(args)
 
-    if not args.production:
-        VECTORS_FILE = VECTORS_FILE + "_test"
-
     # Loading the training and validation embeddings
     embeddings_training = get_embeddings(
         identifier="",

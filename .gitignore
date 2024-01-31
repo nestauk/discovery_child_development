@@ -140,3 +140,4 @@ discovery_child_development/notebooks/wandb/
 wandb/
 
 outputs/labels/*
+models/*
