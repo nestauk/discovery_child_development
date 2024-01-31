@@ -47,14 +47,14 @@ if __name__ == "__main__":
     parser.add_argument(
         "--production",
         type=bool,
-        default=False,
+        default=True,
         help="Do you want to run the code in production? (default: False)",
     )
 
     parser.add_argument(
         "--count",
-        type=bool,
-        default=False,
+        type=int,
+        default=20,
         help="Choose number of runs (default: 20)",
     )
     # Parse the arguments
