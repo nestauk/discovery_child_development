@@ -1,9 +1,9 @@
 """
-Create a testing dataframe for further fine-tuning/adding in further data for the classifier using crunchbase data.
+Create a testing dataframe for further fine-tuning/adding in further data for the classifier.
 
 Usage:
 
-python discovery_child_development/pipeline/models/binary_classifier/06_evaluating_crunchbase_data.py
+python discovery_child_development/pipeline/models/binary_classifier/evaluating_datasets/evaluating_openalex_data.py
 
 Optional arguments:
 --production : Determines whether you wish to use the production/non-production model (default: True)
@@ -22,7 +22,13 @@ from discovery_child_development.utils.huggingface_pipeline import (
 from discovery_child_development.getters.binary_classifier.binary_classifier_model import (
     get_binary_classifier_models,
 )
-from discovery_child_development.getters.labels import get_relevance_labels
+from discovery_child_development.getters.openalex import get_abstracts
+from discovery_child_development.getters.openalex_broad_concepts import (
+    get_abstracts_broad,
+)
+from discovery_child_development.getters.binary_classifier.gpt_labelled_datasets import (
+    get_labelled_data_for_classifier,
+)
 from discovery_child_development.utils.testing_examples_utils import (
     testing_examples_huggingface,
 )
@@ -46,6 +52,7 @@ S3_PATH = "models/binary_classifier/"
 PATH_TO = f"{PROJECT_DIR}/outputs/data/models/"
 SAVE_PATH = "data/labels/binary_classifier/test_text/"
 
+sample_size = binary_config["openalex_sample_size"]
 
 if __name__ == "__main__":
     # Set up the command line arguments
@@ -74,7 +81,7 @@ if __name__ == "__main__":
         logging.info("Logging run on wandb")
         run = wandb.init(
             project="ISS supervised ML",
-            job_type="Binary classifier - testing on crunchbase data",
+            job_type="Binary classifier - testing on openalex data",
             save_code=True,
             tags=["distilbert", "gpt-labelled", "openealex/patents"],
         )
@@ -94,7 +101,7 @@ if __name__ == "__main__":
     model = load_model(model_path=model_folder, config=binary_config, num_labels=2)
 
     # Train model with early stopping
-    training_args = load_training_args(output_dir=S3_PATH, config=binary_config)
+    training_args = load_training_args(**binary_config["training_args"])
     trainer = load_trained_model(
         model=model,
         args=training_args,
@@ -103,26 +110,34 @@ if __name__ == "__main__":
 
     # Trialling the model on the openalex concepts
 
-    # Get labelled crunchbase data
-    crunchbase_relevant = (
-        get_relevance_labels("relevant_crunchbase_investments_20230623")
-        .dropna()
-        .reset_index()
+    # Get labelled training data
+    labelled_data = get_labelled_data_for_classifier(set_type="train")
+    labelled_data_ids = labelled_data.id.unique()
+
+    # Get abstracts
+    abstracts = get_abstracts().query("id not in @labelled_data_ids")
+    abstracts_broad = get_abstracts_broad().query("id not in @labelled_data_ids")
+
+    # Collecting sample of results
+    relevant = abstracts.sample(sample_size, random_state=SEED).assign(labels=1)
+    not_relevant = abstracts_broad.sample(sample_size, random_state=SEED).assign(
+        labels=0
     )
+    test_set = pd.concat([relevant, not_relevant])
 
     predictions, metrics = testing_examples_huggingface(
-        trainer, crunchbase_relevant[["labels", "text"]], binary_config
+        trainer, test_set[["labels", "text"]], binary_config
     )
 
     # Adding predictions to the test set
-    crunchbase_relevant = crunchbase_relevant.assign(predictions=predictions)
+    test_set = test_set.assign(predictions=predictions)
 
     # Reseting the index
-    crunchbase_relevant = crunchbase_relevant.reset_index(drop=True)
+    test_set = test_set.reset_index(drop=True)
 
     # Creating a confusion matrix
     confusion_matrix = classification_utils.plot_confusion_matrix(
-        crunchbase_relevant.labels, predictions, None, "Relevant works"
+        test_set.labels, predictions, None, "Relevant works"
     )
 
     if args.wandb:
@@ -143,7 +158,7 @@ if __name__ == "__main__":
 
     # Save data results to S3
     S3.upload_obj(
-        crunchbase_relevant,
+        test_set,
         S3_BUCKET,
-        f"{SAVE_PATH}gpt_labelled_results_crunchbase.csv",
+        f"{SAVE_PATH}gpt_labelled_results_openalex_sample_size_{sample_size}.csv",
     )

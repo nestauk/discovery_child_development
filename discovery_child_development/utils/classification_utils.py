@@ -7,6 +7,7 @@ import itertools
 import numpy as np
 import pandas as pd
 from sklearn.preprocessing import MultiLabelBinarizer
+from sentence_transformers import SentenceTransformer
 from sklearn.metrics import (
     multilabel_confusion_matrix,
     confusion_matrix,
@@ -330,3 +331,41 @@ def categorise_predictions(
     ].index
 
     return tp, tn, fp, fn
+
+
+def prediction_simple(classifier, text_data: list) -> pd.DataFrame:
+    """Predicts the labels for a list of text data using a simple classifier
+
+    Args:
+        classifier (sklearn classifier): Trained classifier
+        text_data (list): List of strings
+
+    Returns:
+        predictions (pd.DataFrame): A DataFrame containing the predictions
+    """
+
+    model = SentenceTransformer("all-MiniLM-L6-v2")
+    sentence_vectors_384 = model.encode(text_data, show_progress_bar=True)
+    vectors_as_list = [list(vec) for vec in sentence_vectors_384]
+
+    test_df = pd.DataFrame(
+        {
+            "openalex_id": [str(i) for i in range(len(vectors_as_list))],
+            "miniLM_384_vector": vectors_as_list,
+        }
+    )
+
+    # Setting up the test set
+    X_test = test_df["miniLM_384_vector"].apply(pd.Series).values
+
+    predictions = classifier.predict(X_test)
+
+    # Make a dataframe with the predictions
+    predictions = pd.DataFrame(
+        {
+            "text": text_data,
+            "prediction": predictions,
+        }
+    )
+
+    return predictions

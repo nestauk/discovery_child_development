@@ -12,7 +12,7 @@ Usage:
 python discovery_child_development/pipeline/models/binary_classifier/03_embed_training_data_hugging_face.py
 
 Optional arguments:
-    --production : Determines whether to create the embeddings for the full dataset or a test sample (default: True)
+    --production : Determines whether to create the embeddings for the full dataset or a test sample (default: False)
 
 """
 
@@ -29,7 +29,7 @@ from discovery_child_development import binary_config, config
 
 # Set up
 SEED = config["seed"]
-NUM_SAMPLES = config["embedding_sample_size"]
+NUM_SAMPLES = config["labelled_sample_size"]
 # Set the seed
 np.random.seed(SEED)
 VECTORS_PATH = "data/labels/binary_classifier/vectors/"
@@ -79,14 +79,12 @@ if __name__ == "__main__":
         config=binary_config,
         non_label_cols=["id", "source"],
         text_column="text",
-        problem_type=False,
     )
     validation_embeddings = df_to_hf_ds(
         labelled_text_validation,
         config=binary_config,
         non_label_cols=["id", "source"],
         text_column="text",
-        problem_type=False,
     )
 
     # Save the model as a pickle file
