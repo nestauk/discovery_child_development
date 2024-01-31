@@ -3,7 +3,7 @@ Run the inference pipeline.
 
 Usage:
 
-python discovery_child_development/pipeline/models/binary_classifier/05_inference_pipeline.py
+python discovery_child_development/pipeline/models/binary_classifier/05_inference.py
 
 
 """
