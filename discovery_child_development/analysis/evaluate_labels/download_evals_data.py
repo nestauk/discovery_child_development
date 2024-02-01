@@ -15,6 +15,7 @@ if __name__ == "__main__":
     for filename in [
         "relevance_labels_eval.jsonl",
         "detection_management_labels_eval.jsonl",
+        "taxonomy_labels_eval.jsonl",
     ]:
         download_file_from_s3(
             bucket_name=S3_BUCKET,
