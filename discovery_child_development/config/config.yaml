@@ -12,11 +12,18 @@ openalex_concepts:
   - "C15471489" # child psychotherapy
   - "C178229462" # early childhood education
 openalex_years:
+  - 2013
+  - 2014
+  - 2015
+  - 2016
+  - 2017
+  - 2018
   - 2019
   - 2020
   - 2021
   - 2022
   - 2023
+  - 2024
   # openalex keywords (for expanding on the seed concepts)
 openalex_keywords:
   - "'artificial intelligence'"
@@ -59,7 +66,7 @@ taxonomy:
   sheet_name: "initial_taxonomy"
 patents_data_path: "data/patents/"
 
-patents_data_version: "GooglePatents_20231106_175151"
+patents_data_version: "GooglePatents_20240220_122855"
 
 embedding_sample_size: 1000
 labelled_sample_size: 50
