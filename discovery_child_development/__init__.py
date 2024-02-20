@@ -51,3 +51,6 @@ _detection_management_path = (
     Path(__file__).parent.resolve() / "config/detection_management_classifier.yaml"
 )
 detection_management_config = get_yaml_config(_detection_management_path)
+
+_labelling_path = Path(__file__).parent.resolve() / "config/labelling.yaml"
+labelling_config = get_yaml_config(_labelling_path)

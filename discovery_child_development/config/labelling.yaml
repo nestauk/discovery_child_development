@@ -1,0 +1,13 @@
+# Config parameters for the path to the data we want to label 
+
+# Change these parameters based on where the data is saved.
+# Path to the unprocessed data to clean
+DATA_PATH: "metaflow/random_sample/openalex-works_production-False_year-2019_samplesize-500"
+data_extension: "json"
+# Path to the processed data we want to label (i.e. with a 'text' column)
+S3_PATH: "data/data_for_labelling/"
+FNAME: "openalex_random_sample_2019_500"
+extension: "json"
+# Filename to save the labelled data which can be found in data/outputs/binary_classifier,
+# data will be saved as a csv
+OUTPUT_FILENAME: "openalex_random_sample_2019_labelled"

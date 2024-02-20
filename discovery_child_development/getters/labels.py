@@ -79,15 +79,13 @@ def get_taxonomy_labels(raw: bool = False) -> pd.DataFrame:
 
 def get_detection_management_labels() -> pd.DataFrame:
     """Get relevance labels from S3
-
     Returns:
-        pd.DataFrame: A DataFrame containing the relevance labels.
+        pd.DataFrame: A DataFrame containing detection-management labels.
             Columns are:
                 - id: The ID of the work
                 - source: The source of the data (so far: openalex or patent)
                 - text: The text of the work (title + abstract)
-                - prediction: Relevant (is about preschool-age child development),
-                    Not-relevant, Not-specified (might be about child development but age unclear)
+                - prediction: Detection, Management, Both or None
                 - model: The model used to make the prediction
                 - timestamp: The timestamp of the prediction
     """
