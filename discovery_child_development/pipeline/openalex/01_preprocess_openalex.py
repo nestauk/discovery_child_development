@@ -6,7 +6,7 @@ Additional cleaning steps:
 - Works that are not in English are removed.
 
 Usage:
-python discovery_child_development/pipeline/01_preprocess_openalex.py
+python discovery_child_development/pipeline/openalex/01_preprocess_openalex.py
 """
 from nesta_ds_utils.loading_saving import S3 as nesta_s3
 import pandas as pd

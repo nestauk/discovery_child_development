@@ -19,7 +19,7 @@ from tqdm import tqdm
 import hdbscan
 import umap
 from discovery_child_development import logging
-from discovery_child_development.utils.openai_utils import openai
+from discovery_child_development.utils.openai_utils import client
 import copy
 
 
@@ -391,13 +391,13 @@ def describe_clusters_with_gpt(
                 "content": copy.deepcopy(gpt_message).format("\n".join(abstracts)),
             }
         ]
-        chatgpt_output = openai.ChatCompletion.create(
+        chatgpt_output = client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=messages,
             temperature=0.6,
             max_tokens=1000,
-        ).to_dict()
-        cluster_descriptions.append(chatgpt_output["choices"][0]["message"]["content"])
+        )
+        cluster_descriptions.append(chatgpt_output.choices[0].message.content)
 
     return cluster_descriptions
 
@@ -424,13 +424,13 @@ def generate_cluster_names_with_gpt(
         {"role": "user", "content": gpt_message.format("\n".join(cluster_descriptions))}
     ]
     # Generate cluster names
-    cluster_names = openai.ChatCompletion.create(
+    cluster_names = client.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=messages,
         temperature=0.6,
         max_tokens=1000,
-    ).to_dict()
+    )
     # Get cluster names from the GPT response
-    cluster_names_ = cluster_names["choices"][0]["message"]["content"].split("\n")
+    cluster_names_ = cluster_names.choices[0].message.content.split("\n")
     # Map cluster index to cluster name
     return {i: cluster_name for i, cluster_name in enumerate(cluster_names_)}

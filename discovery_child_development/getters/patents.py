@@ -53,7 +53,7 @@ def get_keywords_from_s3(
     )
 
 
-def get_and_process_patents_from_s3(
+def _get_and_process_patents_from_s3(
     patents_data_version: str = PATENTS_DATA_VERSION,
 ) -> pd.DataFrame:
     """Get google patents data from S3 and do light processing by combining title and abstract and removing patents without text
@@ -79,3 +79,21 @@ def get_and_process_patents_from_s3(
         .query("has_hits == True")
         .rename(columns={"publication_number": "id"})
     )[["text", "id"]]
+
+
+def get_and_process_patents_from_s3(
+    patents_data_version: str = PATENTS_DATA_VERSION,
+) -> pd.DataFrame:
+    """Get google patents data from S3 and do light processing by combining title and abstract and removing patents without text
+
+    Args:
+        patents_data_version (str, optional): Version of patent data to download.
+
+    Returns:
+        pd.DataFrame: Google patents data
+    """
+    return S3.download_obj(
+        os.environ["S3_BUCKET"],
+        f"{PATENTS_PATH}{patents_data_version}/{patents_data_version}_processed.parquet",
+        download_as="dataframe",
+    )

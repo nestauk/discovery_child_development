@@ -23,6 +23,10 @@ if __name__ == "__main__":
         + kw.replace_word(keywords, "child", "infant")
         + kw.replace_word(keywords, "child", "baby")
         + kw.replace_word(keywords, "child", "toddler")
+        + kw.replace_word(keywords, "child", "pregnancy")
+        + kw.replace_word(keywords, "child", "prenatal")
+        + kw.replace_word(keywords, "child", "parent")
+        + kw.replace_word(keywords, "child", "family")
     )
     # Save a reference copy on local/GitHub for the most up date query
     query_keywords_path = KEYWORD_FILE.parent / "keywords_query.txt"

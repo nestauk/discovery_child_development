@@ -1,0 +1,145 @@
+{
+  "ai": {
+    "name": "Data science and AI",
+    "description": "Applications of data science, machine learning and artificial intelligence methods, or development of new methods in these areas.",
+    "keywords": [
+      "data science",
+      "data analysis",
+      "artificial intelligence",
+      "machine learning",
+      "automated speech recognition",
+      "computer vision",
+      "deep learning",
+      "preditive analytics"
+    ],
+    "examples": [
+      {
+        "label": "Relevant",
+        "text": "An integrated early care pathway for autism. In this Viewpoint, we argue for the need to reconceptualise an integrated early-care provision for autistic children in the light of their enduring support needs and relevant new findings from developmental and intervention research. This model goes beyond short-term reactive care to outline an early proactive, evidenced, developmentally phased, and scalable programme of support for autistic children and their families from the earliest opportunity, with timely access to later step-up care when needed. We also integrate this model with emerging opportunities from data science and digital health technologies as a potential facilitator of such a pathway."
+      },
+      {
+        "label": "Relevant",
+        "text": "A baby cry translation system. The invention discloses a baby cry translation system. The system includes a camera pickup, the camera pickup is electrically connected through a communication transmission unit, the communication transmission unit is electrically connected with a Flash receiving and processing unit, and the Flash receiving and processing unit is correspondingly and electrically connected. It is electrically connected with the uploading module, the uploading module is electrically connected with the cloud server, and the cloud server is electrically connected with the mobile phone terminal. The baby cry translation system of the present invention is a baby cry translation system with learning ability based on the combination of intelligent hardware equipment and mobile phone APP. Nursing is a good way to relieve the anxiety and pressure of novice parents in parenting, and has the characteristics of intelligence and practicality."
+      },
+      {
+        "label": "Not relevant",
+        "text": "An intelligent monitor for maternal and child care. The present invention relates to the field of monitors, and discloses an intelligent monitor for maternal and infant care, which includes a monitor body and a display screen. The surface of the monitor body is provided with a groove for arranging the display screen. An adjustment assembly for adjusting the angle of the display screen is provided between the lower end surfaces of the display screen, and a support assembly is provided between the bottom surface of the display screen and the groove; through the adjustment assembly, the display screen can be flipped based on the monitor body and after flipping The self-rotation, the support assembly can realize the limit of the display screen after turning over and the limit of the self-rotation after turning over."
+      },
+      {
+        "label": "Not relevant",
+        "text": "Vitamin D Status in Early Childhood and Neurodevelopment and Growth at Age 6–9 Years in North India (P11-061-19). The extent to which vitamin-D deficiency (< 10 ng/ml) is associated with neurodevelopment and linear growth in middle childhood. The study is a follow-up of a factorial randomized double-blind placebo-controlled trial in 1000 North Indian children 6 to 30 months at enrolment, receiving daily 2 RDAs of vitamin B12 and/or folic acid or placebo for 6 months. "
+      }
+    ]
+  },
+  "ai2": {
+    "name": "Data science and AI",
+    "description": "Applications of machine learning and artificial intelligence methods, or development of new methods in these areas. This category DOES NOT include text that mentions simpler data analysis and statistical methods (eg data collection or statistical tests) and it DOES NOT include texts about general technologies if there is no mention of machine learning or AI methods.",
+    "keywords": [
+      "artificial intelligence",
+      "machine learning",
+      "automated speech recognition",
+      "computer vision",
+      "deep learning",
+      "predictive analytics",
+      "generative AI"
+    ],
+    "examples": [
+      {
+        "label": "Relevant",
+        "text": "A system, method and device for sentiment analysis using infant crying. The invention belongs to the technical field of deep learning, and in particular relates to a system, method and device for emotion analysis using baby crying; a crying detection module, training data samples to obtain a detection model, and using the detection model to detect the input sound to be detected, Determine whether the input sound is a baby cry; the cry analysis module, train data samples, get an analysis model, and use the analysis model to classify the detected baby cry; model update module, upload the sound segment marked as a recognition error and the corresponding category label, and upload the classification model currently used by the user; use the voice data uploaded by the user and the original training data to fine-tune the classification model uploaded by the user; download the trained new model and replace the original model. It has the advantages of portability, high recognition accuracy and wide applicability."
+      },
+      {
+        "label": "Not relevant",
+        "text": "An intelligent monitor for maternal and child care. The present invention relates to the field of monitors, and discloses an intelligent monitor for maternal and infant care, which includes a monitor body and a display screen. The surface of the monitor body is provided with a groove for arranging the display screen. An adjustment assembly for adjusting the angle of the display screen is provided between the lower end surfaces of the display screen, and a support assembly is provided between the bottom surface of the display screen and the groove; through the adjustment assembly, the display screen can be flipped based on the monitor body and after flipping The self-rotation, the support assembly can realize the limit of the display screen after turning over and the limit of the self-rotation after turning over."
+      },
+      {
+        "label": "Not relevant",
+        "text": "Vitamin D Status in Early Childhood and Neurodevelopment and Growth at Age 6–9 Years in North India (P11-061-19). The extent to which vitamin-D deficiency (< 10 ng/ml) is associated with neurodevelopment and linear growth in middle childhood. The study is a follow-up of a factorial randomized double-blind placebo-controlled trial in 1000 North Indian children 6 to 30 months at enrolment, receiving daily 2 RDAs of vitamin B12 and/or folic acid or placebo for 6 months. "
+      }
+    ]
+  },
+  "income": {
+    "name": "Income",
+    "description": "Text that mentions parent and family income, finances, socioeconomic status and its impact on child development. This category DOES NOT include text that mentions teacher income and it DOES NOT include texts about general economics or social aspects that are not related to income.",
+    "keywords": ["family income", "socioeconomic status", "cash transfers"],
+    "examples": [
+      {
+        "label": "Relevant",
+        "text": "The socioeconomic gradient in child health and noncognitive skills: Evidence from the Czech Republic. We investigate the presence of a socioeconomic status (SES) gradient in children's health and noncognitive skill development, and its evolution with child age using cohort data from the Czech Republic. We show that family SES are positively associated with better child health."
+      },
+      {
+        "label": "Not relevant",
+        "text": "Characteristics of home-based child care providers who offer non-standard hour care. The past decade has seen a dramatic growth of non-standard work schedules in the workforce, leading to increasing demand for non-standard hour child care during evenings, nights, and weekends. Low-income families, less-educated parents, and single parents with young children report greater demand for non-standard hour care. Given the prevalence of non-standard hour care and the importance of quality child care, a better understanding of who provides non-standard hour care and how to support this sector is necessary."
+      }
+    ]
+  },
+  "ar_vr": {
+    "name": "AR VR",
+    "description": "Text that strictly mentions augmented reality (AR), virtual reality (VR) or mixed reality and immersive technologies. This category DOES NOT include text that mentions any other technologies or topics besides AR and VR.",
+    "keywords": [
+      "augmented reality",
+      "virtual reality",
+      "mixed reality",
+      "immersive technology"
+    ],
+    "examples": [
+      {
+        "label": "Relevant",
+        "text": "IPads in The Early Childhood Science Classroom: An Exploration of IPads Use in Hands - On Science Activities. This qualitative case study explored the affordances and uses of the iPad in Prep classrooms when integrated into hands-on science activities about movement. Using a hybrid inductive and deductive thematic analysis approach, this study identified and described the ways that virtual and augmented reality apps on the iPad can both enhance and distract from hands-on science activities about movement in Prep. The findings suggest ways that educators may achieve greater integration of hands-on science and technology learning experiences in Prep classrooms."
+      },
+      {
+        "label": "Not relevant",
+        "text": "Behavior Profiles at 2 Years for Children Born Extremely Preterm with Bronchopulmonary Dysplasia. Objective To characterize behavior of 2-year-old children based on the severity of bronchopulmonary dysplasia (BPD). Study design We studied children born at 22-26 weeks of gestation and assessed at 22-26 months of corrected age with the Child Behavior Checklist (CBCL). BPD was classified by the level of respiratory support at 36 weeks of postmenstrual age. CBCL syndrome scales were the primary outcomes."
+      },
+      {
+        "label": "Not relevant",
+        "text": "Method for Providing Child Care Training Service in Network, and Managing Server Used Threrein. Disclosed is a method for providing a child care training service through a network and a management server used therefor. According to the present invention, the management server transmits the content for infant childcare training including the image information of the infant to the image equipment of the user"
+      }
+    ]
+  },
+  "parenting": {
+    "name": "Family and home",
+    "description": "Text that is PRIMARILY about parenting, caregiver and parent role in child development, family structure and dynamics, co-parenting, parenting styles, and ways to impact home learning environment. This category DOES NOT include text that simply mentions parents or parenting but is primarily about something else (for example, DO NOT INCLUDE texts about technologies that parents can use such as breast pumps, beds and similar but that are not directly relevant to home learning environment).",
+    "keywords": [
+      "home learning environment",
+      "family dynamics",
+      "parenting",
+      "parents",
+      "caregivers",
+      "family support"
+    ],
+    "examples": [
+      {
+        "label": "Relevant",
+        "text": "Parents’ Attitudes towards Digital Technology Use in Early Childhood. The use of digital technology is significant in improving children’s teaching and learning experiences. For their children to experience the enormous advantages of digital technology, parental involvement is deemed crucial. On that note, this study investigates parents’ attitudes towards the advantages and disadvantages of digital technology during the early years. Also, this study examines the relationships between family monthly income and the parents’ perceptions towards the use of digital technology. Using a simple random sampling technique, a total of 136 completed survey questionnaires were collected from parents whose children enrolled at formal early childhood education institutions in Malaysia."
+      },
+      {
+        "label": "Not relevant",
+        "text": "A multifunctional baby care diaper table. The utility model provides a multifunctional baby nursing diaper table. The multifunctional baby care diaper table includes: a diaper table; two first support rods, the tops of the two first support rods are respectively movably connected to both sides of the bottom of the diaper table; two second support rods , the top ends of the two second support rods are respectively movably connected to both sides of the bottom of the diaper table, and are located on the front of the two first support rods; two guardrails, the bottoms of the two guardrails are respectively Secured to the front and back of the top of the diaper table. The multifunctional baby nursing diaper table provided by the utility model is stable, convenient for parents to take care of the baby, and also convenient for changing clothes after bathing, as well as for the body massage of the baby and the replacement of diapers, with strong practicability, comprehensive functions, and convenient Parents take care of the baby, improve the comfort of the baby, and at the same time, it can be directly folded once without taking out the folding board."
+      },
+      {
+        "label": "Not relevant",
+        "text": "A mother and child care room. The utility model discloses a nursing room for mothers and infants, which comprises a box body, a safety door is arranged on the box body, a code scanning access control system is arranged on the safety door, a ventilation fan and a lighting lamp are arranged on the top of the box body, and the inner wall of the box body is installed and embedded"
+      }
+    ]
+  },
+  "mobile": {
+    "name": "Mobile",
+    "description": "Text that is PRIMARILY about the use of mobile phones, apps and tablets by children, teachers or parents. This category DOES NOT include wearables or internet of things and other unrelated devices (unless they are directly linked to the use of mobile phone, app or tablet).",
+    "keywords": ["mobile device", "app", "tablet", "iphone", "android"],
+    "examples": [
+      {
+        "label": "Relevant",
+        "text": "An early childhood education tablet. The utility model discloses a kindergarten education tablet computer, comprising a base, a pad block is fixedly connected to the lower left part of the base and the lower right part; Connection and positioning mechanism, a first positioning block is fixedly connected to the right part of the upper end of the base, the upper left end of the first positioning block and the upper right end of the positioning mechanism are symmetrically movably connected with a fixing device, and between the two fixing devices A flat plate body is interspersed and connected together, a connection groove is opened in the middle of the upper end of the base, a movable plate is movably inserted and connected in the front part of the connection groove, and one end of the movable plate away from the base is fixedly connected with a connecting column, and the left end of the connecting column is connected. The middle part is fixedly inserted and connected with an insertion rod, and the rear end of the insertion rod penetrates the middle part of the right end of the connecting column and extends to the right. In the kindergarten education tablet computer of the utility model, the whole device is easy to disassemble and install, so that the tablet body can be used flexibly."
+      },
+      {
+        "label": "Not relevant",
+        "text": "A mobile constant temperature milk storage device and its working method. The invention belongs to the field of infant care, and particularly relates to a mobile constant temperature milk storage device and a working method thereof. In order to solve the problem that the milk of the following babies will become cold when multiple babies need to be fed, the present invention proposes a mobile thermostatic milk storage device that can maintain the temperature of the prepared milk and sterilize the feeding bottles. and how it works"
+      },
+      {
+        "label": "Not relevant",
+        "text": "Multimode english teaching device of english teaching. The utility model discloses a multimode english teaching device of english teaching, including supporting box, supporting box&#39;s last fixed surface is connected with the support column, the top fixedly connected with U type support of support column, two symmetrical seal bearing of the inner wall fixedly connected with of U type support, and the dwang has been placed to the inside of U type support, the surface at dwang both ends respectively with two seal bearing&#39;s inner circle fixed connection."
+      }
+    ]
+  }
+}

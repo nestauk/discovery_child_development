@@ -1,0 +1,6 @@
+model: gpt-3.5-turbo-1106
+temperature: 0.0
+num_samples: 250
+output_filename: taxonomy_cat
+local_output_directory: outputs/labels/taxonomy_cat
+s3_directory: data/labels/child_development/
