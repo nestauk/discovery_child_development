@@ -2,8 +2,10 @@ child development
 children development
 childhood development
 early childhood
+early childhood education
 child rearing
 child care
+childcare
 child behavior
 child behaviour
 child psychotherapy
@@ -20,6 +22,22 @@ child + behaviour
 child + autism
 child + special need
 child + learning
+child + assess
 child + assessment
 home learning environment
 child + learning environment
+child + wearable
+child + artificial intelligence
+child + deep learning
+child + machine learning
+child + eye tracking
+child + augmented reality
+child + virtual reality
+child + income
+child + robot
+child + robotics
+child + social media
+child + social services
+child + technology
+child + monitor
+parenting

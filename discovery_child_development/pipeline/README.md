@@ -37,3 +37,13 @@ Patent data is donwloaded with the following query
 ```bash
 python discovery_child_development/pipeline/patents/00_fetch_patents.py
 ```
+
+## Inference
+
+### Check for relevant papers
+
+Run the following script to check for relevant papers in the OpenAlex and Patent data
+
+```bash
+python discovery_child_development/pipeline/models/binary_classifier/05_inference_OpenAlex_Patents.py
+```

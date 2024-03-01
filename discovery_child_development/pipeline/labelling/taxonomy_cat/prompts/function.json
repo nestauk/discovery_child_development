@@ -1,0 +1,15 @@
+{
+  "name": "predict_relevance",
+  "description": "Predict whether the text is relevant to the topic",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "prediction": {
+        "type": "string",
+        "enum": ["Relevant", "Not-relevant"],
+        "description": "The predicted relevance to the topic."
+      }
+    },
+    "required": ["prediction"]
+  }
+}

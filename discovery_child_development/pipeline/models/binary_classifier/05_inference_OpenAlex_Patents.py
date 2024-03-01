@@ -3,7 +3,7 @@ Run the inference pipeline.
 
 Usage:
 
-python discovery_child_development/pipeline/models/binary_classifier/05_inference.py
+python discovery_child_development/pipeline/models/binary_classifier/05_inference_OpenAlex_Patents.py
 
 
 """
@@ -78,7 +78,7 @@ if __name__ == "__main__":
     openalex_df = openalex.get_abstracts()
     data_for_labelling = pd.concat(
         [patents_df[["id", "text"]], openalex_df[["id", "text"]]], ignore_index=True
-    )
+    ).dropna(subset=["text"])
 
     # Get the predictions
     logging.info("Getting the predictions...")

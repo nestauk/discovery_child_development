@@ -26,6 +26,9 @@ openalex_years:
   - 2024
   # openalex keywords (for expanding on the seed concepts)
 openalex_keywords:
+  - "chatgpt"
+  - "income"
+  - "'early childhood education'"
   - "'artificial intelligence'"
   - "assess"
   - "assessment"
@@ -49,7 +52,7 @@ openalex_keywords:
   - "'virtual reality'"
   - "wearable"
 
-openalex_keywords_api_root: "https://api.openalex.org/works?search=(abstract:(child OR infant OR baby OR prenatal OR pregnancy) AND abstract:(KEYWORD)) OR (title:(child OR infant OR baby OR prenatal OR pregnancy) AND title:(KEYWORD))"
+openalex_keywords_api_root: "https://api.openalex.org/works?search=(abstract:(child OR infant OR baby OR prenatal OR pregnancy OR toddler OR family OR parent) AND abstract:(KEYWORD)) OR (title:(child OR infant OR baby OR prenatal OR pregnancy OR toddler OR family OR parent) AND title:(KEYWORD))"
 
 # OpenAlex not relevant concepts
 openalex_broad_concepts:
@@ -66,7 +69,7 @@ taxonomy:
   sheet_name: "initial_taxonomy"
 patents_data_path: "data/patents/"
 
-patents_data_version: "GooglePatents_20240220_122855"
+patents_data_version: "GooglePatents_20240229_111239"
 
 embedding_sample_size: 1000
 labelled_sample_size: 50
