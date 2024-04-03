@@ -49,6 +49,7 @@ OUTPUT_FILEPATH = PROJECT_DIR / CONFIG["local_output_directory"]
 async def main(
     topic: str,
     num_samples: int,
+    num_neg_samples: int,
     model: str,
     temperature: float,
     output_filename: str,
@@ -94,7 +95,7 @@ async def main(
         # Add random sample of texts without keywords
         texts_without_keywords = (
             texts_df_full.query("id not in @texts_with_keywords")
-            .sample(800)
+            .sample(num_neg_samples)
             .id.to_list()
         )
         texts_df = texts_df_full[
@@ -188,6 +189,12 @@ def parse_arguments():
         default=CONFIG["num_samples"],
     )
     parser.add_argument(
+        "--num_neg_samples",
+        type=int,
+        help="The number of negative samples",
+        default=100,
+    )
+    parser.add_argument(
         "--output_filename",
         type=str,
         help="The output filename",
@@ -212,6 +219,7 @@ if "__main__" == __name__:
     num_samples = args.num_samples
     output_filename = args.output_filename + "_" + topic
     only_evals = args.only_evals
+    num_neg_samples = args.num_neg_samples
 
     # Create outputs directory if it doesn't exist
     create_directory_if_not_exists(OUTPUT_FILEPATH)
@@ -228,6 +236,7 @@ if "__main__" == __name__:
             main(
                 topic,
                 num_samples,
+                num_neg_samples,
                 model,
                 temperature,
                 output_filename,

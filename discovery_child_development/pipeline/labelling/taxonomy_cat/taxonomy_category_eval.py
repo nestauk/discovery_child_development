@@ -48,6 +48,7 @@ if "__main__" == __name__:
                 {"reject": "Not-relevant", "accept": "Relevant"}
             )
         )
+        .query("human == 'Relevant' or human == 'Not-relevant'")
     )
     # Load the GPT-labelled data
     gpt_labels = (
@@ -59,6 +60,9 @@ if "__main__" == __name__:
     combined_df = (evals_df.merge(gpt_labels, on="id", how="left"))[
         ["id", "prediction", "source", "human", "gpt"]
     ]
+    # check if there are nulls in the gpt column
+    if combined_df["gpt"].isnull().sum() > 0:
+        raise ValueError("Not all data from eval dataset has been labelled by GPT")
 
     acc = accuracy_score(combined_df["human"], combined_df["gpt"])
     precision, recall, f1, _ = precision_recall_fscore_support(
