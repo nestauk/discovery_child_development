@@ -148,3 +148,4 @@ models/*
 *.cfg
 discovery_child_development/notebooks/spacy/
 .parquet
+outputs/*

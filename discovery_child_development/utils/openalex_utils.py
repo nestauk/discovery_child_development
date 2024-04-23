@@ -3,8 +3,32 @@ from itertools import chain
 import boto3
 from nesta_ds_utils.loading_saving import S3 as nesta_s3
 import pandas as pd
-
+import requests
 from discovery_child_development import S3_BUCKET, logging
+
+BASE_URL = "https://api.openalex.org/works"
+
+
+def get_publications_count_per_year(start_year: int, end_year: int) -> Dict[int, int]:
+    counts_per_year = {}
+
+    for year in range(start_year, end_year + 1):
+        params = {
+            "filter": f"publication_year:{year}",
+        }
+        response = requests.get(BASE_URL, params=params)
+        if response.status_code == 200:
+            data = response.json()
+            counts_per_year[year] = data["meta"]["count"]
+        else:
+            counts_per_year[year] = None  # or handle error differently
+
+    return pd.DataFrame(
+        data={
+            "year": list(counts_per_year.keys()),
+            "total_counts": list(counts_per_year.values()),
+        }
+    )
 
 
 def deinvert_abstract(inverted_abstract: Dict[str, List]) -> Union[str, None]:
