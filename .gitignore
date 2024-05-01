@@ -149,3 +149,4 @@ models/*
 discovery_child_development/notebooks/spacy/
 .parquet
 outputs/*
+discovery_child_development/analysis/initial_results/publications_metadata.jsonl
