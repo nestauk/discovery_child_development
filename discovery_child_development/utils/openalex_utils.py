@@ -26,7 +26,7 @@ def get_publications_count_per_year(start_year: int, end_year: int) -> Dict[int,
     return pd.DataFrame(
         data={
             "year": list(counts_per_year.keys()),
-            "total_counts": list(counts_per_year.values()),
+            "counts": list(counts_per_year.values()),
         }
     )
 

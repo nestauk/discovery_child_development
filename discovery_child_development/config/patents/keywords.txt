@@ -27,6 +27,7 @@ child + assessment
 home learning environment
 child + learning environment
 child + wearable
+child + wearables
 child + artificial intelligence
 child + deep learning
 child + machine learning
@@ -41,3 +42,21 @@ child + social services
 child + technology
 child + monitor
 parenting
+child + mobile
+child + app
+child + apps
+child + literacy
+child + math
+child + maths
+child + mathematics
+child + language
+child + communication
+child + speech
+child + chatgpt
+child + genetics
+child + psychotherapy
+child + randomised controlled trial
+child + randomised controlled trials 
+child + reading
+child + read
+child + generative ai

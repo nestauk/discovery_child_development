@@ -1,7 +1,8 @@
 {
   "ai2": {
     "name": "Data science and AI",
-    "type": "Innovation",
+    "type": "Technology",
+    "subtype": "Data science and AI",
     "description": "Applications of machine learning and artificial intelligence methods, or development of new methods in these areas. This category DOES NOT include text that mentions simpler data analysis and statistical methods (eg data collection or statistical tests) and it DOES NOT include texts about general technologies if there is no mention of machine learning or AI methods.",
     "keywords": [
       "artificial intelligence",
@@ -31,6 +32,7 @@
   "income": {
     "name": "Income",
     "type": "Social",
+    "subtype": "Income",
     "description": "Text that mentions parent and family income, finances, socioeconomic status and its impact on child development. This category DOES NOT include text that mentions teacher income and it DOES NOT include texts about general economics or social aspects that are not related to income.",
     "keywords": ["family income", "socioeconomic status", "cash transfers"],
     "filtering_keywords": [
@@ -61,7 +63,8 @@
   },
   "ar_vr": {
     "name": "AR VR",
-    "type": "Innovation",
+    "type": "Technology",
+    "subtype": "Immersive tech",
     "description": "Text that strictly mentions augmented reality (AR), virtual reality (VR) or mixed reality and immersive technologies. This category DOES NOT include text that mentions any other technologies or topics besides AR and VR.",
     "keywords": [
       "augmented reality",
@@ -96,7 +99,8 @@
   },
   "parenting2": {
     "name": "Family and home",
-    "type": "Social",
+    "type": "Parenting",
+    "subtype": "Parenting",
     "description": "Text that is PRIMARILY about home learning environment for young children and how it can be measured or supported by parenting styles and behaviours, co-parenting, technologies and activities such as parents reading books together with children. Also include research about the impact of family structures (such as single parents or nuclear families) on child development. DO NOT INCLUDE text that mentions parents, family dynamics or relationships without a focus on home learning",
     "keywords": [
       "home learning environment",
@@ -149,7 +153,8 @@
   },
   "mobile": {
     "name": "Mobile",
-    "type": "Innovation",
+    "type": "Technology",
+    "subtype": "Mobile",
     "description": "Text that is ONLY about the use of mobile phones, smartphone apps and tablets by children, teachers or parents. This category DOES NOT include internet of things devices or other unrelated devices (unless they are directly linked to the use of mobile phone, app or tablet). This category also DOES NOT include aspects of mobility (as in physical movement or social mobility).",
     "keywords": [
       "mobile phone",
@@ -193,7 +198,8 @@
   },
   "prenatal": {
     "name": "Prenatal",
-    "type": "Development",
+    "type": "Health",
+    "subtype": "Prenatal",
     "description": "Text that is PRIMARILY about prental fetal development, prenatal maternal health, pregnancy, giving birth or explicitly mentions preterm babies. This category DOES NOT include text that mentions general health or medical topics without a focus on pregnancy or prenatal development.",
     "keywords": ["prenatal", "maternal health", "pregnancy", "birth"],
     "filtering_keywords": [
@@ -220,7 +226,8 @@
   },
   "mathematics": {
     "name": "Mathematics",
-    "type": "Area of learning",
+    "type": "Development & learning",
+    "subtype": "Mathematics",
     "description": "Text that is about developing or measuring the maths and numeracy skills of young children.",
     "keywords": [
       "math",
@@ -255,7 +262,8 @@
   },
   "literacy": {
     "name": "Literacy",
-    "type": "Area of learning",
+    "type": "Development & learning",
+    "subtype": "Literacy",
     "description": "Text that is about developing or measuring the skills of young children in literacy, language comprehension, word reading, writing, transcription, and composition.",
     "keywords": [
       "reading",
@@ -292,7 +300,8 @@
   },
   "arts": {
     "name": "Expressive arts and design",
-    "type": "Area of learning",
+    "type": "Development & learning",
+    "subtype": "Expressive arts and design",
     "description": "Text that is about developing or measuring the skills of young children in expressive arts and design, artistic and cultural awareness, creativity, imagination, music, drama.",
     "keywords": [
       "creativity",
@@ -331,8 +340,9 @@
     ]
   },
   "physical": {
-    "name": "Physical",
-    "type": "Area of learning",
+    "name": "Physical development",
+    "type": "Health",
+    "subtype": "Physical development",
     "description": "Text that is about supporting or measuring the physical development of young children, such as physical activity, motor skills, spatial awareness, stability, balance, using tools and equipment.",
     "keywords": [
       "motor skills",
@@ -358,7 +368,8 @@
   },
   "communication": {
     "name": "Communication and language",
-    "type": "Area of learning",
+    "type": "Development & learning",
+    "subtype": "Communication and language",
     "description": "Text that is about supporting or measuring the development of children's spoken language, language acquisition, communication skills, speech. DOES NOT INCLUDE text that only generally mentions communication or speaking with children, but where it is not the primary focus of the text.",
     "keywords": ["language", "communication", "speech"],
     "filtering_keywords": ["language", "communicat", "speech"],
@@ -379,7 +390,8 @@
   },
   "emotional": {
     "name": "Personal social emotional",
-    "type": "Area of learning",
+    "type": "Development & learning",
+    "subtype": "Personal social emotional",
     "description": "Text that is only about supporting or measuring the social and emotional development of young children. This could include aspects such as strong, warm and supportive relationships with adults, enabling children to learn how to understand their own feelings and those of others, managing emotions, developing a positive sense of self, setting themselves simple goals, have confidence in their own abilities, to persist and wait for what they want and direct attention as necessary, interactions with other children, making good friendships, co-operating and resolving conflicts peaceably.",
     "keywords": [
       "social development",
@@ -420,7 +432,8 @@
   },
   "cognitive": {
     "name": "Cognitive development",
-    "type": "Development",
+    "type": "Development & learning",
+    "subtype": "Cognitive development",
     "description": "Text that is only about supporting or measuring the cognitive development of young children.",
     "keywords": [
       "cognition",
@@ -451,8 +464,9 @@
     ]
   },
   "send": {
-    "name": "Special needs",
-    "type": "Development",
+    "name": "Special educational needs",
+    "type": "Development & learning",
+    "subtype": "Special educational needs",
     "description": "Text that is only about supporting or measuring special needs and disabilities in young children, such as learning difficulties, autism spectrum disorder, dyslexia, attention deficit hyperactivity disorder and others",
     "keywords": [
       "special needs",
@@ -505,7 +519,8 @@
   },
   "sleep": {
     "name": "Sleep",
-    "type": "Development",
+    "type": "Health",
+    "subtype": "Sleep",
     "description": "Text that is only about supporting or measuring sleep for young children and the influence of sleep on child development.",
     "keywords": [
       "sleep",
@@ -543,7 +558,8 @@
   },
   "infancy": {
     "name": "Infancy",
-    "type": "Development",
+    "type": "General",
+    "subtype": "Infancy",
     "description": "Text that is only about supporting or measuring the development of infants, newborns and children between 0 and 2 years of age.",
     "keywords": ["age 1", "age 2", "infant", "infancy", "newborns"],
     "filtering_keywords": [
@@ -571,7 +587,8 @@
   },
   "rct": {
     "name": "RCTs",
-    "type": "Innovation",
+    "type": "General",
+    "subtype": "RCTs",
     "description": "Text that is mentions the use of randomised control trials - a form of scientific experiment used to control factors not under direct experimental control.",
     "keywords": [
       "randomised control trial",
@@ -592,7 +609,8 @@
   },
   "social_media": {
     "name": "Social media",
-    "type": "Innovation",
+    "type": "Technology",
+    "subtype": "Internet",
     "description": "Text that is only about the use online social media to support or measure the development of young children, or about the impact of social media on parents and young children. DO NOT INCLUDE text that is simply about digital technologies in general (without explicitly mentioning social media).",
     "keywords": [
       "social media",
@@ -659,7 +677,8 @@
   },
   "robotics": {
     "name": "Robotics",
-    "type": "Innovation",
+    "type": "Technology",
+    "subtype": "Immersive tech",
     "description": "Text that is only about the use of robotics to support or measure the development of young children. DO NOT INCLUDE text that is simply about digital technologies or hardware in general (without explicitly mentioning robots or robotics)",
     "keywords": ["robot", "robotics"],
     "filtering_keywords": ["robot", "automat", "control"],
@@ -680,7 +699,8 @@
   },
   "genetics": {
     "name": "Genetics",
-    "type": "Innovation",
+    "type": "Biosciences",
+    "subtype": "Genetics",
     "description": "Text that is only about the use of genetics methods and research to support or measure the development of young children. DO NOT INCLUDE text that is simply about biological research (without explicitly mentioning genetics or genes)",
     "keywords": ["genetics", "genes", "heredity"],
     "filtering_keywords": [
@@ -717,7 +737,8 @@
   },
   "neuroscience": {
     "name": "Neuroscience",
-    "type": "Innovation",
+    "type": "Biosciences",
+    "subtype": "Neuroscience",
     "description": "Text that is only about the use of neuroscience methods and research (for example, neurobiology, brain imaging, eye tracking) to support or measure the development of young children. Also include research considering IQ. DO NOT INCLUDE text that is simply about biological research (without explicitly mentioning neuroscientific topics). ",
     "keywords": ["neuroscience", "brain", "brain development", "brain imaging"],
     "filtering_keywords": [
@@ -752,7 +773,8 @@
   },
   "operations": {
     "name": "Operations",
-    "type": "Innovation",
+    "type": "Child care & preschool",
+    "subtype": "Operations",
     "description": "Text that is about topics directly relating to administrative operations, logistics, programme management, paperwork, task management in the context of supporting or measuring the development of young children. For example, this could relate to administrative tasks in a childcare setting, preschool, kindergarten or social services. DO NOT INCLUDE text that is simply about general business operations or management, or that is about the management of a research study or project (without an application to a real-world setting).",
     "keywords": [
       "logistics",
@@ -794,6 +816,7 @@
   "policy": {
     "name": "Policy",
     "type": "General",
+    "subtype": "Policy",
     "description": "Text that is about government policy related to child development, such as policies on early childhood education, child development support, childcare, or child welfare. DO NOT INCLUDE text that is simply about general government policy or policy in other areas (eg, health policy) without a direct application to child development.",
     "keywords": ["policy", "policies"],
     "filtering_keywords": [
@@ -822,6 +845,7 @@
   "labour_market": {
     "name": "Labour market",
     "type": "Social",
+    "subtype": "Labour market",
     "description": "Text that is about aspects related to labour market and workforce, including topics such as teacher workforce, teacher compensation and retention, as well as parental work leave, parents' return to work after having a child, and gender pay gaps resulting from parental leave. DO NOT INCLUDE text that is simply about general workforce issues or labour market policy in other areas (eg, health policy) without a direct application to child development.",
     "keywords": [
       "parent employment",
@@ -866,6 +890,7 @@
   "inequality": {
     "name": "Inequalities",
     "type": "Social",
+    "subtype": "Inequalities",
     "description": "Text that is describes inequalities and their impact on disparities in child development outcomes, such as socioeconomic disparities, racial disparities, or disparities in access to services. Include also texts that describe approaches to reduce the inequalities. DO NOT INCLUDE text that is simply about general social inequalities or disparities in other areas (eg, health disparities) without a direct application to child development.",
     "keywords": ["inequality", "inequalities", "disparities", "disparaty"],
     "filtering_keywords": [
@@ -900,7 +925,8 @@
   },
   "nontech": {
     "name": "Non-tech assessments",
-    "type": "Innovation",
+    "type": "General",
+    "subtype": "Non-tech assessments",
     "description": "Text that is describes low-tech or non-tech methods for assessing child development, such as questionnaires, surveys, screening charts, or diagnostic tools. DO NOT INCLUDE text that is about high-tech, artificial intelligence or other sophisticated digital methods for assessing child development. DO NOT INCLUDE the use of low-tech methods for other purposes besides assessment of child development.",
     "keywords": ["screening chart", "questionnaire", "survey", "diagnostic"],
     "filtering_keywords": [
@@ -928,7 +954,8 @@
   },
   "games": {
     "name": "Games",
-    "type": "Innovation",
+    "type": "General",
+    "subtype": "Games",
     "description": "Text that is about using digital or non-digital games or gamification to support or measure child development. This could include games that are used for educational purposes, for cognitive development, or for social-emotional development.  DO NOT INCLUDE text that is simply about general video games or games for entertainment purposes.",
     "keywords": ["game", "play", "gamification"],
     "filtering_keywords": ["game", "play", "gamification"],
@@ -949,7 +976,8 @@
   },
   "preschool": {
     "name": "Preschool",
-    "type": "General",
+    "type": "Child care & preschool",
+    "subtype": "Preschool",
     "description": "Text that is PRIMARILY about preschool settings, such as preschool education, preschool curriculum, preschool teachers, preschool activities as well as child minders and other formal or semi-formal childcare settings. This could include text about the design of preschool programs, the role of preschool in child development, or the impact of preschool on child outcomes. DO NOT INCLUDE text that is simply about general education or general child development, without a specific focus on preschool. DO NOT INCLUDE text that describes technologies that could be used in a preschool setting, unless the text is primarily about the preschool setting itself.",
     "keywords": [
       "preschool",
@@ -1007,6 +1035,7 @@
   "social_services": {
     "name": "Social services",
     "type": "Social",
+    "subtype": "Social services",
     "description": "Text that is PRIMARILY about social services provided by governments, local authorities or non-profit organisations. This could include text about social services that support child development, such as child welfare services, child protection services, or services for children with disabilities. DO NOT INCLUDE text that is simply about general social services or social services in other areas (eg, health services) without a direct application to child development.",
     "keywords": ["social service", "support program"],
     "filtering_keywords": [
@@ -1041,6 +1070,7 @@
   "community": {
     "name": "Community",
     "type": "Social",
+    "subtype": "Community",
     "description": "Text that is PRIMARILY about community-based programs or services that support child development, such as community centers, community-based parenting programs, community-based child care, peer support, and web platforms or apps that connect caregivers with other parents. DO NOT INCLUDE text that is simply about general community programs or services that are not specifically focused on child development.",
     "keywords": ["community", "peers", "peer support", "peer group"],
     "filtering_keywords": [
@@ -1067,6 +1097,7 @@
   "inclusion": {
     "name": "Inclusion",
     "type": "Social",
+    "subtype": "Inclusion",
     "description": "Text that is PRIMARILY about inclusion and diversity in child development, such as inclusive education, inclusive child care, or programs that support children with disabilities or other special needs. This could include text about the impact of inclusion on child development outcomes, strategies for promoting inclusion, or the role of inclusion in child development programs. DO NOT INCLUDE text that is simply about general diversity or inclusion in other areas (eg, workforce diversity) without a direct application to child development.",
     "keywords": [
       "multiculturalism",
@@ -1114,6 +1145,7 @@
   "mental_health": {
     "name": "Mental health",
     "type": "Health",
+    "subtype": "Mental health",
     "description": "Text that is PRIMARILY about measuring or supporting mental health in the context of young children, such as mental health programs for children or parents, mental health services for children, or the impact of mental health on child development outcomes. This could include text about mental health disorders, mental health promotion, or mental health interventions for children. DO NOT INCLUDE text that is simply about general mental health or mental health in other populations without a direct application to child development.",
     "keywords": ["well-being", "wellbeing", "mental health"],
     "filtering_keywords": [
@@ -1143,6 +1175,7 @@
   "nutrition": {
     "name": "Nutrition and weight",
     "type": "Health",
+    "subtype": "Nutrition & weight",
     "description": "Text that is PRIMARILY about nutrition, diet, or weight in the context of child development, such as the impact of nutrition on child development outcomes, nutrition programs for children, or the role of diet in child health. This could include text about the impact of malnutrition, obesity, or specific nutrients on child development outcomes. DO NOT INCLUDE text that is simply about general nutrition or weight without a direct application to child development.",
     "keywords": [
       "nutrition",
@@ -1190,6 +1223,7 @@
   "oral": {
     "name": "Oral health",
     "type": "Health",
+    "subtype": "Oral health",
     "description": "Text that is PRIMARILY about oral health, dental care, or dental hygiene in the context of child development, such as the impact of oral health on child development outcomes, oral health programs for children, or the role of dental care in child health. This could include text about the impact of oral health on child development outcomes. DO NOT INCLUDE text that is simply about food, or about general oral health or dental care without a direct application to young children.",
     "keywords": [
       "oral health",
@@ -1224,6 +1258,7 @@
   "health": {
     "name": "Health",
     "type": "Health",
+    "subtype": "Health",
     "description": "Text that is PRIMARILY about general health, healthcare, or medical care in the context of child development, such as the impact of health on child development outcomes, health programs for children, or the role of healthcare in child health. This could include text about the impact of health conditions, healthcare services, or medical treatments on child development outcomes. DO NOT INCLUDE text that is simply about general health or healthcare without a direct application to young children, and DO NOT INCLUDE text about child care products or technology without a clearly stated impact on health.",
     "keywords": ["child health", "healthcare"],
     "filtering_keywords": [
@@ -1253,6 +1288,7 @@
   "protection": {
     "name": "Child protection",
     "type": "Health",
+    "subtype": "Child protection",
     "description": "Text that is PRIMARILY about child protection, safeguarding, or abuse in the context of child development, such as child protection programs, child safeguarding policies, the impact of abuse on child development outcomes, and approaches to create safe technologies for children. This could include text about the impact of child protection policies, child abuse prevention programs, or child safeguarding practices on child development outcomes. DO NOT INCLUDE text that is simply about general safety or security without a direct application to child development.",
     "keywords": ["child protection", "safeguarding", "abuse"],
     "filtering_keywords": [
@@ -1291,7 +1327,8 @@
   },
   "internet": {
     "name": "Internet",
-    "type": "Innovation",
+    "type": "Technology",
+    "subtype": "Internet",
     "description": "Text that is PRIMARILY about the internet, world wide web, digital literacy, or online safety in the context of child development, such as the impact of the internet on child development outcomes, digital literacy programs for children and caregivers, or the role of online safety in child health. This could include text about the impact of digital technologies, online safety programs, or digital literacy on child development outcomes. DO NOT INCLUDE text that is simply about general technology or the internet without a direct application to child development. DO NOT INCLUDE text that mentions internet of things (IoT).",
     "keywords": ["internet", "online", "digital literacy"],
     "filtering_keywords": ["internet", "online", "website", "webpage", "web"],
@@ -1312,7 +1349,8 @@
   },
   "wearables": {
     "name": "Wearables",
-    "type": "Innovation",
+    "type": "Technology",
+    "subtype": "Immersive tech",
     "description": "Text that is PRIMARILY about wearable technology, smart watches, or other wearable devices in the context of child development, such as the impact of wearables on child development outcomes, wearable technology programs for children, or the role of wearables in child health. This could include text about the impact of wearable technology, wearable technology programs, or wearable devices on child development outcomes. DO NOT INCLUDE text that is simply about general technology, clothes or wearables without a direct application to child development.",
     "keywords": ["wearable", "wearable", "smart watch"],
     "filtering_keywords": ["wearable", "internet of things", " iot ", "wrist"],
