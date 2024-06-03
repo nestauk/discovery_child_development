@@ -76,7 +76,7 @@ if __name__ == "__main__":
 
     # Get the labelled data
     logging.info("Getting the data...")
-    for i in list(range(0,1)):
+    for i in list(range(1,7)):
         openalex_df = (
             S3.download_obj(
                 S3_BUCKET,
