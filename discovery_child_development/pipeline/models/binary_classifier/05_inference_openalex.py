@@ -80,7 +80,7 @@ if __name__ == "__main__":
         openalex_df = (
             S3.download_obj(
                 S3_BUCKET,
-                path_from=f"{INPUT_FOLDER}outputs_{i}.parquet",
+                path_from=f"{INPUT_FOLDER}output_{i}.parquet",
                 download_as="dataframe",
             )
             .assign(text=lambda df: df["title"] + ". " + df["abstract"])
@@ -89,7 +89,7 @@ if __name__ == "__main__":
             [openalex_df[["id", "text"]]], ignore_index=True
         ).dropna(subset=["text"])
         logging.info(f"Number of papers to label: {len(data_for_labelling)}")
-        
+
         # Get the predictions
         logging.info("Getting the predictions...")
         predictions = predictions_huggingface(
