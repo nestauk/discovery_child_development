@@ -69,26 +69,50 @@ def get_baseline_ukri():
 def load_openalex_data():
     data_df = (
         pd.read_csv(
-            ENRICHED_DATA_DIR / "taxonomy_cat/taxonomy_cat_predictions_filtered.csv"
+            ENRICHED_DATA_DIR / "taxonomy_cat/taxonomy_cat_predictions_openalex_filtered_final.csv"
         )
         .assign(id=lambda df: df["id"].apply(lambda x: x.split("/")[-1]))
         .query("source == 'openalex'")
         .rename(columns={"source": "dataset"})
     )
+    data_df_manual = (
+        pd.read_csv(ENRICHED_DATA_DIR / "openalex_manual_additions.csv")
+        .assign(country_code=lambda df: df["country_code"].apply(lambda x: ast.literal_eval(x)))
+    )
     metadata_df = (
-        pd.read_csv(ENRICHED_DATA_DIR / "openalex_concepts_metadata.csv")
-        .rename(columns={"openalex_id": "id"})
-        .assign(id=lambda df: df["id"].apply(lambda x: x.split("/")[-1]))
+        pd.read_csv(ENRICHED_DATA_DIR / 'openalex_metadata_df_final.csv')
         .drop_duplicates(subset=["id"])
+        .dropna(subset=["country_code"])
+        .assign(country_code=lambda df: df["country_code"].apply(lambda x: ast.literal_eval(x)))
     )
-    extra_metadata_df = pd.read_csv(ENRICHED_DATA_DIR / "pubs_metadata_df.csv").assign(
-        country_code=lambda df: df["country_code"].apply(lambda x: ast.literal_eval(x))
-    )
-    return (
-        data_df.merge(metadata_df[["id", "year"]], how="left", on="id")
-        .merge(extra_metadata_df, how="left", on="id")
+    return pd.concat([(
+        data_df.merge(metadata_df[["id", "year", "country_code"]], how="left", on="id")
         .query("year >= 2013 and year <= 2023")
-    )
+    ), data_df_manual], ignore_index=True)
+
+# def _load_openalex_data():
+#     data_df = (
+#         pd.read_csv(
+#             ENRICHED_DATA_DIR / "taxonomy_cat/taxonomy_cat_predictions_filtered.csv"
+#         )
+#         .assign(id=lambda df: df["id"].apply(lambda x: x.split("/")[-1]))
+#         .query("source == 'openalex'")
+#         .rename(columns={"source": "dataset"})
+#     )
+#     metadata_df = (
+#         pd.read_csv(ENRICHED_DATA_DIR / "openalex_concepts_metadata.csv")
+#         .rename(columns={"openalex_id": "id"})
+#         .assign(id=lambda df: df["id"].apply(lambda x: x.split("/")[-1]))
+#         .drop_duplicates(subset=["id"])
+#     )
+#     extra_metadata_df = pd.read_csv(ENRICHED_DATA_DIR / "pubs_metadata_df.csv").assign(
+#         country_code=lambda df: df["country_code"].apply(lambda x: ast.literal_eval(x))
+#     )
+#     return (
+#         data_df.merge(metadata_df[["id", "year"]], how="left", on="id")
+#         .merge(extra_metadata_df, how="left", on="id")
+#         .query("year >= 2013 and year <= 2023")
+#     )
 
 
 def get_baseline_openalex():
@@ -126,11 +150,20 @@ def get_baseline_patents():
         .query("year >= 2013 and year <= 2023")
     )
 
+def load_crunchbase_companies():
+    return pd.read_csv(ENRICHED_DATA_DIR / "crunchbase_combined_labels_checked.csv")
 
 def load_crunchbase_data():
     cb_data_df = pd.read_csv(
         ENRICHED_DATA_DIR / "crunchbase_combined_labels_checked.csv"
     )
+    # add missing companies - Byju's
+    df_extra = pd.DataFrame({
+        "id": ["15d119e6-d721-3baf-da4b-880891c0c3fd"],
+        "topics": ["mobile, literacy, numeracy, internet"]
+    })
+    cb_data_df = pd.concat([cb_data_df, df_extra], ignore_index=True)
+
     cb_country_codes = (
         pd.read_csv(ENRICHED_DATA_DIR / "crunchbase_country_codes.csv")
         .drop_duplicates(subset=["id"])
@@ -227,7 +260,7 @@ def get_geographical_distribution(data_exploded_df, column="id"):
     return growth_df, ts_counts
 
 
-def load_topic_data():
+def load_topic_data(is_crunchbase=False):
     topics_dict = json.load(open(PATH_TO_TOPICS, "r"))
     topics = list(topics_dict.keys())
 
@@ -241,7 +274,7 @@ def load_topic_data():
                 "name": topics_dict[topic]["name"],
             }
         )
-    return (
+    topics_df = (
         pd.DataFrame(topics_df)
         .sort_values(
             [
@@ -255,6 +288,20 @@ def load_topic_data():
         .rename(columns={"type": "type"})
         .replace("Data science and AI", "AI")
     )
+    if is_crunchbase:
+        return pd.concat([
+            topics_df,
+            pd.DataFrame(
+                {
+                    'topic': ['operations'],
+                    'type': ['Technology'],
+                    'subtype': ['Operations'],
+                    'name': ['Operations'],
+                }
+            ),
+        ], ignore_index=True)
+    else:
+        return topics_df        
 
 
 TOPICS_DF = load_topic_data()
@@ -282,7 +329,7 @@ def plot_quick_ts(data_df, column, value_denominator=1):
     return pu.configure_plots(fig)
 
 
-def explode_data(data_df, column="topics"):
+def explode_data(data_df, column="topics", is_crunchbase=False):
     return (
         data_df.fillna({column: ","})
         .assign(
@@ -291,14 +338,14 @@ def explode_data(data_df, column="topics"):
             )
         )
         .explode("topics")
-        .drop_duplicates(subset=["id", "topics"])
         .merge(
-            TOPICS_DF,
+            load_topic_data(is_crunchbase),
             left_on="topics",
             right_on="topic",
             how="left",
             suffixes=("", "_"),
         )
+        .drop_duplicates(subset=["id", "topics", "type"])        
     )
 
 
@@ -431,3 +478,60 @@ def get_data_magnitude_growth(data_exploded_df, ids, column, value):
         return df.merge(
             TOPICS_DF[["type", "subtype"]].drop_duplicates(), on="subtype", how="left"
         )
+
+show_types = ['Biosciences', 'Child care & preschool', 'Development & learning', 'Health', 'Society', 'Parenting']
+
+def _get_counts_by_application(data_exploded_df, topics_df, selected_ids, groupby_column='name', count_col="id", count_agg="count"):
+    return (
+        data_exploded_df.query("year >= 2019")
+        .query("id in @selected_ids")
+        .drop_duplicates(['id', 'name'])
+        .groupby(groupby_column)
+        .agg(counts = (count_col, count_agg))
+        .reset_index()
+        .merge(topics_df, on=groupby_column, how='left')
+        .sort_values(['type', 'counts'], ascending=[True, False])
+        .query("type in @show_types")
+    )[['topic', 'name', 'subtype', 'type', 'counts']]
+
+
+def get_counts_by_application_all_tech(data_exploded_df, topics_df, count_col="id", count_agg="count"):
+    counts = []
+    _df = topics_df.query("type in @show_types").query("topic != 'arts'")[['name']]
+    for tech_topic in ['AI', 'Internet', 'Mobile', 'Immersive tech']:
+        selected_ids = data_exploded_df.query("subtype == @tech_topic").id.to_list()
+        counts_df = _get_counts_by_application(data_exploded_df, topics_df, selected_ids, count_col=count_col, count_agg=count_agg, groupby_column='name')[['counts', 'name']].rename(columns={'counts': tech_topic})
+        _df = _df.merge(counts_df, on='name', how='left')
+    _df = _df.fillna(0)
+    return _df
+
+def get_counts_by_application(data_exploded_df, topics_df, count_col="id", count_agg="count"):
+    selected_ids = data_exploded_df.query("type == 'Technology'").id.to_list()
+    _total_counts = _get_counts_by_application(data_exploded_df, topics_df, selected_ids, count_col=count_col, count_agg=count_agg, groupby_column='name')
+        
+    _tech_counts = get_counts_by_application_all_tech(data_exploded_df, topics_df, count_col=count_col, count_agg=count_agg)
+
+    return _total_counts[['name', 'counts']].merge(_tech_counts, on='name').rename(columns={'counts': 'Total'})
+
+
+
+import altair as alt 
+def get_counts_by_application_chart(
+    df,
+    chart_title = "Digital technology applications (detailed)",
+    chart_subtitle = "Number of publications",
+):
+    fig = alt.Chart(
+        df,
+        width=300,
+        height=400,
+    ).mark_bar().encode(
+        y=alt.Y('name:N', sort=df.name.to_list(), title=''),
+        x=alt.X('counts:Q', title=''),
+        color=alt.Color('type:N', legend=alt.Legend(title='Type')),
+        tooltip=['name', 'counts']
+    )
+
+    fig = pu.configure_titles(pu.configure_plots(fig), chart_title, chart_subtitle)
+    return fig
+

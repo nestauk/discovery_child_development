@@ -4,7 +4,8 @@ Script to do inference on the complete dataset with a trained classifier
 """
 import pandas as pd
 import argparse
-from discovery_child_development import PROJECT_DIR, S3_BUCKET
+import json
+from discovery_child_development import PROJECT_DIR, S3_BUCKET, logging
 from nesta_ds_utils.loading_saving import S3
 
 from discovery_child_development.getters.openalex import get_sentence_embeddings
@@ -19,13 +20,17 @@ from discovery_child_development.pipeline.models.taxonomy_cat.train_classifiers 
 # Path to data to be labelled
 ENRICHED_DATA_DIR = PROJECT_DIR / "outputs/enrichments"
 PATH_TO_DATASET = (
-    ENRICHED_DATA_DIR / "openalex_patents_relevance_labels_only_relevant.csv"
+    ENRICHED_DATA_DIR / "openalex_relevance_labels_only_relevant.csv"
 )
 
 # Path to sentence embeddings
 VECTORS_PATH = "data/outputs/vectors/"
-VECTORS_FILE = "sentence_vectors_384_labelled.parquet"
+VECTORS_FILE = "sentence_vectors_openalex_384_labelled.parquet"
 
+PATH_TO_TOPICS = (
+    PROJECT_DIR
+    / "discovery_child_development/pipeline/labelling/taxonomy_cat/prompts/topics.json"
+)
 
 def inference_simple(examples: pd.DataFrame, classifier):
     """Testing the simple classifier on some examples
@@ -61,11 +66,13 @@ def parse_arguments():
 
 if __name__ == "__main__":
     # Define the arguments
-    args = parse_arguments()
-    try:
-        topic = args.topic
-    except ValueError:
-        raise ValueError("You must provide a valid topic")
+    # args = parse_arguments()
+    # try:
+    #     topic = args.topic
+    # except ValueError:
+    #     raise ValueError("You must provide a valid topic")
+    topics_dict = json.load(open(PATH_TO_TOPICS, "r"))
+    topics = list(topics_dict.keys())
 
     # Load dataset sentence embeddings (all-MiniLM-L6-v2)
     embeddings_all = (
@@ -86,45 +93,49 @@ if __name__ == "__main__":
         .assign(id=lambda df: df["id"].apply(lambda x: x.split("/")[-1]))
         .merge(embeddings_all.reset_index(), on="id", how="left")
     )
-    # Load all the models
-    models_all = {}
-    for model in MODELS_SIMPLE:
-        model_path = f"{S3_MODEL_PATH}taxonomy_cat_classifier_{topic}_{model}.pkl"
-        models_all[model] = S3.download_obj(bucket=S3_BUCKET, path_from=model_path)
-    # Apply all the models on the dataset
-    results_model = []
-    for model in models_all:
-        results_df = (
-            inference_simple(relevant_df, models_all[model])
-            .rename(columns={"labels": "prediction"})
-            .assign(model=model)
-        )[["id", "prediction", "prob_relevant", "model"]]
-        results_model.append(results_df)
-    results_model = pd.concat(results_model, axis=0)
-    # Get ensemble results
-    ensemble_df = results_model.groupby(["id"]).agg(
-        prediction=("prediction", "mean"),
-        prob_relevant=("prob_relevant", "mean"),
-    )
-    # Change results_model to long dataframe format
-    results_model_long_df = (
-        results_model.drop(columns=["prob_relevant"])
-        .pivot(index="id", columns="model", values="prediction")
-        .reset_index()
-    )
-
-    # Create the final dataframe
-    results_df = (
-        relevant_df.merge(ensemble_df, on="id", how="left")
-        .merge(results_model_long_df, on="id", how="left")
-        .drop(columns=["miniLM_384_vector", "Unnamed: 0"])
-    )
-    # Export the final data frame
-    (
-        results_df[["id", "prediction", "prob_relevant"] + list(models_all.keys())]
-        .assign(topic=topic)
-        .to_csv(
-            ENRICHED_DATA_DIR / f"taxonomy_cat/taxonomy_cat_predictions_{topic}.csv",
-            index=False,
+    for topic in topics:
+        # Load all the models
+        logging.info(f"Inference for topic {topic}")
+        
+        models_all = {}
+        for model in MODELS_SIMPLE:
+            model_path = f"{S3_MODEL_PATH}taxonomy_cat_classifier_{topic}_{model}.pkl"
+            models_all[model] = S3.download_obj(bucket=S3_BUCKET, path_from=model_path)
+        # Apply all the models on the dataset
+        results_model = []
+        for model in models_all:
+            results_df = (
+                inference_simple(relevant_df, models_all[model])
+                .rename(columns={"labels": "prediction"})
+                .assign(model=model)
+            )[["id", "prediction", "prob_relevant", "model"]]
+            results_model.append(results_df)
+        results_model = pd.concat(results_model, axis=0)
+        # Get ensemble results
+        ensemble_df = results_model.groupby(["id"]).agg(
+            prediction=("prediction", "mean"),
+            prob_relevant=("prob_relevant", "mean"),
         )
-    )
+        # Change results_model to long dataframe format
+        results_model_long_df = (
+            results_model.drop(columns=["prob_relevant"])
+            .pivot(index="id", columns="model", values="prediction")
+            .reset_index()
+        )
+
+        # Create the final dataframe
+        results_df = (
+            relevant_df.merge(ensemble_df, on="id", how="left")
+            .merge(results_model_long_df, on="id", how="left")
+            .drop(columns=["miniLM_384_vector"])
+        )
+        # Export the final data frame
+        (
+            results_df[["id", "prediction", "prob_relevant"] + list(models_all.keys())]
+            .assign(topic=topic)
+            .to_csv(
+                ENRICHED_DATA_DIR
+                / f"taxonomy_cat/openalex/taxonomy_cat_predictions_{topic}.csv",
+                index=False,
+            )
+        )

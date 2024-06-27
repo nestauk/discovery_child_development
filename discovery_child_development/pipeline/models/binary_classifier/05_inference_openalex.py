@@ -77,10 +77,12 @@ if __name__ == "__main__":
     # Get the labelled data
     logging.info("Getting the data...")
     for i in list(range(1,7)):
+        filename = f"{INPUT_FOLDER}output_{i}.parquet"
+        logging.info(f"Reading {filename}...")
         openalex_df = (
             S3.download_obj(
                 S3_BUCKET,
-                path_from=f"{INPUT_FOLDER}output_{i}.parquet",
+                path_from=filename,
                 download_as="dataframe",
             )
             .assign(text=lambda df: df["title"] + ". " + df["abstract"])

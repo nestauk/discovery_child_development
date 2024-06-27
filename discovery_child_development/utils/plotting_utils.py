@@ -619,6 +619,7 @@ def ts_smooth(
     line_width=_line_width,
     line_point_filled=True,
     legend_orient: str = "top",
+    color_scale=alt.Scale(),
 ):
     """"""
     if variable == "no_of_projects":
@@ -659,7 +660,9 @@ def ts_smooth(
             x=alt.X("year:O", title=""),
             y=alt.Y(f"{variable}:Q", title=variable_title),
             color=alt.Color(
-                f"{category_column}:N", legend=alt.Legend(orient=legend_orient)
+                f"{category_column}:N",
+                legend=alt.Legend(orient=legend_orient),
+                scale=color_scale,
             ),
             tooltip=tooltip,
         )
