@@ -57,6 +57,7 @@ possible_topics = ["openalex", "patents", "crunchbase", "gtr"]
 
 # Streamlit app
 def main():
+    # Load in variables in the session state, to persist during the usage of the app
     if "results" not in st.session_state:
         st.session_state["results"] = None
     if "model" not in st.session_state:
@@ -99,9 +100,13 @@ def main():
         default_prompt = "You are an expert researcher. Generate summaries of the two or three main themes based on the documents most relevant to the user query. Write in a succinct and clear manner, using bullet points for each theme."
         st.session_state["prompt"] = default_prompt
 
+    # Title of the app
     st.title("AI Soft Play assistant")
+
+    # User input for the query
     query = st.text_input("Enter a query:")
     st.session_state["query"] = query
+
     # Selecting datasets for the search
     datasets = st.multiselect(
         "Select datasets", possible_topics, default=possible_topics
