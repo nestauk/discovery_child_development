@@ -34,7 +34,6 @@ def retrieve_similar_vectors(
     return (
         _vectors_df[["id"]]
         .assign(similarity=cosine_similarities[0])
-        # .query("id in @_df.id.to_list()")
         .sort_values("similarity", ascending=False)
         .iloc[0:n]
         .merge(data, on="id", how="left")
@@ -64,16 +63,11 @@ def main():
         st.session_state["model"] = SentenceTransformer("all-MiniLM-L6-v2")
     if "data" not in st.session_state:
         # Load in data
-        st.session_state["data"] = (
-            S3.download_obj(
-                bucket=os.environ["S3_BUCKET"],
-                path_from="data/assistant/full_data_final.csv",
-                download_as="dataframe",
-            )
-            # ) (
-            #     pd.read_csv(utils.PROJECT_DIR / "outputs/data/tables/full_data_final.csv")
-            .fillna({"major_category": ","})
-        )
+        st.session_state["data"] = S3.download_obj(
+            bucket=os.environ["S3_BUCKET"],
+            path_from="data/assistant/full_data_final.csv",
+            download_as="dataframe",
+        ).fillna({"major_category": ","})
     if "vectors" not in st.session_state:
         # Load in vectors
         vectors_df = S3.download_obj(
@@ -143,8 +137,6 @@ def main():
             hide_index=True,
         )
     # Generating a summary
-    # selectbox with options "summary" or "product ideas"
-    # synthesis_option = st.selectbox("Select synthesis option", ["Summary", "Product ideas"])
     st.session_state["prompt"] = st.text_area(
         "Prompt", value=st.session_state["prompt"]
     )
