@@ -23,3 +23,5 @@ openai
 aiofiles
 scikit-multilearn
 tiktoken
+chromedriver-autoinstaller
+ipykernel

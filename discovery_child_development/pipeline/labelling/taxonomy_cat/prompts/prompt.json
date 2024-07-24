@@ -1,0 +1,4 @@
+{
+  "role": "user",
+  "content": "Act as a domain expert who is labelling texts in terms of whether they are relevant to the topic of {name}. You will predict whether the text should be labelled as Relevant or Not-relevant to the topic. Label text as Relevant if it STRICTLY adheres to the following definition. ###Definition###\nDefinition of the topic: {description}. A non-exhaustive list of keywords of the topic: {keywords}\n\n###Examples\n{examples}\n\n###Instructions###\nPredict the label of the this text:\n{text}\n"
+}

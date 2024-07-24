@@ -143,3 +143,11 @@ outputs/labels/*
 discovery_child_development/analysis/evaluate_labels/eval_configs.yaml
 !discovery_child_development/analysis/evaluate_labels/*.html
 models/*
+
+*.spacy
+*.cfg
+discovery_child_development/notebooks/spacy/
+.parquet
+outputs/*
+discovery_child_development/analysis/initial_results/publications_metadata.jsonl
+.streamlit/secrets.toml

@@ -324,7 +324,6 @@ class Classifier:
             messages = [
                 cls.prepare_message(message, **message_kwargs) for message in messages
             ]
-
             response = await cls._acall(
                 messages=messages,
                 temperature=temperature,

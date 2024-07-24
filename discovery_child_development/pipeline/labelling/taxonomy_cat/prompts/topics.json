@@ -1,0 +1,1372 @@
+{
+  "ai2": {
+    "name": "Data science and AI",
+    "type": "Technology",
+    "subtype": "Data science and AI",
+    "description": "Applications of machine learning and artificial intelligence methods, or development of new methods in these areas. This category DOES NOT include text that mentions simpler data analysis and statistical methods (eg data collection or statistical tests) and it DOES NOT include texts about general technologies if there is no mention of machine learning or AI methods.",
+    "keywords": [
+      "artificial intelligence",
+      "machine learning",
+      "automated speech recognition",
+      "computer vision",
+      "deep learning",
+      "predictive analytics",
+      "generative AI"
+    ],
+    "filtering_keywords": [""],
+    "examples": [
+      {
+        "label": "Relevant",
+        "text": "A system, method and device for sentiment analysis using infant crying. The invention belongs to the technical field of deep learning, and in particular relates to a system, method and device for emotion analysis using baby crying; a crying detection module, training data samples to obtain a detection model, and using the detection model to detect the input sound to be detected, Determine whether the input sound is a baby cry; the cry analysis module, train data samples, get an analysis model, and use the analysis model to classify the detected baby cry; model update module, upload the sound segment marked as a recognition error and the corresponding category label, and upload the classification model currently used by the user; use the voice data uploaded by the user and the original training data to fine-tune the classification model uploaded by the user; download the trained new model and replace the original model. It has the advantages of portability, high recognition accuracy and wide applicability."
+      },
+      {
+        "label": "Not relevant",
+        "text": "An intelligent monitor for maternal and child care. The present invention relates to the field of monitors, and discloses an intelligent monitor for maternal and infant care, which includes a monitor body and a display screen. The surface of the monitor body is provided with a groove for arranging the display screen. An adjustment assembly for adjusting the angle of the display screen is provided between the lower end surfaces of the display screen, and a support assembly is provided between the bottom surface of the display screen and the groove; through the adjustment assembly, the display screen can be flipped based on the monitor body and after flipping The self-rotation, the support assembly can realize the limit of the display screen after turning over and the limit of the self-rotation after turning over."
+      },
+      {
+        "label": "Not relevant",
+        "text": "Vitamin D Status in Early Childhood and Neurodevelopment and Growth at Age 6–9 Years in North India (P11-061-19). The extent to which vitamin-D deficiency (< 10 ng/ml) is associated with neurodevelopment and linear growth in middle childhood. The study is a follow-up of a factorial randomized double-blind placebo-controlled trial in 1000 North Indian children 6 to 30 months at enrolment, receiving daily 2 RDAs of vitamin B12 and/or folic acid or placebo for 6 months. "
+      }
+    ]
+  },
+  "income": {
+    "name": "Income",
+    "type": "Society",
+    "subtype": "Income",
+    "description": "Text that mentions parent and family income, finances, socioeconomic status and its impact on child development. This category DOES NOT include text that mentions teacher income and it DOES NOT include texts about general economics or social aspects that are not related to income.",
+    "keywords": ["family income", "socioeconomic status", "cash transfers"],
+    "filtering_keywords": [
+      "income",
+      "investment",
+      "finance",
+      "money",
+      "savings",
+      "salary",
+      "earning",
+      "wage",
+      "pay",
+      "pension",
+      "socioeconomic",
+      "economic",
+      "cash"
+    ],
+    "examples": [
+      {
+        "label": "Relevant",
+        "text": "The socioeconomic gradient in child health and noncognitive skills: Evidence from the Czech Republic. We investigate the presence of a socioeconomic status (SES) gradient in children's health and noncognitive skill development, and its evolution with child age using cohort data from the Czech Republic. We show that family SES are positively associated with better child health."
+      },
+      {
+        "label": "Not relevant",
+        "text": "Characteristics of home-based child care providers who offer non-standard hour care. The past decade has seen a dramatic growth of non-standard work schedules in the workforce, leading to increasing demand for non-standard hour child care during evenings, nights, and weekends. Low-income families, less-educated parents, and single parents with young children report greater demand for non-standard hour care. Given the prevalence of non-standard hour care and the importance of quality child care, a better understanding of who provides non-standard hour care and how to support this sector is necessary."
+      }
+    ]
+  },
+  "ar_vr": {
+    "name": "AR VR",
+    "type": "Technology",
+    "subtype": "Immersive tech",
+    "description": "Text that strictly mentions augmented reality (AR), virtual reality (VR) or mixed reality and immersive technologies. This category DOES NOT include text that mentions any other technologies or topics besides AR and VR.",
+    "keywords": [
+      "augmented reality",
+      "virtual reality",
+      "mixed reality",
+      "immersive technology"
+    ],
+    "filtering_keywords": [
+      " ar ",
+      " vr ",
+      "augmented",
+      "virtual",
+      "mixed",
+      "reality",
+      "immersive",
+      "headset"
+    ],
+    "examples": [
+      {
+        "label": "Relevant",
+        "text": "IPads in The Early Childhood Science Classroom: An Exploration of IPads Use in Hands - On Science Activities. This qualitative case study explored the affordances and uses of the iPad in Prep classrooms when integrated into hands-on science activities about movement. Using a hybrid inductive and deductive thematic analysis approach, this study identified and described the ways that virtual and augmented reality apps on the iPad can both enhance and distract from hands-on science activities about movement in Prep. The findings suggest ways that educators may achieve greater integration of hands-on science and technology learning experiences in Prep classrooms."
+      },
+      {
+        "label": "Not relevant",
+        "text": "Behavior Profiles at 2 Years for Children Born Extremely Preterm with Bronchopulmonary Dysplasia. Objective To characterize behavior of 2-year-old children based on the severity of bronchopulmonary dysplasia (BPD). Study design We studied children born at 22-26 weeks of gestation and assessed at 22-26 months of corrected age with the Child Behavior Checklist (CBCL). BPD was classified by the level of respiratory support at 36 weeks of postmenstrual age. CBCL syndrome scales were the primary outcomes."
+      },
+      {
+        "label": "Not relevant",
+        "text": "Method for Providing Child Care Training Service in Network, and Managing Server Used Threrein. Disclosed is a method for providing a child care training service through a network and a management server used therefor. According to the present invention, the management server transmits the content for infant childcare training including the image information of the infant to the image equipment of the user"
+      }
+    ]
+  },
+  "parenting2": {
+    "name": "Family and home",
+    "type": "Parenting",
+    "subtype": "Parenting",
+    "description": "Text that is PRIMARILY about home learning environment for young children and how it can be measured or supported by parenting styles and behaviours, co-parenting, technologies and activities such as parents reading books together with children. Also include research about the impact of family structures (such as single parents or nuclear families) on child development. DO NOT INCLUDE text that mentions parents, family dynamics or relationships without a focus on home learning",
+    "keywords": [
+      "home learning environment",
+      "family structure",
+      "parenting styles",
+      "co-parenting",
+      "parenting advice"
+    ],
+    "filtering_keywords": [
+      "home learning",
+      "parenting style",
+      "single parent",
+      "parenting skill",
+      "parenting education",
+      "parenting program",
+      "parenting intervention",
+      "parenting support",
+      "parenting practice",
+      "parenting behavior",
+      "parenting knowledge",
+      "parenting attitude",
+      "parenting guidance",
+      "parenting stress",
+      "parent skill",
+      "parent education",
+      "parent program",
+      "parent intervention",
+      "parent support",
+      "parent practice",
+      "parent behavior",
+      "parent knowledge",
+      "parent attitude",
+      "parent guidance",
+      "parent stress"
+    ],
+    "examples": [
+      {
+        "label": "Relevant",
+        "text": "Parents’ Attitudes towards Digital Technology Use in Early Childhood. The use of digital technology is significant in improving children’s teaching and learning experiences. For their children to experience the enormous advantages of digital technology, parental involvement is deemed crucial. On that note, this study investigates parents’ attitudes towards the advantages and disadvantages of digital technology during the early years. Also, this study examines the relationships between family monthly income and the parents’ perceptions towards the use of digital technology. Using a simple random sampling technique, a total of 136 completed survey questionnaires were collected from parents whose children enrolled at formal early childhood education institutions in Malaysia."
+      },
+      {
+        "label": "Not relevant",
+        "text": "A multifunctional baby care diaper table. The utility model provides a multifunctional baby nursing diaper table. The multifunctional baby care diaper table includes: a diaper table; two first support rods, the tops of the two first support rods are respectively movably connected to both sides of the bottom of the diaper table; two second support rods , the top ends of the two second support rods are respectively movably connected to both sides of the bottom of the diaper table, and are located on the front of the two first support rods; two guardrails, the bottoms of the two guardrails are respectively Secured to the front and back of the top of the diaper table. The multifunctional baby nursing diaper table provided by the utility model is stable, convenient for parents to take care of the baby, and also convenient for changing clothes after bathing, as well as for the body massage of the baby and the replacement of diapers, with strong practicability, comprehensive functions, and convenient Parents take care of the baby, improve the comfort of the baby, and at the same time, it can be directly folded once without taking out the folding board."
+      },
+      {
+        "label": "Not relevant",
+        "text": "A mother and child care room. The utility model discloses a nursing room for mothers and infants, which comprises a box body, a safety door is arranged on the box body, a code scanning access control system is arranged on the safety door, a ventilation fan and a lighting lamp are arranged on the top of the box body, and the inner wall of the box body is installed and embedded"
+      }
+    ]
+  },
+  "mobile": {
+    "name": "Mobile",
+    "type": "Technology",
+    "subtype": "Mobile",
+    "description": "Text that is ONLY about the use of mobile phones, smartphone apps and tablets by children, teachers or parents. This category DOES NOT include internet of things devices or other unrelated devices (unless they are directly linked to the use of mobile phone, app or tablet). This category also DOES NOT include aspects of mobility (as in physical movement or social mobility).",
+    "keywords": [
+      "mobile phone",
+      "smartphone",
+      " app ",
+      "tablet",
+      "iphone",
+      " ipad ",
+      "android"
+    ],
+    "filtering_keywords": [
+      "mobile",
+      "phone",
+      "smartphone",
+      "smart phone",
+      " app ",
+      " apps ",
+      "tablet",
+      "iphone",
+      " ipad ",
+      "android",
+      "screen time",
+      "screentime",
+      "touchscreen",
+      "touch screen"
+    ],
+    "examples": [
+      {
+        "label": "Relevant",
+        "text": "An early childhood education tablet. The utility model discloses a kindergarten education tablet computer, comprising a base, a pad block is fixedly connected to the lower left part of the base and the lower right part; Connection and positioning mechanism, a first positioning block is fixedly connected to the right part of the upper end of the base, the upper left end of the first positioning block and the upper right end of the positioning mechanism are symmetrically movably connected with a fixing device, and between the two fixing devices A flat plate body is interspersed and connected together, a connection groove is opened in the middle of the upper end of the base, a movable plate is movably inserted and connected in the front part of the connection groove, and one end of the movable plate away from the base is fixedly connected with a connecting column, and the left end of the connecting column is connected. The middle part is fixedly inserted and connected with an insertion rod, and the rear end of the insertion rod penetrates the middle part of the right end of the connecting column and extends to the right. In the kindergarten education tablet computer of the utility model, the whole device is easy to disassemble and install, so that the tablet body can be used flexibly."
+      },
+      {
+        "label": "Not relevant",
+        "text": "A mobile constant temperature milk storage device and its working method. The invention belongs to the field of infant care, and particularly relates to a mobile constant temperature milk storage device and a working method thereof. In order to solve the problem that the milk of the following babies will become cold when multiple babies need to be fed, the present invention proposes a mobile thermostatic milk storage device that can maintain the temperature of the prepared milk and sterilize the feeding bottles. and how it works"
+      },
+      {
+        "label": "Not relevant",
+        "text": "Multimode english teaching device of english teaching. The utility model discloses a multimode english teaching device of english teaching, including supporting box, supporting box&#39;s last fixed surface is connected with the support column, the top fixedly connected with U type support of support column, two symmetrical seal bearing of the inner wall fixedly connected with of U type support, and the dwang has been placed to the inside of U type support, the surface at dwang both ends respectively with two seal bearing&#39;s inner circle fixed connection."
+      }
+    ]
+  },
+  "prenatal": {
+    "name": "Prenatal",
+    "type": "Health",
+    "subtype": "Prenatal",
+    "description": "Text that is PRIMARILY about prental fetal development, prenatal maternal health, pregnancy, giving birth or explicitly mentions preterm babies. This category DOES NOT include text that mentions general health or medical topics without a focus on pregnancy or prenatal development.",
+    "keywords": ["prenatal", "maternal health", "pregnancy", "birth"],
+    "filtering_keywords": [
+      "prenatal",
+      "newborn",
+      "birth",
+      "maternal",
+      "neonate"
+    ],
+    "examples": [
+      {
+        "label": "Relevant",
+        "text": "Health Pregnancy, Healthy Baby: Testing the added benefits of pregnancy ultrasound for child development in a randomised control trial. Abstract Background The 2016 World Health Organization Antenatal Guidelines and the 2015 South African Maternal and Child Health Guidelines recommend one early antenatal ultrasound scan to establish gestational age and to detect multiple pregnancies and fetal abnormalities. Prior research indicates that ultrasound can also increase parental-fetal attachment. We aim to establish whether, compared to routine care, messages to promote parental attachment and healthy child development, conducted during one or two pregnancy ultrasounds improve early child development and growth, exclusive breastfeeding, parental-child interactions and pre- and post-natal clinic attendance"
+      },
+      {
+        "label": "Not relevant",
+        "text": "A low-birth-weight infant formula milk powder that is easy to digest and absorb and its preparation method. The invention discloses a low birth weight infant formula milk powder which is easy to digest and absorb and a preparation method thereof. The present invention uses recombinant protein components and a reasonable proportion of easily digestible fat composition, aiming at the characteristics of infants in the special period of low birth weight, and under the condition of ensuring balanced nutrition, a low-weight infant goat milk that is easy to digest and absorb is invented. formula milk powder. The infant formula powder is closer to breast milk in the following aspects. First, the protein is compounded with bovine whey protein and goat milk casein, and the composition of goat milk casein is closer to that of breast milk and is easily absorbed by infants. Second: Optimize the ratio of Sn-2 fatty acids and medium-chain fatty acids, making it easier for babies to digest and absorb. Third, the fatty acid optimization is closer to breast milk, optimizing the ratio of n-3, n-6, and n-9 fatty acids; supplementing arachidonic acid and docosahexaenoic acid promotes the development of the brain and optic nerve. Fourth: Prebiotic ingredients are added in a 9:1 ratio of galacto-oligosaccharides and fructo-oligosaccharides to improve immunity."
+      },
+      {
+        "label": "Not relevant",
+        "text": "Characteristics of home-based child care providers who offer non-standard hour care. The past decade has seen a dramatic growth of non-standard work schedules in the workforce, leading to increasing demand for non-standard hour child care during evenings, nights, and weekends. Low-income families, less-educated parents, and single parents with young children report greater demand for non-standard hour care. Given the prevalence of non-standard hour care and the importance of quality child care, a better understanding of who provides non-standard hour care and how to support this sector is necessary."
+      }
+    ]
+  },
+  "mathematics": {
+    "name": "Mathematics",
+    "type": "Development & learning",
+    "subtype": "Mathematics",
+    "description": "Text that is about developing or measuring the maths and numeracy skills of young children.",
+    "keywords": [
+      "math",
+      "mathematics",
+      "numbers",
+      "numeracy",
+      "mathematical",
+      "skills"
+    ],
+    "filtering_keywords": [
+      "math",
+      "numer",
+      "number",
+      " stem ",
+      "science",
+      "scientific"
+    ],
+    "examples": [
+      {
+        "label": "Relevant",
+        "text": "Mathematics learning method for child based on non-language and self-leading. The present invention provides a mathematical problem without a fingerprint and explanation, and at the same time provides a mathematical concept and operation principle systematically step by step, and provides an image of a mathematical problem using blocks and symbols, thereby providing infants&#39; intuitive thinking, visual thinking and inductive reasoning. By increasing the usability of abilities and maximizing curiosity about learning mathematics, it is possible to increase learning spontaneity and concentration. It relates to a self-directed non-verbal mathematics education method that can maximize the sense of achievement, motivation, and learning continuity by minimizing the"
+      },
+      {
+        "label": "Not relevant",
+        "text": "Child development beyond the nutrition-specific models: bridging the pathways via psychosocial stimulation. Background Undernutrition has severe and lasting consequences on child development. Evidently, the interventions based on the biomedical model with food and direct supplementation have failed to produce the desired outcomes for decades. In light of the established positive effects of psychosocial stimulation on developmental outcomes, we propose that the observed failures relate to not including psychosocial stimulation within the interventions. Here we test whether psychosocial stimulation mediates the association between nutritional status and motor and mental development in a large cohort from Madhya Pradesh, India."
+      },
+      {
+        "label": "Not relevant",
+        "text": "Educational toys. PROBLEM TO BE SOLVED: To provide a dice for teaching materials, which is larger than a general dice, has easy exchange of 6 patterns, has fun card contents, and enhances a learning effect, in consideration of the use of infants and children.  SOLUTION: A three-dimensional block body 12 having various shapes, in which at least a pair or more of magnets 14a are arranged on the surface thereof, and a magnetism capable of being attracted by a magnetic force to the surface of the three-dimensional block body. It is equipped with a surface plate 14 made of a body or in which magnets are arranged in a direction on which magnets can be attracted on a three-dimensional block body, and characters, figures, patterns, etc. are written on the surface plate, and as an educational toy 11 as appropriate. It is made available."
+      }
+    ]
+  },
+  "literacy": {
+    "name": "Literacy",
+    "type": "Development & learning",
+    "subtype": "Literacy",
+    "description": "Text that is about developing or measuring the skills of young children in literacy, language comprehension, word reading, writing, transcription, and composition.",
+    "keywords": [
+      "reading",
+      "writing",
+      "letters",
+      "handwriting",
+      "literacy",
+      "phonics"
+    ],
+    "filtering_keywords": [
+      "read",
+      "writ",
+      "letter",
+      "handwriting",
+      "liter",
+      "phonic",
+      "language",
+      "ling"
+    ],
+    "examples": [
+      {
+        "label": "Relevant",
+        "text": "A kind of literacy device for early childhood education. The utility model belongs to the technical field of educational tools, in particular to a literacy device for early childhood education. Both ends of the top of the base are rotatably connected with a rotating rod through a rotating shaft, the rotating rod is attached to the support frame, and one end of the rotating rod is threaded with a bolt, which is threadedly connected to the base, and the top of the support frame is A threaded rod is fixed, a threaded sleeve is threadedly connected to the outer surface of the threaded rod, a writing table is fixed on the top of the threaded sleeve, a rotating seat is fixed on the top of the writing table, and a bearing is passed between the two rotating seats A rotating shaft is connected in rotation. The utility model opens the electric push rod, so that the electric push rod drives the rack to displace, and the rack moves to drive the gear to rotate, the gear drives the rotating shaft to rotate, and then the rotating shaft drives the reading board to adjust the angle."
+      },
+      {
+        "label": "Not relevant",
+        "text": "Development of Interactive Media Based on Augmented Reality for Early Childhood Learning Around the Home. In this age of digitization, it is essential to develop interactive media that may serve as a vehicle for learning while also engaging children. Thus, learning media that includes both real and digital media can be made more exciting and less tedious by making it more fun while still valuing traditional and interactive learning utilizing technology, which is why this is important. This project aims to generate media solutions that early childhood educators and kindergarten teachers can use to assist them in learning and teaching."
+      },
+      {
+        "label": "Not relevant",
+        "text": "A kind of preschool education cognitive matching toy box. The utility model discloses a cognitive matching toy box for preschool education for young children, which comprises a box body and a box cover. The top of the box body is rotatably connected with a box cover through a rotating shaft, and a latch is welded at the center of the top of the box cover. The inner cavity of the box body is embedded with a baffle, one side of the baffle is provided with a groove, the other side of the baffle is provided with a character plate at both vertical ends, and the bottom of the threaded rod is welded with "
+      }
+    ]
+  },
+  "arts": {
+    "name": "Expressive arts and design",
+    "type": "Development & learning",
+    "subtype": "Expressive arts and design",
+    "description": "Text that is about developing or measuring the skills of young children in expressive arts and design, artistic and cultural awareness, creativity, imagination, music, drama.",
+    "keywords": [
+      "creativity",
+      "arts",
+      "design",
+      "imagination",
+      "singing",
+      "music"
+    ],
+    "filtering_keywords": [
+      " art ",
+      " arts ",
+      "creativ",
+      "design",
+      "imagin",
+      " sing",
+      "music",
+      "dance",
+      "dancing",
+      "theatre",
+      "theater"
+    ],
+    "examples": [
+      {
+        "label": "Relevant",
+        "text": "A building block toy for preschool music education. The invention discloses a building block toy for preschool music education, which mainly includes a main body, a plug board and a plug block. The upper part of the card seat is plugged with plug boards arranged at equal distances, a wiring board is installed on the inner side of the outer frame, a connection head is fixedly installed on the front of the left side of the connection board, and a wire is fixedly installed on the left side of the connection head. The middle part of the left side wall of the outer frame is provided with a wire passage hole matched with the wire, the wire passes through the left side wall of the outer frame through the wire passage hole, and the front side of the wiring board is fixedly installed with sockets arranged at equal intervals. The structure of the present invention is reasonable in design, the device helps students to understand the difference in pronunciation between notes when the teacher is teaching music knowledge, and for young children, it can be entertaining and can fully mobilize students to learn actively, and at the same time, The device fully guarantees safety and greatly improves the learning enthusiasm of young students."
+      },
+      {
+        "label": "Not relevant",
+        "text": "A puzzle water cup. The utility model relates to the technical field of early childhood education, and relates to an educational water cup; the utility model comprises a cup body, a cup cover and a bottom cover, a touch control decorative layer is pasted on the side wall surface of the cup body, and a voice playback device is installed in the bottom cover The touch control decorative layer includes a surface decorative film layer, an insulating adhesive isolation layer and a common ground film layer. The back of the surface decorative film layer is provided with touch electrode lines, the front of the common ground film layer is provided with ground electrode lines, and the surface decorative film layer is provided with touch electrode lines. The back of the cup is connected with a touch electrode collecting end, and the touch electrode collecting end is electrically connected with the voice playback device; in this utility model, the pattern or pattern printed on the decorative layer is controlled by pressing the touch sticking on the outer surface of the cup body. letters or characters, the touch electrode line can be made to contact the ground electrode line through the round hole on the insulating adhesive isolation layer, so as to be electrically connected, so that the touch electrode collecting terminal is connected to the voice playback device, and the voice playback device Play the corresponding sound."
+      },
+      {
+        "label": "Not relevant",
+        "text": "A multifunctional reading table. The utility model discloses a multifunctional reading table, which belongs to the field of reading tables. The utility model comprises a table board and two supporting components arranged on both sides of the table board. The rotary connection and locking between the table board and the supporting components can realize When the reading table is used, the two sides are switched, and then the two ends are set as the reading side and the book screen respectively, so that the reading table can be switched between the reading mode and the calligraphy and painting mode in actual use, and the multi-functional use of the reading table can be realized; The corresponding setting of the upper rotation locking assembly enables the table board to be used stably in the corresponding mode and corresponding angle. The multi-functional reading table in the utility model has the advantages of simple structure and convenient use, can reliably realize the application in the reading mode and the painting and calligraphy mode, meets the multi-functional use requirements, provides convenience for preschool children to learn and play, and is beneficial to The development of children&#39;s good study habits and sitting habits has good practical value and promotion prospects."
+      }
+    ]
+  },
+  "physical": {
+    "name": "Physical development",
+    "type": "Health",
+    "subtype": "Physical development",
+    "description": "Text that is about supporting or measuring the physical development of young children, such as physical activity, motor skills, spatial awareness, stability, balance, using tools and equipment.",
+    "keywords": [
+      "motor skills",
+      "physical development",
+      "physical",
+      "spatial awareness"
+    ],
+    "filtering_keywords": ["motor", "physical", "spatial", "walk", "move"],
+    "examples": [
+      {
+        "label": "Relevant",
+        "text": "Devices systems and methods to develop infant hand-eye coordination and spatial awareness while interacting with a caretaker. An infant development device or toy including a body configured to be held by an adult, and a directional input manipulated by an infant. The device or toy performs various functions in response to different directional input provided by the infant. For example, the toy may provide audio output corresponding with the directional input and/or visual output on a display device corresponding with the directional input. The toy may also include one or more additional input devices designed to be manipulated by the adult to provide positive reinforcement or corrective prompts to the infant. To use the toy, the adult carries the infant while holding the toy in one hand. The adult then walks the infant in the direction (forward, backward, turn right, turn left, etc.) indicated by the toy in response to the infant&#39;s manipulation of the directional input device. Other variations and uses for the device are contemplated."
+      },
+      {
+        "label": "Not relevant",
+        "text": "A baby pillow with the function of soothing the mind and refreshing the brain. The utility model provides a baby pillow with functions of soothing the nerves and refreshing the brain, comprising a pillow cover, a first pillow core is arranged on the top of the inner side of the pillow cover, a groove is opened on the top of the first pillow core, and the inner side of the first pillow core is provided with a groove. A player is fixedly connected to both sides of the first pillow core, and a first ventilation groove is opened on the inner side of the first pillow core. The utility model provides a baby pillow with the function of soothing the nerves and refreshing the brain. The mint sachet has the effect of repelling mosquitoes to the baby, and has the effect of refreshing the mind. The mental state is conducive to the healthy development of children&#39;s bodies."
+      },
+      {
+        "label": "Not relevant",
+        "text": "A child seat with good safety performance for early childhood education. The utility model discloses a child seat with good safety performance for infant education, which comprises a first fixing block. Supporting legs are welded on the outer walls on both sides of the first fixing block near the bottom, and the supporting legs are far away from the first fixing block. One end of the block is connected with a support by bolts, the inner walls of both sides of the support are provided with first counterbores, and the inner walls of the two first counterbore are welded with second bearings, and the two second bearings are The inner wall is welded with a rotating shaft, and the outer wall of the rotating shaft is rolled and connected with a roller at the middle position, the top of the first fixing block is located at the middle position with a second counterbore, and the inner wall of the second counterbore is welded with a telescopic cylinder. The utility model can place some children&#39;s educational articles on the fixed plate, which is convenient for parents to educate children, improves the safety of the child seat, avoids the children falling off the chair due to the disorderly movement of the children and causes damage to the children, and is convenient for children to carry out the child seat. Mobile, improve the safety of device movement."
+      }
+    ]
+  },
+  "communication": {
+    "name": "Communication and language",
+    "type": "Development & learning",
+    "subtype": "Communication and language",
+    "description": "Text that is about supporting or measuring the development of children's spoken language, language acquisition, communication skills, speech. DOES NOT INCLUDE text that only generally mentions communication or speaking with children, but where it is not the primary focus of the text.",
+    "keywords": ["language", "communication", "speech"],
+    "filtering_keywords": ["language", "communicat", "speech"],
+    "examples": [
+      {
+        "label": "Relevant",
+        "text": "Electronic device for testing online non-face-to-face language development disorder, system, and control method thereof. In the control method of a system for the examination of online non-face-to-face language developmental disorders according to an embodiment of the present invention, the process of outputting at least one of an understanding language test question and an expression language test question through a display unit by a question information output unit ; acquiring, by the answer information acquisition unit, at least one of input information, audio information, and image information of answers of parents, infants, and children to the understanding language test question and the expression language test question; a process of analyzing, by the answer information analyzing unit, at least one of input information, audio information, and image information of the answers of the parents or infants and children"
+      },
+      {
+        "label": "Not relevant",
+        "text": "Selecting educational apps for preschool children: How useful are website app rating systems?. Abstract In the present paper, we assess whether website rating systems are useful for selecting educational apps for preschool age children. We selected the 10 highest scoring and 10 lowest scoring apps for 2–4‐year‐olds from two widely used websites (Good App Guide; Common Sense Media). Apps rated highly by the two websites had a higher educational potential as assessed by a validated questionnaire for evaluating the educational potential of apps and were more likely to include a learning goal and feedback compared to low scoring apps. However, high scoring apps scored on average just 9/20 for indicators of educational potential, and both high and low scoring apps had poor language quality as determined by psycholinguistic and construction type analyses. We argue that website rating systems should also include quality of feedback, adjustable content, social interactions, storyline and a more fine‐grained analysis of language in their assessments. Practitioner notes What is already known about this topic Appropriately designed apps for preschool age children have the potential to teach early school readiness skills. Selecting high quality educational apps for preschool age children is challenging. The children's app marketplace is currently unregulated. What this paper adds We assess whether two leading app rating websites are useful for selecting educational apps for preschool age children. Children's apps rated highly by two app website rating systems had a higher educational potential than low rated apps as measured by a research informed app evaluation tool. In‐depth analysis of the language in apps shows that highly rated children's apps on app rating websites may not enrich a child's early language environment. Implications for practice and/or policy Children's app rating website assessments should include potential for feedback, language, adjustable content, storyline and social interactions. Policy should be implemented for app ratings in the app stores or on website app rating systems."
+      },
+      {
+        "label": "Not relevant",
+        "text": "Systematic Child Talks in Early Childhood Education—A Method for Sustainability. One of a preschool teacher’s most important competencies is to be able to talk with children and to invite them to share their ideas, knowledge, and experiences. This skill is of utmost importance within Early Childhood Education for sustainability. The aim of this article is to show various ways in which preschool teachers carry out systematic talks with children. Data come from a large Swedish development and research project, Sustainable Preschool, involving around 200 teachers in Early Childhood Education. During the spring of 2022, the preschools carried out theme-oriented projects linked to sustainable development. The participating preschool teachers were then asked to carry out systematic child talks with children about learning for sustainability and their understanding of the sustainability-related content. "
+      }
+    ]
+  },
+  "emotional": {
+    "name": "Personal social emotional",
+    "type": "Development & learning",
+    "subtype": "Personal social emotional",
+    "description": "Text that is only about supporting or measuring the social and emotional development of young children. This could include aspects such as strong, warm and supportive relationships with adults, enabling children to learn how to understand their own feelings and those of others, managing emotions, developing a positive sense of self, setting themselves simple goals, have confidence in their own abilities, to persist and wait for what they want and direct attention as necessary, interactions with other children, making good friendships, co-operating and resolving conflicts peaceably.",
+    "keywords": [
+      "social development",
+      "emotional development",
+      "self-awareness",
+      "relationships"
+    ],
+    "filtering_keywords": [
+      "social development",
+      "emotion",
+      "emotional",
+      "emotions",
+      "feelings",
+      "feeling",
+      "mood",
+      "moods",
+      "psychological",
+      "psychology",
+      "relationship",
+      "relationships",
+      "interpersonal",
+      "empathy"
+    ],
+    "examples": [
+      {
+        "label": "Relevant",
+        "text": "Mindful Self-Care for Earlier Schooling. This chapter explores the role that mindful self-care practices play in helping students transition into attending school for the first time. Self-care practices are described in this chapter based on a thorough review of the literature focusing on the benefits for young students in early childhood educational settings. A thorough review of the literature has provided insight into five areas that address the following topics: (1) defining the concept of mindful self-care, (2) the impact of mindfulness practices on self-care, (3) the significance of modeling in learning to be self-cared, (4) benefits of self-care in the early childhood transitionary period, (5) long-term benefits of implementing self-care skills as socio-emotional competencies in early childhood, (6) implications for earlier public schooling, (7) educating starting at birth."
+      },
+      {
+        "label": "Not relevant",
+        "text": "Learning tableware set. The utility model provides a learning tableware set, which comprises a bowl body and a food spoon, wherein the food spoon is matched with the bowl body for use. The bowl body comprises a bowl bottom and an arc bowl wall, wherein one side of the bowl bottom is provided with an annular concave part, one side of the arc bowl wall is annularly arranged on the periphery of one side of the bowl bottom, and the other side of the arc bowl wall, which is not connected with the bowl bottom, is provided with a flange towards the central shaft of the bowl bottom. The food spoon comprises a holding part and a scooping part, wherein the scooping part is connected with the holding part, and the radian of one end of the scooping part far away from the holding part is consistent with the radian of the annular concave part. Therefore, the liquid food can be accumulated in the annular concave part at the bottom of the bowl, so that the infant can conveniently scoop up the food, and in the scooping process, the flange of the arc-shaped bowl wall can push the food to the center of the scooping part, so that the infant can scoop up the food more stably."
+      },
+      {
+        "label": "Not relevant",
+        "text": "A kind of composition with soothing and moisturizing effect and its preparation method and application. The present application discloses a composition with a soothing and moisturizing effect, and a preparation method and application thereof. The composition provided in the present application is obtained by symbiotic fermentation of Dendrobium officinale, Amomum, pomelo peel and jasmine. The composition provided in the present application has the functions of anti-oxidation, soothing and moisturizing, the composition is mild and non-irritating, and is suitable for use in child care products."
+      }
+    ]
+  },
+  "cognitive": {
+    "name": "Cognitive development",
+    "type": "Development & learning",
+    "subtype": "Cognitive development",
+    "description": "Text that is only about supporting or measuring the cognitive development of young children.",
+    "keywords": [
+      "cognition",
+      "memory",
+      "problem solving",
+      "executive function"
+    ],
+    "filtering_keywords": [
+      "cognit",
+      " iq ",
+      "intelligence",
+      "memory",
+      "executive"
+    ],
+    "examples": [
+      {
+        "label": "Relevant",
+        "text": "The Effective of Block Play and Pretend Play in Early Childhood Development. Cognitive, social, as well as affective development are significantly influenced by early childhood development. This study investigates how block play and pretend play independently or jointly influence the development of young children. The positive effects of block play and pretend play on early childhood development include language and communication skills, problem-solving abilities, social skills, and emotional regulation. In addition, research indicates that children who engage in block play later demonstrate superior academic achievement. It has been discovered that playing with blocks improves spatial reasoning, problem-solving, and creativity. Children gain a deeper comprehension of fundamental concepts, such as shape, size, and measurement, through block play. In this paper, the author discussed that block play and pretend play should be emphasised in the toddler years so as to promote the development of young children. This paper provides parents, educators, and policymakers with insights for fostering childrens cognition, sociability, and emotion through play-based learning environments."
+      },
+      {
+        "label": "Not relevant",
+        "text": "Ethno-Cultural Features in the Development of Social Interest in Children of Roma Origin in Pre-School Age. In preschool age, according to the classics of individual psychology A. Adler and R. Dreikurs, the lifestyle is formed and social interest develops. In its development, each child is placed at the center of a unique social circle of human relationships, namely child - family - teacher. The specific study focused on the manifestations of social interest in preschool children of different ethnic origins. The comparative analysis of the level of social interest in children of different ethnic origins shows statistical differences in its development. However, a very optimistic trend is emerging related to the results of pre-school education and training. The particular advantages, sustainability and effectiveness and the integrating nature of the paradigm of modern preschool education and upbringing in our country are revealed."
+      },
+      {
+        "label": "Not relevant",
+        "text": "An autonomous intelligent mattress for an infant. An intelligent mattress for an infant, comprises a) a plurality of sensors adapted to provide data relative to physical parameters and vital signs of the infant; and b) a computing device configured to collect and process said provided data in order to obtain an actual behavior of the infant, to compare said processed data with predefined behavioral patterns, to respond according to response scripts associated with a detected predefined behavioral pattern, and to update the database of predefined behavioral patterns, while considering past events and parameters affected by the infant&#39;s development."
+      }
+    ]
+  },
+  "send": {
+    "name": "Special educational needs",
+    "type": "Development & learning",
+    "subtype": "Special educational needs",
+    "description": "Text that is only about supporting or measuring special needs and disabilities in young children, such as learning difficulties, autism spectrum disorder, dyslexia, attention deficit hyperactivity disorder and others",
+    "keywords": [
+      "special needs",
+      "disability",
+      "disabilities",
+      "learning difficulties",
+      "autism",
+      "spectrum disorder",
+      "dyslexia",
+      "attention deficit",
+      "hyperactivity"
+    ],
+    "filtering_keywords": [
+      "delay",
+      "disorder",
+      "disorders",
+      "disability",
+      "disabled",
+      "disabilities",
+      "special needs",
+      "learning difficulties",
+      "learning difficulty",
+      "autism",
+      "autist",
+      "spectrum",
+      "dyslexia",
+      "attention deficit",
+      "hyperactivity",
+      "delay",
+      "impairement",
+      "impaired",
+      "adhd",
+      "special educational needs",
+      " send "
+    ],
+    "examples": [
+      {
+        "label": "Relevant",
+        "text": "Temperament predicts challenging behavior in children with autism spectrum disorder at age 5. Challenging behaviors during early childhood have a significant impact on cognitive and social development. The present study aimed to identify the developmental predictors of these behaviors in preschool aged children with Autism Spectrum Disorder (ASD) at 2-year follow-up. We examined temperament, which has been identified as key to emotion regulation in typical development, as well as developmental level and ASD symptom severity, as potential predictors of parent-reported challenging behavior.Forty-three parents of preschool aged children with ASD from a previous study were invited to participate. Data from 26 children with ASD aged 4-6 years (M = 5, SD = .60) were available for follow-up analyses. Developmental level, ASD symptom severity, and temperamental difficulty at baseline were considered as potential predictors of frequency and severity of challenging behavior at follow-up.Baseline negative affectivity was uniquely predictive of frequency of challenging behavior at follow-up. Although no individual variable was identified as a unique predictor of variance, the combined effects of temperament were predictive of the severity of challenging behavior at follow-up, contributing to 46 % of variance in scores.These findings highlight the potential impact of emotion-regulation related aspects of temperament on later emerging challenging behavior in young children with ASD, suggesting opportunities for early intervention. Results also identified a role for developmental level in the severity of challenging behavior, but suggest that the effect may be metered by temperament."
+      },
+      {
+        "label": "Not relevant",
+        "text": "A baby soothing device for pediatric intensive care unit. The invention discloses a baby soothing device used in a pediatric intensive care unit. The invention belongs to the technical field of baby care, and specifically refers to a baby soothing device for pediatric intensive care unit, which includes a magnetically guided floating baby soothing mechanism, a manual magnetically guided sucker, a baby incubator and a mobile bracket. The suction cup applies the magnetic force to the magnet on the top of the light floater, and the moving manual magnetic force guides the suction cup to drive the light floater to move in the transparent liquid container, so as to distract the baby and play a soothing role, which effectively solves the current serious problem in pediatrics. In the intensive care unit, there are problems such as damage to the baby&#39;s physical function, poor comfort effect, disinfection dead corners in the comfort device, and interference with medical equipment."
+      },
+      {
+        "label": "Not relevant",
+        "text": "Teaching equipment for learning and learning Chinese of children. The invention discloses a teaching device for learning and learning Chinese of infants, which comprises a protective shell, wherein the bottom and the top of an inner cavity of the protective shell are respectively provided with an adjusting device, one side of the adjusting devices, which is close to each other, is movably connected with an inner shell, the left side of the bottom of the inner cavity of the inner shell is fixedly connected with a first isolation plate, the inner cavity of the inner shell is symmetrically arranged at the left side of the first isolation plate and is provided with a voice sound, the bottom of the inner cavity of the inner shell is symmetrically arranged at the right side of the first isolation plate and is provided with a pinyin module, the bottom of the inner cavity of the inner shell is fixedly connected with a writing and drawing module at one side of the pinyin module, which is far away from the first isolation plate, the top of the inner cavity of the. The device has an external protection structure, so that the device is protected from being damaged when being used by infants, the service life of the device is prolonged, and the personal safety of the infants is protected."
+      }
+    ]
+  },
+  "sleep": {
+    "name": "Sleep",
+    "type": "Health",
+    "subtype": "Sleep",
+    "description": "Text that is only about supporting or measuring sleep for young children and the influence of sleep on child development.",
+    "keywords": [
+      "sleep",
+      "sleep patterns",
+      "sleep quality",
+      "sleep duration",
+      "bedtime"
+    ],
+    "filtering_keywords": [
+      "sleep",
+      "bed",
+      "cradle",
+      "crib",
+      " cot ",
+      " nap ",
+      "night",
+      "pillow",
+      "snooze",
+      "wake"
+    ],
+    "examples": [
+      {
+        "label": "Relevant",
+        "text": "Smart bed with new mattress structure. The utility model discloses an intelligent bed with a novel mattress structure, which comprises an intelligent bed frame, four corners at the bottom of the intelligent bed frame are fixedly installed with supporting legs, and a lifting fence is fixedly installed between the four supporting legs, and the lifting fence includes Fence and two electric lifts, the two sides of the bottom of the fence are fixed with electric lifts, the two electric lifts include lifting platform, fixed platform and cross lifting frame, one end of the bottom of the lifting platform and one end of the top of the fixed platform are both The rotating seat is fixedly installed. The mattress of the utility model has high air permeability. The baby movement monitor monitors the behavior of infants on the mattress in real time to avoid suffocation of infants. The non-contact infrared temperature measuring gun real-time The body temperature of infants is measured, the speaker plays lullaby, and the baby on the mattress is soothed. It has high practicability. The fence can gradually increase the height of the fence according to the needs of children, and realizes the cradle function, which is helpful for infants and young children on the mattress to sleep."
+      },
+      {
+        "label": "Relevant",
+        "text": "The relationship between screen time before bedtime and behaviors of preschoolers with autism spectrum disorder and the mediating effects of sleep. There are overlapping effects of screen time and sleep on children's behavior. The purpose of this study was to explore the relationship of screen time with behavior problems in children with autism spectrum disorder (ASD) and the probable mediating effects of sleep, in order to provide evidence for the need for clinical identification and intervention.A sample of 358 preschoolers with ASD were included. We investigated the children's basic characteristics of sex and age, ASD symptoms (ABC, CARS, and ADOS-2), neurodevelopment (GDS-C), sleep habits (CSHQ), and behavior (CBCL). Pearson correlation tests were used to determine the direct correlations among children's screen time, CBCL, and CSHQ. Linear regression analysis was used to explore whether screen time predicted total score of CBCL. Multi-step linear regression analysis was used to investigate the mediating effect of sleep on the relationship between screen time and total score of CBCL.Screen time before bedtime was correlated with CBCL and CSHQ, which indicated that screen time before bedtime was correlated with sleep and behavior in children with ASD. Screen time before bedtime was a predictor of CBCL total score (indicating children's behavior), and CSHQ total score (indicating children's sleep habits) played a partial mediating role between screen time before bedtime and children's behavior.Clinicians should support and educate parents of children with ASD, which should focus on managing screen time, especially screen time before bedtime."
+      },
+      {
+        "label": "Not relevant",
+        "text": "Method, device, computer equipment and storage medium for detecting milk-spitting behavior of infants. The invention relates to a method, device, computer equipment, and storage medium for detecting milk-spitting behavior of infants. The method includes acquiring several images of infants during sleep to form a sequence of images to be detected; performing face positioning on the sequence of images to be detected to obtain an initial image sequence; analyzing and processing the initial image sequence to obtain a frame difference sequence; establishing a three-dimensional model diagram according to the frame difference sequence to obtain multiple connected domains; calculating the area in multiple connected domains and filtering to obtain the maximum connected domain area, To obtain the area of the target connected domain; calculate the rate of change corresponding to the area of the target connected domain; judge whether the area of the target connected domain and the rate of change meet the set conditions; if so, send a warning notification to the terminal to prompt the terminal Holder. The invention realizes the high-quality detection of the milk-spitting behavior of infants, improves the accuracy of the whole detection, and reduces the detection complexity."
+      }
+    ]
+  },
+  "infancy": {
+    "name": "Infancy",
+    "type": "General",
+    "subtype": "Infancy",
+    "description": "Text that is only about supporting or measuring the development of infants, newborns and children between 0 and 2 years of age.",
+    "keywords": ["age 1", "age 2", "infant", "infancy", "newborns"],
+    "filtering_keywords": [
+      "infant",
+      "infan",
+      "newborn",
+      "age 1",
+      "age 2",
+      "baby"
+    ],
+    "examples": [
+      {
+        "label": "Relevant",
+        "text": "Baby stroller intelligent control system. The invention is applicable to the technical field of baby carriages, and provides an intelligent control system for a baby carriage, comprising a central controller, an operation module, a transmission module, a communication module, a driving module, a function module, an interface module and a power supply module; the central controller is electrically connected to For the running module, the transmission module, the communication module and the power supply module, the communication module is electrically connected to the driving module, the function module and the interface module, and the interface module is electrically connected to the power supply module. Thereby, the present invention realizes the real-time monitoring and care of the baby through the intelligent control system and the automatic detection system, and the intelligent control system is equipped with a voice module and a wireless video module, so as to realize intelligent child care and reduce the burden of the mother and father; The module adopts detection technology to supervise various indicators of the baby&#39;s body to ensure the comfort and safety of the baby."
+      },
+      {
+        "label": "Not relevant",
+        "text": "Providing equipment, providing method, providing program and providing system. PROBLEM TO BE SOLVED: To provide a providing device, a providing method, a providing program and a providing system which provide useful information for a user who raises a child.  SOLUTION: The providing device 100 has a determination unit 133 for determining an attribute related to pregnancy or childcare of the user based on an action related to the development of a child performed by the user via a user terminal 10, and the determination. The selection unit 134 that selects the provision information to be provided to the user based on the attribute determined by the unit 133, and the provision information selected by the selection unit 134 are transmitted to the user terminal 10 via the user terminal 10. It has a providing unit 135 that provides to the user.  [Selection diagram] Fig. 1"
+      },
+      {
+        "label": "Not relevant",
+        "text": "The Relationship between Rehabilitation of Severe Early Childhood Caries and Well-Being in 5 Years Old Patient, A Case Report. Early Childhood Caries (ECC) is a public health problem that continues to affect infants and preschool children worldwide, and severe destruction of primary teeth due to caries is a common occurrence in children under 6-years-old. The purpose of this report was to present a case of a 5-yearold patient with severe ECC and the effect of mouth rehabilitation on child’s lifestyle. In this case a comprehensive treatment plan was followed, including many types of procedures to achieve functional requirements which have important role in nutrition and proper development in this age."
+      }
+    ]
+  },
+  "rct": {
+    "name": "RCTs",
+    "type": "General",
+    "subtype": "RCTs",
+    "description": "Text that is mentions the use of randomised control trials - a form of scientific experiment used to control factors not under direct experimental control.",
+    "keywords": [
+      "randomised control trial",
+      "randomized control trial",
+      " rct "
+    ],
+    "filtering_keywords": ["randomised", "randomized", "rct"],
+    "examples": [
+      {
+        "label": "Relevant",
+        "text": "Protocol for a randomised trial evaluating a preconception-early childhood telephone-based intervention with tailored e-health resources for women and their partners to optimise growth and development among children in Canada: a Healthy Life Trajectory Initiative (HeLTI Canada). Introduction The ‘Developmental Origins of Health and Disease’ hypothesis suggests that a healthy trajectory of growth and development in pregnancy and early childhood is necessary for optimal health, development and lifetime well-being. The purpose of this paper is to present the protocol for a randomised controlled trial evaluating a preconception-early childhood telephone-based intervention with tailored e-health resources for women and their partners to optimise growth and development among children in Canada: a Healthy Life Trajectory Initiative (HeLTI Canada). The primary objective of HeLTI Canada is to determine whether a 4-phase ‘preconception to early childhood’ lifecourse intervention can reduce the rate of child overweight and obesity. Secondary objectives include improved child: (1) growth trajectories; (2) cardiometabolic risk factors; (3) health behaviours, including nutrition, physical activity, sedentary behaviour and sleep; and (4) development and school readiness at age 5 years. Method and analysis A randomised controlled multicentre trial will be conducted in two of Canada’s highly populous provinces—Alberta and Ontario—with 786 nulliparous (15%) and 4444 primiparous (85%) women, their partners and, when possible, the first ‘sibling child.’ The intervention is telephone-based collaborative care delivered by experienced public health nurses trained in healthy conversation skills that includes detailed risk assessments, individualised structured management plans, scheduled follow-up calls, and access to a web-based app with individualised, evidence-based resources. An ‘index child’ conceived after randomisation will be followed until age 5 years and assessed for the primary and secondary outcomes. Pregnancy, infancy (age 2 years) and parental outcomes across time will also be assessed. Ethics and dissemination The study has received approval from Clinical Trials Ontario (CTO 1776). The findings will be published in peer-reviewed journals and disseminated to policymakers at local, national and international agencies. Findings will also be shared with study participants and their communities. Trial registration number ISRCTN13308752 ; Pre-results."
+      },
+      {
+        "label": "Not relevant",
+        "text": "The impacts of family treatment drug court on child welfare core outcomes: A meta-analysis. Substance abuse has been prevalent among caregivers involved in child welfare and is a major barrier to their achieving favorable outcomes. Family Treatment Drug Courts (FTDCs) have been viewed as one of the most promising interventions but research has reported mixed effects on child welfare outcomes. No meta-analysis was conducted to synthesize the findings to reach a more generalizable conclusion. The meta-analysis synthesized findings from existing evaluations to examine whether and to what extent FTDC participants achieved better reunification and safety outcomes than non-participants. Among 17 identified studies dated from 2004 to 2018, the pooled sample subjects in the intervention and comparison groups were 3402 and 3683 for the 16 studies on reunification outcomes, and 842 and 632 for the eight studies on child safety outcomes. We first estimated the FTDCs’ pooled effects on child reunification and safety outcomes. Furthermore, we conducted a series of subgroup meta-analysis to compare FTDCs’ effects across study and program characteristics. Subjects participating in FTDCs were substantially more likely to achieve reunification (OR = 1.75, 95% CI = 1.38, 2.22) without increasing the risk of subsequent foster care reentry or maltreatment re-report. Subgroup meta-analysis suggests factors such as research design, FTDC model, observation length, publication type and period may contribute to FTDCs’ disparities on reunification outcomes. The synthesized findings strengthen evidence for the implementation and expansion of FTDCs for serving substance abusing caregivers in the child welfare system."
+      }
+    ]
+  },
+  "social_media": {
+    "name": "Social media",
+    "type": "Technology",
+    "subtype": "Internet",
+    "description": "Text that is only about the use online social media to support or measure the development of young children, or about the impact of social media on parents and young children. DO NOT INCLUDE text that is simply about digital technologies in general (without explicitly mentioning social media).",
+    "keywords": [
+      "social media",
+      "facebook",
+      "instagram",
+      "whatsapp",
+      "mumsnet",
+      "netmums",
+      "youtube",
+      "online network",
+      "online community",
+      "forum",
+      " sms ",
+      "messaging",
+      "chat",
+      "tweet",
+      "twitter",
+      "snapchat",
+      "tiktok",
+      "linkedin",
+      "pinterest",
+      "reddit",
+      "tumblr",
+      "myspace"
+    ],
+    "filtering_keywords": [
+      "social media",
+      "facebook",
+      "instagram",
+      "whatsapp",
+      "mumsnet",
+      "netmums",
+      "youtube",
+      "online network",
+      "online community",
+      "forum",
+      " sms ",
+      "messaging",
+      "chat",
+      "tweet",
+      "twitter",
+      "snapchat",
+      "tiktok",
+      "linkedin",
+      "pinterest",
+      "reddit",
+      "tumblr",
+      "myspace"
+    ],
+    "examples": [
+      {
+        "label": "Relevant",
+        "text": "A systematic review exploring the impact of social media on breastfeeding practices. Social media has potential to promote and support positive health behaviours. This systematic review explores the influence of social media on breastfeeding decision-making, promotion and support. For the purpose of the review, social media was defined as social networking sites and blogs; M-technology and apps were only considered if they included an interactive element, such as a ‘share’ function, or one-to-many communication. Searches were conducted on EBSCO across seven databases (limited to 2007–2019). Of the 1261 papers initially identified, 22 met the inclusion criteria for the current review. Results are mixed, but there is evidence that social media can be used to improve breastfeeding awareness and attitudes. Breastfeeding mothers value pro-breastfeeding online communities. However, the success of such social media groups may be dependent on specific content shared, individual contributors, and group dynamics. Key considerations for practitioners are offered regarding how social media can augment services offered to support breastfeeding. Research in this field is still very much in its infancy. Further investigation of specific social media content is needed, alongside the viewpoints of those who have ceased breastfeeding against their wishes."
+      },
+      {
+        "label": "Not relevant",
+        "text": "Analysis Of Social Development Of Early Children: Challenges And Solutions In The Digital Era. The aim of the research is to describe and analyze the social development of early childhood in the digital age, uncover challenges and solutions faced by parents, teachers and society. This research method uses qualitative methods with the type of literature review research. Data sources use two kinds of data, namely primary data and secondary data. Primary data is obtained directly from collecting data from research journals, books, websites that are relevant to the study of early childhood social development in the digitalization era and secondary data sources (basic government legal regulations, books, etc.). The data analysis technique uses content analysis. The results of this study indicate that as many as 47% of parents spend all day in front of gadget screens, and most of their children already have an emotional bond with gadget devices. Solutions in more intensive surveillance research for parents in using smartphones at home, making certain programs to use gadgets. The recommendation from this study is that a special learning model is needed at home in using gadgets with certain programs in fostering social development."
+      },
+      {
+        "label": "Not relevant",
+        "text": "Impact of Screen Time on Children’s Development: Cognitive, Language, Physical, and Social and Emotional Domains. Technology has become integral to children’s lives, impacting many aspects, from academic to socialization. Children of today’s generation are growing up with digital devices, such as mobile phones, iPads, computers, video games, and smart gadgets; therefore, screen time has become ubiquitous in children’s daily routines. This paper provides a review of screen time usage and its impact in children across multiple developmental domains: cognitive, language, physical, and socio-emotional domain of children under eight years of age. The cognitive domain considers factors such as attention span and memory; language domain examines vocabulary, speech, and language development; physical domain focuses on motor development, exercise, sleep, and diet; and social-emotional domain considers relationships, self-identity, and emotional behaviors/regulation. Our findings are mixed, as there are both benefits and drawbacks in technology use, but screen time in children requires controlled observation and monitoring for sustainable improved progress across developmental domains. Specific recommendations advise that children’s screen time per day should be limited to zero minutes (min) (0–2 years), &lt;60 min (3–5-years), and 60 min (6–8 years)."
+      }
+    ]
+  },
+  "robotics": {
+    "name": "Robotics",
+    "type": "Technology",
+    "subtype": "Immersive tech",
+    "description": "Text that is only about the use of robotics to support or measure the development of young children. DO NOT INCLUDE text that is simply about digital technologies or hardware in general (without explicitly mentioning robots or robotics)",
+    "keywords": ["robot", "robotics"],
+    "filtering_keywords": ["robot", "automat", "control"],
+    "examples": [
+      {
+        "label": "Relevant",
+        "text": "Learning Computational Thinking Development in Young Children With Bee-Bot Educational Robotics. It is widely known that when used intentionally and appropriately, technology and interactive media are effective tools to support learning and development. In recent years, there has been a push to introduce coding and computational thinking in early childhood education, and robotics is an excellent tool to achieve this. This chapter presents some results obtained in the development of a learning experience in computational thinking using Bee-Bot educational robotics. The experience involved 47 preschoolers of a kindergarten in Crete, Greece during the period 2019-2020. The study reports statistically significant learning gains between the initial and final assessment of children's computational thinking skills. It was found that children in the treatment group who engaged in the robotic curricular intervention performed better on CT tests. This finding shows that an enhanced teaching experience using robots was beneficial for improving young children's computational thinking skills. The implications for designing appropriate curricula using robots for kindergarteners are addressed."
+      },
+      {
+        "label": "Not relevant",
+        "text": "Method of analyzing infant behavior using three dimensional modeling and server performing the same. The infant behavior analysis server through three-dimensional modeling according to an embodiment of the present invention receives three-dimensional image data generated based on image data among image data captured by an image photographing device formed in a space where infants and young children are active. A 3D image data receiving unit, an audio data receiving unit for receiving audio data among the image data captured by the imaging device, and analyzing the 3D image data and the audio data to obtain 3D image data and audio data for each predetermined situation type After segmentation, a context tag allocator for allocating different context tags to each of the divided three-dimensional image data and audio data, and a context tag corresponding to the analysis target type among the three-dimensional image data to which the context tags are respectively assigned Analyze the 3D image data to extract a specific behavior pattern corresponding to the type of analysis target, and if the specific behavior pattern exists in a pre-created behavior pattern database, the voice data and behavior pattern at the time the behavior pattern is extracted and an infant monitoring unit for generating infant monitoring information corresponding to the type of analysis target by using it."
+      },
+      {
+        "label": "Not relevant",
+        "text": "A kind of folding cart of learning to walk. The utility model relates to mother and baby&#39;s product technical fields, provide a kind of folding cart of learning to walk, including vehicle body, set on the two front wheels and two rear-wheels of the body bottom, it further include two support legs, two rear-wheels are respectively arranged on the bottom of two support leg, rotation locking mechanism is respectively equipped between the top of two support legs and the two sidewalls of the vehicle body so that the support leg rear-wheel lands when rotating and being locked to the vehicle body back side or when support leg is rotated to the vehicle body side wall reclines storage.In the utility model, by rotating locking mechanism, support leg can be made to rotate and be locked to vehicle body back side, two rear-wheels land at this time, and cart of learning to walk can be used normally；After use, support leg can also be made to rotate to vehicle body side-walls and the vehicle body side wall that reclines locking by rotating locking mechanism, in this way, reducing cart occupied space of learning to walk by after two support legs and the storage of two rear-wheels, being convenient for carrying and store."
+      }
+    ]
+  },
+  "genetics": {
+    "name": "Genetics",
+    "type": "Biosciences",
+    "subtype": "Genetics",
+    "description": "Text that is only about the use of genetics methods and research to support or measure the development of young children. DO NOT INCLUDE text that is simply about biological research (without explicitly mentioning genetics or genes)",
+    "keywords": ["genetics", "genes", "heredity"],
+    "filtering_keywords": [
+      "genes",
+      " gene ",
+      "heredit",
+      "genetic",
+      "genomic",
+      "genotype",
+      "phenotype",
+      "inherit",
+      "chromosome",
+      "mutation",
+      "allele",
+      " dna ",
+      " rna ",
+      "protein",
+      "methyl"
+    ],
+    "examples": [
+      {
+        "label": "Relevant",
+        "text": "Heritability of Psychological Traits and Developmental Milestones in Infancy. <h3>Importance</h3> Although infancy is the most rapid period of postnatal growth and development, factors associated with variation in infant traits are not well understood. <h3>Objective</h3> To synthesize the large twin study literature partitioning phenotypic variance in psychological traits and developmental milestones in infancy into estimates of heritability and shared and nonshared environment. <h3>Data Sources</h3> PubMed, PsycINFO, and references of included publications were searched up to February 11, 2021. <h3>Study Selection</h3> Peer-reviewed publications using the classical twin design to study psychological traits and developmental milestones from birth to 2 years old were included. <h3>Data Extraction and Synthesis</h3> Data were extracted in line with Preferred Reporting Items for Systematic Reviews and Meta-Analyses and categorized using the<i>International Classification of Functioning, Disability and Health: Children and Youth Version</i>. Data were pooled in 3-level random effects models, incorporating within-cohort variance in outcome measurement and between-cohort variance. Data were analyzed from March 2021 through September 2021. <h3>Main Outcomes and Measures</h3> The primary outcomes were monozygotic and dizygotic twin correlations. These were used to calculate genetic and shared and nonshared environment estimates. <h3>Results</h3> Among 139 publications that were systematically retrieved, data were available on 79 044 twin pairs (31 053 monozygotic and 47 991 dizygotic pairs), 52 independent samples, and 21 countries. Meta-analyses were conducted on psychological traits and developmental milestones from 106 publications organized into 10 categories of functioning, disability, and health. Moderate to high genetic estimates for 8 categories were found, the highest of which was psychomotor functions (pooled<i>h2</i>, 0.59; 95% CI, 0.25-0.79;<i>P</i> &lt; .001). Several categories of traits had substantial shared environment estimates, the highest being mental functions of language (pooled<i>c2</i>, 0.59; 95% CI, 0.24-0.86;<i>P</i> = .001). All examined categories of traits had moderate or high nonshared environment estimates, the highest of which were emotional functions (pooled<i>e2</i>, 0.42; 95% CI, 0.33-0.50;<i>P</i> &lt; .001) and family relationships (pooled<i>e2</i>, 0.42; 95% CI, 0.30-0.55;<i>P</i> &lt; .001). <h3>Conclusions and Relevance</h3> These findings may be an important source of information to guide future gene discovery research, public perspectives on nature and nurture, and clinical insights into the degree to which family history and environments may estimate major domains of infant functioning, disability, and health in psychological traits and developmental milestones."
+      },
+      {
+        "label": "Not relevant",
+        "text": "A kind of infant supplementary food nutrition package mediated by nitrogen in the whole process and preparation method thereof. The invention relates to a whole-process nitrogen-mediated supplementary food nutrition package for infants and a preparation method thereof, belonging to the technical field of creation of high-quality infant and young children&#39;s supplementary food nutrition package, and in particular to a whole-process nitrogen-mediated vibration screening of main materials, &#34;nitrogen&#34; The key technologies for the production of nutrition packs are the three-stage pneumatic equalization mixing, double quantitative precision filling, heat fusion quick sealing and cooling quick break, and for the first time using vitamin acetate A and cholecalciferol decay rate and scanning electron microscope SEM map are important indicators of the quality of infant complementary food nutritional packages. The accelerated storage test for 60 days confirmed that the quality deterioration rate of infant complementary food nutritional packages produced under the mediation of nitrogen throughout the whole process was significantly lower than The control group (P&lt;0.05) provided important research ideas for promoting the innovation and development of the high-quality nutritional package industry."
+      },
+      {
+        "label": "Not relevant",
+        "text": "Association of perinatal factors with suspected developmental delay in urban children aged 1–36 months - a large-scale cross-sectional study in China. Abstract Background Studies on perinatal risk factors and the developmental delay of children have been inconclusive and few studies have assessed the association between infants and toddlers’ body mass index (BMI) and developmental outcomes. Methods We conducted a cross-sectional study of children aged 1—36 months who had a routine physical examination in the child health departments of hospitals from March 2018 to November 2021 in 16 provinces, 4 autonomous regions and 2 municipalities directly under the central government by using the Infant Toddler Growth Development Screening Test (ITGDST). Normal children were defined as those with scores ≥ mean – 2 standard deviations (SD), while children with developmental delay were those with scores &lt; mean—2SD in terms of overall development, gross motor, fine motor and language development. Binary logistic regression was used to analyze the risk factors of gross motor, fine motor, language and overall neurodevelopment. Results After removing some provinces with a small sample size and children with incomplete data, 178,235 children with 12 complete variables were included in the final analysis. The rate of overall developmental delay was 4.5%, while 12.5% of children had at least one developmental delay aspect. Boys, parity, advanced maternal age, multiple birth, cesarean section, neonatal injury, family heredity history, microcephaly, abnormal BMI at birth and at physical examination after controlling the confounding of other factors had a significant effect on development delay (overall neurodevelopment, gross motor, fine motor or language development). Per capita gross domestic product was a protective factor for the children’s neuropsychological development. Conclusions This study reveals significant associations of perinatal factors and BMI with developmental delay in the Chinese children aged 1–36 months, which may be crucial for early intervention."
+      }
+    ]
+  },
+  "neuroscience": {
+    "name": "Neuroscience",
+    "type": "Biosciences",
+    "subtype": "Neuroscience",
+    "description": "Text that is only about the use of neuroscience methods and research (for example, neurobiology, brain imaging, eye tracking) to support or measure the development of young children. Also include research considering IQ. DO NOT INCLUDE text that is simply about biological research (without explicitly mentioning neuroscientific topics). ",
+    "keywords": ["neuroscience", "brain", "brain development", "brain imaging"],
+    "filtering_keywords": [
+      "neuro",
+      "brain",
+      " iq ",
+      " eye ",
+      "fmri",
+      " eeg ",
+      " mri ",
+      "neural",
+      "cortex",
+      "cortic",
+      " mind ",
+      "cognit",
+      "nerve"
+    ],
+    "examples": [
+      {
+        "label": "Relevant",
+        "text": "Systems and methods for assessing infant and child development via eye tracking. Systems, devices, and methods are described for assessing the risk of developmental, cognitive, social, or mental abilities or disabilities in very young patients (e.g., in the first 2-6 months of life). Generally, the decline in visual fixation of a subject over time with respect to certain dynamic stimuli provides a marker of possible abilities or disabilities (such as ASD). The visual fixation of the subject is identified, monitored, and tracked over time through repeated eye tracking sessions, and data relating to the visual fixation is then analyzed to determine a possible increased risk certain conditions in the subject. A change in visual fixation as compared to similar visual fixation data of typically-developing subjects or to a subject&#39;s own, prior visual fixation data provides an indication of a developmental, cognitive, or mental ability or disability."
+      },
+      {
+        "label": "Relevant",
+        "text": "Young Children’s Memories for Social Actions: Influences of Age, Theory of Mind, and Motor Complexity. Children learn actions performed by a social partner better when they misremember these actions as their own. Identifying the factors that alter the propensity to make appropriation errors is critical for optimizing social learning. In two experiments ( N = 110), we investigate the developmental trajectory of appropriation errors and examine social‐cognitive and motor‐related factors in 3‐ to 8‐year‐olds. Children with better theory of mind (ToM) skills made fewer appropriation errors for motorically complex actions. Appropriation errors did not differ as a function of ToM if children could perform the corresponding actions. A second experiment replicated this effect and found no influence of collaborative context on appropriation errors. This research sheds light on the complex relations among development, social‐cognition, and motor‐related factors."
+      },
+      {
+        "label": "Not relevant",
+        "text": "A child behavior monitoring system and its determination method based on motion determination sensor and deep learning technology. The present invention proposes a child behavior monitoring system and its determination method based on motion determination sensors and deep learning technology. The monitoring system includes two modes of image processing and gait recognition. The above two modes are mutually integrated to improve the determination accuracy of infant behavior . Image processing is based on deep learning technology. By using CNN to train the classified pictures of children, the corresponding classification model is obtained, and the movement change data of children at the time t is monitored spatially, so as to better predict the action of the next frame. Compared with the traditional single-frame identification and judgment, the present invention has good predictability. In order to deal with the misjudgment that may be caused by image processing, the present invention integrates gait recognition into it, perceives the actual action of the child&#39;s behavior, and combines the acceleration change difference and pressure sensitivity change difference generated by the child&#39;s behavior on the basis of learning the child&#39;s behavior picture. Feedback learning. The combination of the above two methods effectively improves the accuracy and predictive ability of children&#39;s behavior monitoring."
+      }
+    ]
+  },
+  "operations": {
+    "name": "Operations",
+    "type": "Child care & preschool",
+    "subtype": "Operations",
+    "description": "Text that is about topics directly relating to administrative operations, logistics, programme management, paperwork, task management in the context of supporting or measuring the development of young children. For example, this could relate to administrative tasks in a childcare setting, preschool, kindergarten or social services. DO NOT INCLUDE text that is simply about general business operations or management, or that is about the management of a research study or project (without an application to a real-world setting).",
+    "keywords": [
+      "logistics",
+      "logistical",
+      "management",
+      "manager",
+      "administrate",
+      "administrative",
+      "administrator",
+      "business",
+      "paperwork"
+    ],
+    "filtering_keywords": [
+      "logistics",
+      "logistical",
+      "management",
+      "manager",
+      "administrate",
+      "administrative",
+      "administrator",
+      "business",
+      "paperwork"
+    ],
+    "examples": [
+      {
+        "label": "Relevant",
+        "text": "Early Children's Education Management at GMIM Betlehem Kindergarten Level II. The management of Early Childhood Education (PAUD) at GMIM Betlehem Kindergarten Tataraan II Tondano presents challenges that demand attention. This study delves into the intricacies of PAUD management implementation. Conducted at the Ministry of Education of the Republic of Korea (GMIM), the research scrutinizes the management practices within the institution. The data collection employed a combination of documentation, observation, and interview methods. The evaluation of PAUD management yields insightful findings. Notably, observation proves to be an effective tool in fostering students' object recognition and social abilities. Several components constitute the management of PAUD at GMIM Betlehem Kindergarten Tataraan II. The meticulous planning involves formulating a vision, mission, and institutional objectives, creating a comprehensive academic calendar, developing yearly programs structured into semesters, and crafting weekly and daily activity plans. Despite these efforts, the program's yearly updates lack responsiveness to on-the-ground developments. Implementation faces challenges due to insufficient teaching staff, a consequence of the substantial number of students in each class. Evaluating student progress is crucial, with the research emphasizing two stages: learning assessment and progress reporting. The assessment incorporates techniques such as observation, performance demonstrations, and anecdotal records. The findings contribute to the ongoing discourse, serving as a benchmark for educators to refine future teaching plans. In essence, addressing the complexities of PAUD management at GMIM Betlehem Kindergarten Tataraan II requires strategic planning, sufficient staffing, and a commitment to adapting programs based on regular assessments."
+      },
+      {
+        "label": "Not relevant",
+        "text": "A protective cover body structure of a child care bed. The utility model relates to the field of medical equipment, in particular to a protective cover structure for a child care bed, which comprises a bed body, four bed body brackets arranged on the top corners of the bottom surface of the bed body, and a protective bar is arranged on one side of the bed body. The other side of the body is provided with a rotating hinge, the top surface of the bed is provided with a grid baffle, one side wall of the grid baffle is movably connected with the bed body through the rotating hinge, and the top surface of the grid baffle is provided with a mesh. The mesh support frame is provided with mesh strips, the side walls of the grid baffle are provided with clamping blocks, the side walls of the bed are provided with clamping block grooves matched with the clamping blocks, and the grid baffles are provided with clamping blocks. There is a push-cover handle on the other side wall of the child care bed; therefore, it has a broad market prospect to produce a child care bed protective cover body structure with a simple structure and convenient adjustment of the height of the bed curtain and the bed curtain."
+      },
+      {
+        "label": "Not relevant",
+        "text": "Establishment of Childhood's Discipline Characters in a Clean and Healthy Life Behavior in The Pandemic Covid-19. Clean and healthy living behavior is a big challenge in early childhood education, especially during the Clean and healthy living behavior is a big challenge in early childhood education, especially during the covid 19 pandemic. One of the primary keys, in this case, is the disciplined character of children. This study aims to analyze the character of children's discipline in implementing Clean and Healthy Life Behavior during the Covid-19 Pandemic. This research is a type of qualitative research with a descriptive approach. Data analysis was carried out by systematically analyzing data obtained from interviews, field notes, and other materials so that they were quickly accessible and informed to others. The results showed that children's discipline in implementing Clean and Healthy Behavior (PHBS) during the Covid-19 pandemic was optimal. It showed the character of the following actions: using masks or face shields, hand washing discipline, and discipline in the application. From social distancing, discipline in activities, discipline in consuming healthy food, and discipline in maintaining environmental cleanliness. Then the factors that influence the disciplined character of children in implementing clean and healthy living behavior during the Covid-19 pandemic consist of internal factors in the form of habits and heredity and external factors in the form of education and environmental factors."
+      }
+    ]
+  },
+  "policy": {
+    "name": "Policy",
+    "type": "General",
+    "subtype": "Policy",
+    "description": "Text that is about government policy related to child development, such as policies on early childhood education, child development support, childcare, or child welfare. DO NOT INCLUDE text that is simply about general government policy or policy in other areas (eg, health policy) without a direct application to child development.",
+    "keywords": ["policy", "policies"],
+    "filtering_keywords": [
+      "polic",
+      "politic",
+      "government",
+      "authority",
+      "universal early childhood education and care",
+      "universal child care"
+    ],
+    "examples": [
+      {
+        "label": "Relevant",
+        "text": "The impact of a health promotion program on toddlers´ socio-emotional development: a cluster randomized study. Abstract Background The first three years of life are a critical period for the development of socio-emotional skills, highlighting the importance of socio-emotional development in early childhood. This study aimed to evaluate the effectiveness of a health promotion intervention program on the socio-emotional development of children aged 12 to 42 months during the COVID-19 pandemic. Methods A total of 344 children from 15 childcare centers participated in this study, with six centers in the intervention group and nine in the control group. Childcare teachers in the intervention group received a six-month training program aimed at promoting healthy lifestyles, including topics such as diet, sleep, physical activity, and sedentary behavior. Sociodemographic and anthropometric measures were assessed at baseline, and socio-emotional development was assessed using the Bayley Scales of Infant and Toddler Development – Third Edition (Bayley-III) at baseline and post-intervention. Results Intervened children whose mothers had a lower education level demonstrated significantly higher socio-emotional development than the controlled children (B = 19.000, p = 0.028), while no significant difference was observed in children with mothers from higher education levels. Conclusion These findings suggest that intervention programs for childcare teachers can be effective in promoting healthy socio-emotional development in children from socioeconomically disadvantaged backgrounds. Future intervention programs should consider tailoring their approaches to target disadvantaged populations. Trial registration This cluster randomized controlled trial was registered in the Clinical Trials database/platform on 09/09/2019 (number NCT04082247)."
+      },
+      {
+        "label": "Relevant",
+        "text": "Efficient child care subsidies: any need for cash for care?. Abstract We model choices between caring for an infant at home or through some market provision of child care. Maternal labor supply necessitates child care purchased in the market. Households are distinguished along three dimensions: (i) exogenous income, (ii) the wage rate of the primary care giver and (iii) the quality which the primary caregiver provides for child care. The market can supply child care at varying qualities and in continuous amounts. All households value consumption and child care quality. Sources of market failure comprise taxation of labor and productivity impacts on child care not fully taken account of by parents. Optimal corrective subsidies are highly correlated with taxed paid by secondary earners. In a second-best environment, typical policies of subsidizing child care will also distort quality choices. Employing “no-use subsidies” mitigates such distortions and can also counter excessive levels of subsidies for external child care."
+      },
+      {
+        "label": "Not relevant",
+        "text": "Smart education systems and methods configured for changes in the market for infant institutions. The present invention relates to a smart education system configured to meet changes in the market for early childhood institutions, and includes a server unit that provides various learning contents, teacher-related, parent-related, and educational-related materials as online and offline services; A pad unit possessed by a teacher and configured to download, store, and manage the learning content provided by the server unit through online; A display unit connected to the pad unit by wire or wirelessly and outputting the learning content downloaded from the pad unit; And an application unit in which the learning content is implemented in an application form so that the learning content corresponding to a touch by the pad unit is output to the pad unit or the display unit, or simultaneously output to the pad unit and the display unit. It is characterized by technical features that include, and can improve the level of early childhood education by providing online/offline education for kindergartens and daycare centers of early childhood institutions in accordance with changes in cost, structure, and environment in the market of early childhood institutions. , Due to the form of application, the teaching method is formed by interaction between the teacher and the toddler, rather than a one-sided teaching method, so that the teaching can be freely conducted, thereby improving the educational effect."
+      }
+    ]
+  },
+  "labour_market": {
+    "name": "Labour market",
+    "type": "Society",
+    "subtype": "Labour market",
+    "description": "Text that is about aspects related to labour market and workforce, including topics such as teacher workforce, teacher compensation and retention, as well as parental work leave, parents' return to work after having a child, and gender pay gaps resulting from parental leave. DO NOT INCLUDE text that is simply about general workforce issues or labour market policy in other areas (eg, health policy) without a direct application to child development.",
+    "keywords": [
+      "parent employment",
+      "employment",
+      "work life balance",
+      "workfoce",
+      "pay gap",
+      "parental leave"
+    ],
+    "filtering_keywords": [
+      " labor ",
+      " labour ",
+      "employ",
+      " pay ",
+      " job ",
+      " wage ",
+      " worker ",
+      "employment",
+      "workforce",
+      "compensation",
+      "salar"
+    ],
+    "examples": [
+      {
+        "label": "Relevant",
+        "text": "Effect of Universal Child Care Subsidy on Child-Rearing Costs by Mothers’ Working Status in South Korea. This study aims to investigate the effects of universal child care and early education subsidy on child-rearing cost burdens, and examine the extent to which this association differs depending on mothers’ working status in South Korea. Using the Korea Welfare Panel Study (KOWEPS) and a fixed effects panel model, we found that child care and early education subsidy usage is associated with a reduction of total child-rearing costs, but not much out-of-pocket child care expenses. Furthermore, the introduction of universal child care and early education subsidy is likely to benefit households with part-time working mothers in terms of reducing total child-rearing cost burden, but it increased out-of-pocket child care cost in households where mothers were not working. The child care and early education subsidy achieved the aim of reducing household financial burden associated with parenthood, and enabling parents to combine their paid work with parenthood—in particular for mothers with part-time jobs. However, full-time working mothers are limited in enjoying the benefits of the subsidy. Our findings regarding South Korea’s child care and early education system provide important insights for emerging and developing economies that are increasingly showing an interest in instituting new child care and early education systems."
+      },
+      {
+        "label": "Relevant",
+        "text": "Paying for Childcare to Work? Evaluating the Role of Policy in Affordable Care and Child Poverty. Unless parents have a family member at home who can provide care, most will need childcare to work and achieve career mobility. Existing policies to help families with child-care costs in the United States include means-tested subsidies and nonrefundable tax credits. Many low-income families are eligible for the means-tested benefits, yet receipt rates are low. These families are generally excluded from the Child and Dependent Care Tax Credit (CDCTC) because it is nonrefundable. We analyze two approaches to reduce child-care expenses for low-income working families: (1) making the CDCTC fully refundable and increasing its generosity and (2) providing subsidies to ensure families spend no more than the Department of Health and Human Services affordability guidelines suggest. We evaluate how much such policies would alleviate child poverty through reducing child-care costs and through increasing earnings by enabling parents to work more."
+      },
+      {
+        "label": "Not relevant",
+        "text": "Science starts early: A literature review examining the influence of early childhood teachers’ perceptions of gender on teaching practices. Women are underrepresented in science fields as compared to men and although much research has been dedicated to understanding this disparity, most has been conducted on older aged children. However, this excludes the youngest and arguably most impressionable group of students: preschoolers. This study reviewed the literature to investigate how early childhood teachers’ perceptions of gender influence their teaching practices. Qualitative analysis and coding of 31 articles resulted in five main categories: Teacher Perception, Curriculum, Teacher Interactions, Gender Identity, and Social Standing. Results are discussed in the context of early childhood science teaching practices to better understand the role of the teacher and gender bias in young children’s preschool science experiences and how it may impact their future science interests."
+      },
+      {
+        "label": "Not relevant",
+        "text": "Maternal time investment in caregiving activities to promote early childhood development: evidence from rural India. Introduction Intervention strategies that seek to improve early childhood development outcomes are often targeted at the primary caregivers of children, usually mothers. The interventions require mothers to assimilate new information and then act upon it by allocating sufficient physical resources and time to adopt and perform development promoting behaviours. However, women face many competing demands on their resources and time, returning to familiar habits and behaviours. In this study, we explore mothers' allocation of time for caregiving activities for children under the age of 2, nested within a cluster randomised controlled trial of a nutrition and care for development intervention in rural Haryana, India. Methods We collected quantitative maternal time use data at two time points in rural Haryana, India, using a bespoke survey instrument. Data were collected from 704 mothers when their child was 12 months old, and 603 mothers when their child was 18 months old. We tested for significant differences in time spent by mothers on different activities when children are 12 months of age vs. 18 months of age between arms as well as over time, using linear regression. As these data were collected within a randomised controlled trial, we adjusted for clusters using random effects when testing for significant differences between the two time points. Results At both time points, no statistically significant difference in maternal time use was found between arms. On average, mothers spent most of their waking time on household chores (over 6 h and 30 min) at both time points. When children were aged 12 months, approximately three and a half hours were spent on childcare activities for children under the age of 2 years. When children were 18 months old, mothers spent more time on income generating activities (30 min) than when the children were 12 years old, and on leisure (approximately 4 h and 30 min). When children were 18 months old, less time was spent on feeding/breastfeeding children (30 min less) and playing with children (15 min). However, mothers spent more time talking or reading to children at 18 months than at 12 months. Conclusion We find that within a relatively short period of time in early childhood, maternal (or caregiver) time use can change, with time allocation being diverted away from childcare activities to others. This suggests that changing maternal time allocation in resource poor households may be quite challenging, and not allow the uptake of new and/or optimal behaviours."
+      }
+    ]
+  },
+  "inequality": {
+    "name": "Inequalities",
+    "type": "Society",
+    "subtype": "Inequalities",
+    "description": "Text that is describes inequalities and their impact on disparities in child development outcomes, such as socioeconomic disparities, racial disparities, or disparities in access to services. Include also texts that describe approaches to reduce the inequalities. DO NOT INCLUDE text that is simply about general social inequalities or disparities in other areas (eg, health disparities) without a direct application to child development.",
+    "keywords": ["inequality", "inequalities", "disparities", "disparaty"],
+    "filtering_keywords": [
+      "inequality",
+      "inequalities",
+      "disparities",
+      "disparity",
+      "equity",
+      "equality",
+      "parity",
+      "socioeconomic",
+      "socio-economic",
+      "racial",
+      "access",
+      "disadvantage",
+      "poverty"
+    ],
+    "examples": [
+      {
+        "label": "Relevant",
+        "text": "Effect of Universal Child Care Subsidy on Child-Rearing Costs by Mothers’ Working Status in South Korea. This study aims to investigate the effects of universal child care and early education subsidy on child-rearing cost burdens, and examine the extent to which this association differs depending on mothers’ working status in South Korea. Using the Korea Welfare Panel Study (KOWEPS) and a fixed effects panel model, we found that child care and early education subsidy usage is associated with a reduction of total child-rearing costs, but not much out-of-pocket child care expenses. Furthermore, the introduction of universal child care and early education subsidy is likely to benefit households with part-time working mothers in terms of reducing total child-rearing cost burden, but it increased out-of-pocket child care cost in households where mothers were not working. The child care and early education subsidy achieved the aim of reducing household financial burden associated with parenthood, and enabling parents to combine their paid work with parenthood—in particular for mothers with part-time jobs. However, full-time working mothers are limited in enjoying the benefits of the subsidy. Our findings regarding South Korea’s child care and early education system provide important insights for emerging and developing economies that are increasingly showing an interest in instituting new child care and early education systems."
+      },
+      {
+        "label": "Not Relevant",
+        "text": "3D Absorbent Core Forming Equipment. The utility model relates to a 3D absorption core forming equipment. The outlet of the hopper is directly facing the polymer surface applying device, the discharge of the polymer surface applying device is directly facing the inlet of the polymer lower hopper, and the outlet of the polymer lower hopper is directly facing the negative pressure transfer. The wheel surface, below the negative pressure transfer wheel is the air bucket table, the upper transition wheel surface is in dynamic contact with the negative pressure transfer wheel surface, and the transfer wheel surface under the corrosion net of the negative pressure transfer wheel surface has the required 3D The shape and the required 3D arrangement form of the negative pressure port, the wheel surface of the lower transition wheel is in dynamic contact with the surface of the wind bucket. Advantages: First, it solves the waste phenomenon of spreading and single core material formed by the free fall of polymer resin on the non-woven fabric; second, it makes the core form a combination of multiple 3D cores in the desired shape , not only saves polymer resin, but also forms a support for the human body, airflow, and fluid channels, solving the problems of poor air permeability, humidity, and stuffiness faced by women&#39;s physiological care and baby care."
+      },
+      {
+        "label": "Not relevant",
+        "text": "Children’s physical activity level and sedentary behavior in Norwegian early childhood education and care: effects of a staff-led cluster-randomized controlled trial. Abstract Background: A growing body of evidence suggests that children’s physical activity (PA) level in early childhood education and care (ECEC) settings is insufficient. Since most children attend ECEC settings for many hours on most days of the week and these institutions reach children across the socioeconomic spectrum, ECEC settings may serve as an ideal avenue for increasing PA level, reducing sedentary time and enhancing the overall health of young children. This paper investigates the effectiveness of the “Active Kindergarten – Active Children” study in increasing children’s PA level and reducing sedentary time within the ECEC setting. Methods: Accelerometers were used to assess PA and sedentary time. A total of 116 three- to four-year-olds took part in a randomized controlled trial in 11 ECEC settings. The participants were cluster-randomized, by ECEC setting, to either a 12-week staff-led and expert-supported intervention or a waiting-list control group. Results: The intervention group increased time spent in moderate- and vigorous-intensity PA by 10 min/day (95% CI = 3, 18; P=0.01), took 1909 more steps per day (95% CI = 1130, 2688; P˂0.01) and reduced sedentary time by 14 min/day (95% CI = -27, -1; P=0.04) compared to the control group. The intervention group was 2.4 times more likely (95% CI = 1.05, 5.7; P = 0.04) to meet the PA recommendations than the control group at follow-up. Conclusions: Our results show that a flexible staff-led and expert-supported multi-component PA intervention can increase the total PA level and moderate- and vigorous-intensity PA and reduce sedentary time in three- to four-year-old children during their stay in ECEC settings."
+      }
+    ]
+  },
+  "nontech": {
+    "name": "Non-tech assessments",
+    "type": "General",
+    "subtype": "Non-tech assessments",
+    "description": "Text that is describes low-tech or non-tech methods for assessing child development, such as questionnaires, surveys, screening charts, or diagnostic tools. DO NOT INCLUDE text that is about high-tech, artificial intelligence or other sophisticated digital methods for assessing child development. DO NOT INCLUDE the use of low-tech methods for other purposes besides assessment of child development.",
+    "keywords": ["screening chart", "questionnaire", "survey", "diagnostic"],
+    "filtering_keywords": [
+      "assess",
+      "screen",
+      "test",
+      "asq",
+      "survey",
+      "questionnaire"
+    ],
+    "examples": [
+      {
+        "label": "Relevant",
+        "text": "A developmental screening test tool for children aged 0-6 and using method thereof. The invention discloses a developmental screening test tool for children aged 0-6, including a set of standard test tools (standard square cloth, red pom-pom, metal bell with handle, standard size red leather ball, sugar pellet, shaking drum, red square wood, mug with handle, clear glass vial, picture sheet, pencil, button material, beading material, jigsaw puzzle, puzzle piece rectangle material, test paper with incomplete portrait color, standard tennis ball, test paper with maze, absurd pictures, skipping rope with wooden handle); a test sheet; and a set of standardized test methods."
+      },
+      {
+        "label": "Relevant",
+        "text": "Combined screening of early childhood development, hearing and vision by community health workers using mHealth tools in a low-income community. Children in low-income communities are at risk for developmental delays and sensory losses. mHealth screening tools enable community health workers to detect developmental delays and sensory losses. This study aims to describe a combined (developmental and sensory – hearing and vision) mHealth-supported screening programme conducted by community healthcare workers with children aged four-six years (n = 63) at early childhood development centres in a low-income community. Early childhood development practitioners (n = 5) assisted with developmental screening. Referral rates were 30% (n = 19) for development, 6% (n = 4) for hearing and 5% (n = 3) for vision. The average screening time for combined screenings was 11.72 min (SD 3.45 min). Post screening questionnaires probing participants' perspectives and experiences of the combined screening were positive. A combined mHealth-supported screening programme conducted by community health workers and early childhood development practitioners appears viable, supporting early detection of developmental delays and sensory losses in children from low-income communities."
+      },
+      {
+        "label": "Not relevant",
+        "text": "Application of Augmented Reality Technology in Children’s Picture Books Based on Educational Psychology. To cultivate children's imagination, observation, thinking ability, and aesthetic consciousness, the questionnaire survey is adopted to analyze the design strategies and principles of children's picture books based on augmented reality (AR). Primarily, the related concepts and theories are expounded for the research content. Children in preschool aged 4-5 years are invited as primary participants in this work, and the psychological characteristics of the invited children are analyzed in depth. Then, a study is carried out on the existing AR children's picture books. The problems existing in the design of AR children's picture books are found, and then, related solutions are put forward based on the results of the questionnaire survey. Besides, a design is made on the strategies and interactive design principles of AR children's picture books on mobile terminals that are more in line with the needs of children. The results show that 41.07% of parents do not understand AR technology, and 37.5% of preschool children indicate that they do not operate mobile devices independently. However, they need the assistance of parents to use this kind of picture book. A total of 44.64% of parents believe that the main problem of AR picture books in the current market is the lack of interesting interaction. Given the above problems, five principles are proposed for the design of AR children's picture books based on mobile terminals, namely, easy operation principle, interesting principle, guiding principle, timely feedback principle, and safety principle. A set of universally applicable design methods are proposed for AR children's picture books based on mobile terminals, which provides certain theoretical guidance for the development of related types of products."
+      }
+    ]
+  },
+  "games": {
+    "name": "Games",
+    "type": "General",
+    "subtype": "Games",
+    "description": "Text that is about using digital or non-digital games or gamification to support or measure child development. This could include games that are used for educational purposes, for cognitive development, or for social-emotional development.  DO NOT INCLUDE text that is simply about general video games or games for entertainment purposes.",
+    "keywords": ["game", "play", "gamification"],
+    "filtering_keywords": ["game", "play", "gamification"],
+    "examples": [
+      {
+        "label": "Relevant",
+        "text": "Analysis and Design of Game-Based Learning Applications for Early Childhood Using Children-Centered Design Method. Early childhood education is a very important stage to prepare early childhood to enter a higher level in basic education. Therefore, appropriate learning methods are needed so that children can be motivated to learn, because early childhood requires interactive and fun learning methods by playing. Based on observations and interviews conducted, early childhood education still uses conventional learning methods. The conventional learning method makes children feel bored while learning and less motivated to learn, especially recognizing the letters of the alphabet and numbers. Game-based learning is a learning method that is an innovation for early childhood learning because it can motivate children to be more enthusiastic in learning. According to existing research, mobile game-based learning is very effective in motivating early childhood learning. Children-centered design is used as a research method because this method places children as the main object of research. Quality in Use Integrated Measurement is used as a usability testing method. The user experience obtained from the results of the analysis will be implemented into a game-based learning application that suits the user's needs. The results of the tests carried out showed results of 87% for low personas, 91% for mid persona, and 95% for high persona."
+      },
+      {
+        "label": "Relevant",
+        "text": "Early Education Robot for Preschool Children. With the development of society, the rise of education level and the improvement of quality of life, young parents are increasingly willing to provide more abundant and comprehensive preschool education for their children, and preschool education products have gradually become a new trend. Our team will design a children's programming robot for preschool children, to establish programming thinking for children, increase pleasure of learning, and enhance parent-child interaction space. This design adopts the methods of questionnaire survey, user interview and literature retrieval to deeply understand the pain points of children's preschool education, the development status of domestic early childhood education products, and children's preferences, so as to determine the product use process, product function structure and product packaging. The design uses on-chip sensors and priority commands combined with ergonomics and perceptual engineering. Children can play arithmetic games through the combination of the main robot and the control panel, and parents can help children learn and play through mobile application. The product have the ability to cultivate and rich preschool children's scientific way of thinking and problem-solving ability，so that children can use scientific thinking to explain the phenomena and problems in the future, and they can get all-round learning and development at last. After the usability test, the interviewees and their parents believed that the design had certain educational effect."
+      },
+      {
+        "label": "Not relevant",
+        "text": "Training equipment for coordination of preschool children. The utility model discloses a children&#39;s harmony training equipment before learning, include basketball board, regulation post and install the support frame at basketball board back, the last surrounding of basketball board is provided with a plurality of color lamps, the symmetry is provided with a plurality of frames and a plurality of display screen on the basketball board, and every display screen all is located the top of the corresponding frame in position, two projection lamps are installed to the bottom symmetry of basketball board. The utility model discloses simple structure, interesting strong, in children&#39;s harmony training process, use sound and pattern to guide jointly, make children be happy to train in the initiative to from obtaining the enjoyment."
+      }
+    ]
+  },
+  "preschool": {
+    "name": "Preschool",
+    "type": "Child care & preschool",
+    "subtype": "Preschool",
+    "description": "Text that is PRIMARILY about preschool settings, such as preschool education, preschool curriculum, preschool teachers, preschool activities as well as child minders and other formal or semi-formal childcare settings. This could include text about the design of preschool programs, the role of preschool in child development, or the impact of preschool on child outcomes. DO NOT INCLUDE text that is simply about general education or general child development, without a specific focus on preschool. DO NOT INCLUDE text that describes technologies that could be used in a preschool setting, unless the text is primarily about the preschool setting itself.",
+    "keywords": [
+      "preschool",
+      "kindergarten",
+      "pre-k",
+      "child minder",
+      "child minding"
+    ],
+    "filtering_keywords": [
+      "preschool",
+      "day care",
+      "daycare",
+      "day-care",
+      "pre-k",
+      "prek",
+      "kindergarten",
+      "childmind",
+      "child-mind",
+      "child mind",
+      "classroom",
+      "nursery",
+      "nurseries",
+      "playgroup",
+      "education and care centre",
+      "education centre",
+      "education and care center",
+      "education center",
+      "development centre",
+      "development center",
+      "child care center",
+      "child care centre",
+      "early childhood center",
+      "early childhood centre",
+      "educational setting",
+      "education settings",
+      "child care setting",
+      "childcare setting",
+      "early childhood setting"
+    ],
+    "examples": [
+      {
+        "label": "Relevant",
+        "text": "Developing a Conceptual Model for the Causal Effects of Outdoor Play in Preschools Using PLS-SEM. This study attempts to establish the causal effects of outdoor play through a conceptual model consisting of six latent constructs. Seventy Penang preschool operators took part in a questionnaire survey conducted from June to July 2021. All of the 70 respondents agreed that outdoor play is important for children’s development even though only 62 respondents implemented outdoor play yards in their preschools. Raw data from these 62 respondents were used to develop the conceptual model by PLS-SEM. Measurement models were assessed by checking the indicator reliability, internal consistency reliability, convergent validity and discriminant validity. The structural model was assessed by checking the SRMR and NFI. The measurement models are found to be acceptable with AVE &gt; 0.50 for all of the constructs and all of the 34 indicators have loadings &gt; 0.50. However, there are 16 indicators with difference between loadings &lt; 0.10, and the structural model does not have a good fit with SRMR &gt; 0.10 and NFI &lt; 0.90. Lack of discriminant validity could be remedied by removing eight indicators with difference between loadings &lt; 0.10. Model fit could be improved with larger sample size since bootstrapping with 1000 iterations yielded SRMR = 0.098 at 95% for the saturated model. Seven significant paths were found among the six constructs in the final conceptual model."
+      },
+      {
+        "label": "Not relevant",
+        "text": "The challenge of ensuring effective early years music education by non-specialists. The article reports research concerning the potential and actual benefits for young children in engaging in musical activities, whether in the home or outside, such as in community nursery settings and schools. The research literature suggests that music can support a wide range of psychological, social and physical behaviours and development. However, there is a paradox in that many teachers and teaching assistants of young children are likely to have a somewhat limited professional knowledge of how best to organise effective music education. They may also be unaware of how to maximise music’s wider benefits. One possible solution is to effect appropriately mentored professional development with experienced early years music specialists. Evidence of how such professional development can make a difference is exampled in several recent and ongoing workplace-based case studies from the UK and Australia."
+      },
+      {
+        "label": "Not Relevant",
+        "text": "A kind of preschool education cognitive matching toy box. The utility model discloses a cognitive matching toy box for preschool education for young children, which comprises a box body and a box cover. The top of the box body is rotatably connected with a box cover through a rotating shaft, and a latch is welded at the center of the top of the box cover. The inner cavity of the box body is embedded with a baffle, one side of the baffle is provided with a groove, the other side of the baffle is provided with a character plate at both vertical ends, and the bottom of the threaded rod is welded with The second bevel gear is meshed with the first bevel gear. In the present invention, through the different positions of the first electrode pieces on different grooves and the different positions of the second electrode pieces on the character board, only when the corresponding grooves and the character board are connected, the sound can be pronounced, and the children can read. Only when the connection is correct can you get sound feedback, which can improve children&#39;s learning interest, and the corresponding words and patterns are set on the text board and groove, which can help children&#39;s learning."
+      }
+    ]
+  },
+  "social_services": {
+    "name": "Social services",
+    "type": "Society",
+    "subtype": "Social services",
+    "description": "Text that is PRIMARILY about social services provided by governments, local authorities or non-profit organisations. This could include text about social services that support child development, such as child welfare services, child protection services, or services for children with disabilities. DO NOT INCLUDE text that is simply about general social services or social services in other areas (eg, health services) without a direct application to child development.",
+    "keywords": ["social service", "support program"],
+    "filtering_keywords": [
+      "service",
+      "government",
+      "public sector",
+      "authority",
+      "authorities",
+      "social care",
+      "benefit",
+      "universal credit",
+      "home visit",
+      "health visit",
+      "program",
+      "counsel"
+    ],
+    "examples": [
+      {
+        "label": "Relevant",
+        "text": "Needs for the Spatial Composition and Services of Child Care Community Centers through Mothers’ Experiences of Child Care Communities. The purpose of this study is to discuss the usage of child care community center and explore the needs for space and services through child-rearing mothers’ experiences about exchanges. For this, two focus group interviews were conducted with residents of apartments and multi-family houses (nine residents each) in Cheongju. Participants were mothers in their 30s and 40s of infants aged four years or younger. The results are as follows.: (1) Mothers had expectations about affective, informational, sociable, and instrumental aspects of exchanges among child-rearing mothers. (2) Mothers actually wanted to give and receive help, preferring to exchange help with neighbors over part-time care services. (3) Spatial needs for childcare community centers included plays, floor-seating, safety, facilities, division of areas, accessibility. (4) In relation to desired services and programs, mothers showed a strong need for affective (psychological counseling of parents, childcare counseling experts, psychological comfort of child-rearing mothers), informational (information magazines in child care community centers, parent education, father training), sociable (exchanges and self-managed activities of child-rearing mothers, Pumasi among child-rearing mothers), and instrumental (child development programs, donation and exchange of toys and books, talent donation) support. This suggested the need for a well-organized service plan based on the social support theory in order to revitalize child care communities."
+      },
+      {
+        "label": "Relevant",
+        "text": "The Impact on Service Collaboration of Co-location of Early Childhood Services in Tasmanian Child and Family Centres: An Ethnographic Study. There is a global trend towards place-based initiatives (PBIs) to break the cycle of disadvantage and promote positive child development. Co-location is a common element of these initiatives and is intended to deliver more coordinated services for families of young children. This paper examines how co-locating early childhood services (ECS) from health and education in Child and Family Centres (CFCs) has impacted collaboration between services.This ethnographic study included 130 participant observation sessions in ECS between April 2017 and December 2018 and semi-structured interviews with 45 early childhood service providers and 39 parents/carers with pre-school aged children.Service providers based in CFCs reported that co-location of services was facilitating local cooperation and collaboration between services. However, insufficient information sharing between services, prioritising client contact over collaborative practice and limited shared professional development remained barriers to collaborative practice. For parents, co-location improved access to services, but they experienced services independently of each other.Co-location of ECS in CFCs contributed to greater cooperation and collaboration between services. However, for the potential of CFCs to be fully realised there remains a need for governance that better integrates service policies, systems and processes that explicitly support collaborative practice."
+      },
+      {
+        "label": "Not relevant",
+        "text": "Earlier and Concurrent Food Insecurity Are Associated with Suboptimal Parenting in Early Childhood. Food insecurity (FI) is associated with poor health, suboptimal nutrition, and disadvantaged linguistic, social, and academic development for children. Given the prominent role that parents play in children's development, FI may be associated with parenting practices.We aimed to understand how FI and its change over time relate to parenting in early childhood.Data were from the Early Childhood Longitudinal Study-Birth Cohort: parental interviews and child assessments at 9 mo and 2, 4, and 5 y old. Dependent variables were parenting practices in years 2, 4, and 5 in parent-child interaction, discipline, rules, and routines in general and food-related settings. Stratified by gender, parenting outcomes were regressed on earlier FI and child, parent, and contextual covariates, then additionally regressed on concurrent FI, using models with full-information-maximum-likelihood and cluster control.Earlier FI was associated with harsh discipline (girls, year 5: β1 = 0.0811, P < 0.05) and frequent evening meals at a regular time (girls and boys, years 2 and 4), before adding concurrent FI. Accounting for earlier FI and covariates, concurrent FI was associated with harsh discipline (girls, years 2 and 4: β2 = 0.0489 and 0.0705, P < 0.05; boys, year 2: β2 = 0.0584, P < 0.05), rules about foods (girls, year 4), frequent evening meals as a family (girls, years 2 and 4), and frequent evening meals at a regular time (girls, years 2 and 4; boys, year 2); earlier FI remained associated with harsh discipline (girls, year 5) and frequent evening meals at a regular time (girls, years 2 and 4; boys, year 4).FI was linked with suboptimal parenting practices in structuring a general and food-related living environment, particularly for girls and by the age of 5 y."
+      }
+    ]
+  },
+  "community": {
+    "name": "Community",
+    "type": "Society",
+    "subtype": "Community",
+    "description": "Text that is PRIMARILY about community-based programs or services that support child development, such as community centers, community-based parenting programs, community-based child care, peer support, and web platforms or apps that connect caregivers with other parents. DO NOT INCLUDE text that is simply about general community programs or services that are not specifically focused on child development.",
+    "keywords": ["community", "peers", "peer support", "peer group"],
+    "filtering_keywords": [
+      "communit",
+      "peer",
+      "social network",
+      "relationships"
+    ],
+    "examples": [
+      {
+        "label": "Relevant",
+        "text": "Rethinking parental support system in daycare to improve cognitive development of early childhood. The growing number of working mothers in Indonesia has impacted on the increasing need for competent caregiver in order to optimize children’s development. The aim of this chapter is to examine the relations among parental involvement, mother-caregiver communication, caregiver-children interaction and attachment, and children’s cognitive development. This chapter is based on a study conducted at four daycare centers. The study involved 39 preschool children aged 2.5 to 6.4 years alongside their fathers and mothers as well as 16 caregivers who interact with the children daily. The results indicate that the mothers’ involvement and mother-caregiver communication, in addition to the interaction and attachment between the caregivers and the children, has positive correlation to the cognitive development of the children. The findings also indicate that parental support system should become an important factor to be developed in daycare centers for optimal cognitive development. Therefore, the development of parental support system becomes a strategic issue in early childhood education particularly in daycare centers in Indonesia. This chapter also discussed the development of the strategy to create parental support system in daycare centers."
+      },
+      {
+        "label": "Relevant",
+        "text": "Early childhood professional culture: Social networks and beliefs among pre-kindergarten educators. As efforts are made in the United States for public school districts to implement pre-kindergarten programs and centers, there is a growing need to attend to the aspects of the local context that may influence the ways that teachers and staff make sense of their work. Yet, the professional cultures in which early childhood teachers and other educators make sense of their practice are multi-faceted and not well understood. This study explores the network structures and beliefs among educators in three pre-kindergarten centers. In particular, the mentorship relationships among lead teachers, assistants, instructional coaches, and administrators were explored along with individuals’ beliefs about themselves and others. Findings indicate that early childhood mentoring networks aligned with formal role hierarchies, and were similar to networks seen in elementary school research. Trust among lead and assistant teachers and autonomy were particularly important in the pre-kindergarten settings where two individuals work together as part of a classroom teaching team, and the school serves a single grade level. Suggestions for future research expanding the work on professional culture in early childhood settings are addressed."
+      },
+      {
+        "label": "Not relevant",
+        "text": "Education management system of infant institutions for emergency situations. The present invention relates to an education management system for an early childhood institution for an emergency situation, wherein infants and teachers go to school and work at the relevant early childhood institution, and online transmission and reception are possible, so that the teacher inputs through the teacher terminal possessed by the teacher. an equalizer for transmitting scheduling information; The infant does not enroll in the corresponding infant institution, and since transmission and reception are possible online, the same scheduling information input by the teacher is received through a parent terminal possessed by the parent of the infant, and the received scheduling information is registered as the registration Non-equal part that can be uploaded while running at the same time as part; and a server unit capable of online transmission and reception with the registration unit and the non-department unit, respectively, providing various learning contents, education-related materials, and class management as an online service; It is a technological feature that includes It has the effect of minimizing the educational gap among the desired children."
+      }
+    ]
+  },
+  "inclusion": {
+    "name": "Inclusion",
+    "type": "Society",
+    "subtype": "Inclusion",
+    "description": "Text that is PRIMARILY about inclusion and diversity in child development, such as inclusive education, inclusive child care, or programs that support children with disabilities or other special needs. This could include text about the impact of inclusion on child development outcomes, strategies for promoting inclusion, or the role of inclusion in child development programs. DO NOT INCLUDE text that is simply about general diversity or inclusion in other areas (eg, workforce diversity) without a direct application to child development.",
+    "keywords": [
+      "multiculturalism",
+      "inclusion",
+      "equity",
+      "equality",
+      "diversity",
+      "ethnicity",
+      "race",
+      "racism",
+      "colonialism",
+      "decolonisation"
+    ],
+    "filtering_keywords": [
+      "multicultural",
+      "multi cultural",
+      "multi-cultural",
+      "inclus",
+      "equit",
+      "equality",
+      "ethnic",
+      "race",
+      "racial",
+      "racism",
+      "colonial",
+      "colonisation",
+      "decolon",
+      "gender"
+    ],
+    "examples": [
+      {
+        "label": "Relevant",
+        "text": "A Critical Realist Reflection on the Use of Social Media as Third Space for Rights Education in Early Childhood. The promotion and advancement of Rights Education in Early Childhood ought to be supported through the development of spaces that allow for interdisciplinary discourses among different stakeholders. The project #ChildRightsChat emerged from interactions between the authors to use a digital space to promote the advancement of an interdisciplinary and global discussion about children’s rights. A primary aim was to facilitate adult learning about the protection and promotion of children’s rights in practice. Chats in Twitter, through structured and moderated interactions, were designed to share knowledge and experiences around specific topics. The present paper presents the authors’ reflections, as moderators of #ChildRightsChat, through a critical realist analysis. The findings explore how social media can be understood as a learning environment in ‘third space’, with respect to the nature of interactions that occurred, the context as a learning space, and the voices heard in the chat. The implications of social media to include global perspectives for the advancement of rights-based practice in early childhood education and care are considered."
+      },
+      {
+        "label": "Relevant",
+        "text": "Levelling the playing field in ECEC. The provision of high-quality early childhood education and care (ECEC) is widely seen as a strategy to promote a more equitable and inclusive society due to its potential to give all children, and especially those from disadvantaged backgrounds, a strong basis for early development and well-being. This requires approaches that address the needs of the increasingly diverse populations of children participating in ECEC. A first step in this direction is to assess the prevalence of different dimensions of diversity (e.g., socio-economic disadvantage, special education needs, different first language, and refugee status) across ECEC centres, and the extent to which the quality of ECEC varies between more and less diverse centres. This working paper uses data from the TALIS Starting Strong 2018 survey to examine these questions in the nine participating countries, and to derive policy pointers to ensure that ECEC systems promote equity and inclusion in response to the diversity of children’s needs."
+      },
+      {
+        "label": "Not relevant",
+        "text": "Bringing Recycling Awareness to Children by Designing a Waste Bin with Embedded Deep Learning. Today, the biggest problem in the correct classification of waste is that people do not have the awareness of recycling. In this direction, a smart recycling box that will bring this awareness to people from childhood is an effective solution. Today, in order to raise awareness of recycling in children, activities are organized in preschool or primary school periods to develop children&#39;s love of nature and skills to protect nature within the scope of MEB education programs, and the types of objects and wastes we use in daily life are taught and the benefits of waste recycling are explained. Children are taken to waste collection/separation factories in order to show the difficulties in sorting wastes and to show through which processes the separated wastes are recovered."
+      }
+    ]
+  },
+  "mental_health": {
+    "name": "Mental health",
+    "type": "Health",
+    "subtype": "Mental health",
+    "description": "Text that is PRIMARILY about measuring or supporting mental health in the context of young children, such as mental health programs for children or parents, mental health services for children, or the impact of mental health on child development outcomes. This could include text about mental health disorders, mental health promotion, or mental health interventions for children. DO NOT INCLUDE text that is simply about general mental health or mental health in other populations without a direct application to child development.",
+    "keywords": ["well-being", "wellbeing", "mental health"],
+    "filtering_keywords": [
+      "mental health",
+      "well-being",
+      "wellbeing",
+      "resilience",
+      " stress ",
+      "anxiety",
+      "depression"
+    ],
+    "examples": [
+      {
+        "label": "Relevant",
+        "text": "Language development in children of clinically depressed mothers in remission: Early experience effects.. We compared language comprehension and production across the second year of life in children of clinically depressed mothers who later remitted with children of nondepressed mothers. Altogether, 157 mother-child dyads participated: 46 with mothers diagnosed at infant age 5 months as having major, minor, or other depressive disorders who fully remitted by 15 and 24 months and 111 with nondepressed mothers. The majority of mothers (mean [M] age = 32.8 years) were married, European American, and college educated. The groups did not differ on most sociodemographic indices, and analyses controlled for residual group differences in maternal education and child birth order. Children of early clinically depressed mothers understood fewer words at 15 months (by maternal report on the MacArthur Communicative Development Inventory [MCDI]) and 24 months (by experimenter-administered Reynell Developmental Language Scales [RDLS]) than children of nondepressed mothers. Children of nondepressed mothers increased in language comprehension from 15 to 24 months, whereas children of early clinically depressed mothers did not. Aggregating over 15 and 24 months, nondepressed mothers reported that their children expressed more words than clinically depressed mothers reported their children expressed; experimenter assessment revealed no difference between the two groups. Maternal clinical depression in the first 5 months is related to reduced language comprehension and production during the second year of life even in children whose mothers remit, indicating an early experience effect of maternal clinical depression in muting child language development. Future research should identify the mechanisms by which this early experience effect occurs to inform targeted early preventative interventions for at-risk children. (PsycInfo Database Record (c) 2021 APA, all rights reserved)."
+      },
+      {
+        "label": "Relevant",
+        "text": "Integrating evidence-based practices into early childhood mental health clinics: A dynamic approach to strengthening the resilience of children birth to five and families. This paper describes a dynamic process of workforce development, implementation, and evaluation of evidence-based practices (EBPs) within an early childhood mental health (ECMH) network serving children birth to five and their families. The key feature of an effective structure and multi-year process to train clinical service providers in evidence-based practices is the capacity building cycle: Assess, Select, Train, Evaluate. The New York City (NYC) ECMH network assessed the capacity and competencies of early childhood clinical practitioners and selected evidence-based practices and models that are: 1) appropriate for the birth to five population, 2) dyadic or family based, and 3) trauma-informed and/or strengths-based. We describe the evaluation, needs assessments, and best practices that support the effective use of evidence-based practices. It is important to flexibly respond to the needs of the community when selecting evidence-based practices, paying particular attention to equity issues. Considerations to note are that the few EBPs available for this birth to five population are costly, have a limited number of trainers, may not have a train-the-trainer model, and rarely have these EBPs been evaluated in multi-lingual or diverse U.S. communities. The success of implementing a multi-year cycle in NYC lies in having a funded training center closely linked to the workforce."
+      },
+      {
+        "label": "Not relevant",
+        "text": "Advantages of a developmental psychopathology approach to studying the antecedents of physical health. Although the field of developmental psychopathology has traditionally focused on mental health, there has been increasing interest in exploring how psychological and developmental factors are associated with physical health. I argue that the principles of developmental psychopathology may be particularly useful for understanding physical health across development. I discuss how researchers can apply the following developmental psychopathology principles to the study of physical health: 1) dimensional measurement of stress exposure, 2) the multifaceted nature of risk and resilience, 3) focus on processes and pathways, and 4) lifespan development and intergenerational effects. I provide several future directions and considerations for work in this area, many of which are consistent with the new goals of Infant and Child Development."
+      }
+    ]
+  },
+  "nutrition": {
+    "name": "Nutrition and weight",
+    "type": "Health",
+    "subtype": "Nutrition & weight",
+    "description": "Text that is PRIMARILY about nutrition, diet, or weight in the context of child development, such as the impact of nutrition on child development outcomes, nutrition programs for children, or the role of diet in child health. This could include text about the impact of malnutrition, obesity, or specific nutrients on child development outcomes. DO NOT INCLUDE text that is simply about general nutrition or weight without a direct application to child development.",
+    "keywords": [
+      "nutrition",
+      "weight",
+      "diet",
+      "breastfeeding",
+      "obesity",
+      "malnutrition"
+    ],
+    "filtering_keywords": [
+      "nutrition",
+      "weight",
+      "obesity",
+      "diet",
+      "food",
+      "calories",
+      "caloric",
+      "nutrient",
+      "nutritional",
+      "microbiome",
+      "meal",
+      "digest",
+      "feed",
+      "wean",
+      "formula",
+      "consum",
+      "eating",
+      " eat "
+    ],
+    "examples": [
+      {
+        "label": "Relevant",
+        "text": "The Role of Iron for Supporting Children’s Growth and Development. According to the World Health Organization (WHO), Iron Deficiency (ID) affects around 2 billion people worldwide. Early childhood ID has been associated with permanent cognitive deficits associated with CNS structural, metabolic impairment, growth retardation, impaired immune response, psychological abnormalities, and behavioral delays. This literature review will focus on the important role of iron in child growth and development.&#x0D; Iron is necessary for various cellular processes in the growing brain especially when it comes to memory and learning. Children with early ID show cognitive deficits that persist; however, prompt iron treatment soothes the problem. A chronic ID group reported substantially lower scores of vocabularies, ambient sound perception, and motor measurements in a recent study relative to infants with normal nutritional iron status at 6 months and 14-18 months. Children's iron requirement differentiates based on individual age. The daily iron requirement for one- to three-year-old children is 7 mg. Some risk factors of infants and toddlers in developing ID are insufficient food intake, poor bioavailability, reduced absorption, increase demand, increase losses, cow’s milk enteropathy hookworm infection, and maternal gestation.&#x0D; Iron plays an important role in promoting children's growth and development. Physical health and nutrition are important in the first two years of life. Children who are unable to achieve iron adequacy will possibly show permanent cognitive deficit and impaired motor growth. Thus, iron supplementation may only be successful in early prescription after diagnosing iron deficiency."
+      },
+      {
+        "label": "Relevant",
+        "text": "Method of improving visual processing, visual acuity, or both by administering compositions comprising RRR-alpha-tocopherol to infants. Methods for improving the visual processing of a healthy infant by administering a composition comprising RRR-alpha-tocopherol to the infant are disclosed. Methods for improving the visual acuity of a healthy infant by administering a composition comprising RRR-alpha-tocopherol to the infant are also disclosed. Methods for improving the development of the visual processing, visual acuity, or both, of an infant by administering a composition comprising RRR-alpha-tocopherol to the infant are also disclosed."
+      },
+      {
+        "label": "Not relevant",
+        "text": "A kind of baby care cream and preparation method thereof. The invention discloses an infant care ointment and a preparation method thereof, belonging to the field of child care. An infant care ointment and a preparation method thereof comprise an antibacterial composition A, a moisturizing composition B, an antipruritic composition C and a Conventional composition D, the bacteriostatic composition A includes comfrey, white fresh skin, cnidium, terrestrial vitex, borneol and Sophora flavescens, and the moisturizing composition B includes olive oil, nut extract, flax Seed oil, can be treated by applying baby care cream on baby&#39;s skin, bacteriostatic composition A and antipruritic composition C to treat diseased skin, relieve baby&#39;s pain, moisturizing composition B and conventional composition D It protects normal skin, protects baby&#39;s skin, and effectively avoids the occurrence of lesions, and the baby care cream is made of plant extracts, which is safe and mild, conducive to the absorption of baby&#39;s skin, can be used for a long time, and has good protection effect."
+      }
+    ]
+  },
+  "oral": {
+    "name": "Oral health",
+    "type": "Health",
+    "subtype": "Oral health",
+    "description": "Text that is PRIMARILY about oral health, dental care, or dental hygiene in the context of child development, such as the impact of oral health on child development outcomes, oral health programs for children, or the role of dental care in child health. This could include text about the impact of oral health on child development outcomes. DO NOT INCLUDE text that is simply about food, or about general oral health or dental care without a direct application to young children.",
+    "keywords": [
+      "oral health",
+      "dental care",
+      "dental hygiene",
+      "dental",
+      "oral"
+    ],
+    "filtering_keywords": [
+      "oral",
+      "dental",
+      "teeth",
+      "tooth",
+      "mouth",
+      "caries"
+    ],
+    "examples": [
+      {
+        "label": "Relevant",
+        "text": "Oral health behavior during early childhood in children with major congenital heart defects. Good oral health in children with congenital heart defect (CHD) is important.To assess oral health behavior during early childhood in children with CHD in comparison with children with no known systemic conditions and to explore parental oral health behavior associated with children's behavior.Seventy of all 89 children born in Finland between April 1, 2017, and March 31, 2020, with (a) major CHD potentially included in the criteria of endocarditis prophylaxis or (b) any CHD with surgical repair combined with a chromosomal syndrome, and a comparison group of 87 children with no known systemic conditions were recruited. Thirty-five children with CHD were randomized to usual care (no intensified counseling) and were compared with 87 matched comparison children by a parental questionnaire assessing child and parental oral health behavior at child age at 24 months.Toothbrushing twice a day (p = .008) and the use of fluoride toothpaste twice a day (p = .059) were less common in children with CHD than in children in the comparison group. Nonwater drinks between meals was more common among children in the CHD group than in the comparison group (p = .015).Children with major CHD experience poorer oral health behavior in comparison with children with no known systemic conditions during early childhood."
+      },
+      {
+        "label": "Relevant",
+        "text": "The Effect of the Treatment of Severe Early Childhood Caries on Growth-Development and Quality of Life. Purpose: Untreated early childhood caries (ECC) adversely affect children’s quality of life. Our aim was to evaluate the effects of ECC on growth, development, and quality of life. Design and Methods: A total of 95 children were divided into three groups: general anesthesia (GA) (n = 31), dental clinic (DC) (n = 31), and control (n = 33). ECOHIS was applied to the parents in the GA and DC groups during a pre-treatment period and also applied in the post-treatment in the first and sixth months. Height, weight, and BMI measurements of the children in the study groups were taken and recorded at the pre-treatment stage and in the post-treatment in the first and sixth months. However, for the control group, these measurements were made just at the baseline and in the sixth month. Results: Upon the treatment of ECC, the total ECOHIS score significantly decreased (p &lt; 0.001) in both groups in the following first month, whereas the scores of the children in the GA group reached a similar level to the DC group at the end of the sixth month. Following treatment, the weight and height of the children with ECC who initially had significantly lower BMI percentiles than the control group (p = 0.008) were observed to increase and, thus, they reached a similar BMI percentile value to the control group in the sixth month. Conclusions: The results of our study revealed that development and growth deficiencies in the children with ECC could be reversed rapidly by dental treatments and, thus, their quality of life would increase. The importance of treating ECC was revealed since treating ECC had positive effects both on the children’s growth and development and on the quality of life of the children and their parents."
+      },
+      {
+        "label": "Not relevant",
+        "text": "Child development beyond the nutrition-specific models: bridging the pathways via psychosocial stimulation. Background Undernutrition has severe and lasting consequences on child development. Evidently, the interventions based on the biomedical model with food and direct supplementation have failed to produce the desired outcomes for decades. In light of the established positive effects of psychosocial stimulation on developmental outcomes, we propose that the observed failures relate to not including psychosocial stimulation within the interventions. Here we test whether psychosocial stimulation mediates the association between nutritional status and motor and mental development in a large cohort from Madhya Pradesh, India. Method Using a correlational design in children below 3 years of age ( N = 275; Males = 148, Females = 127) nutritional status was measured through mid-upper arm circumference (MUAC), psychosocial stimulation was assessed with the HOME-inventory, and motor and mental development were assessed with the Developmental Assessment Scales for Indian Infants (DASII). We assessed the effectiveness of 25-week intervention model incorporating psychosocial stimulation on 95 undernourished children in experimental group and 77 in control group. Results The study found that psychosocial stimulation fully mediated the relationship between nutritional status and the motor development [Effect = 1.03, 95% C.I. (0.19, 2.04), p = 0.05] and mental development [Effect = 0.49, 95% C.I. (0.09, 1.03), p = 0.05] in children under 3 years of age. Nutritional status significantly predicted the psychosocial stimulation to the child ( R 2 = 0.77). Analyzing the effectiveness of the intervention program revealed significant reduction in the developmental delays in both the motor [ t (81) = 2.568, p = 0.012] and mental development [ t (81) = 4.506, p = 0.001] of the undernourished children. Conclusion Findings indicate that nutrition translates into positive developmental outcomes in a child only with the scaffolding effects of psychosocial stimulation primarily received from home. Integrating psychosocial stimulation activities like storytelling, play, art and crafts, puppets, travel etc. in the intervention programs designed to address undernutrition may yield rich dividends in bridging the developmental delays among undernourished children."
+      }
+    ]
+  },
+  "health": {
+    "name": "Health",
+    "type": "Health",
+    "subtype": "Health",
+    "description": "Text that is PRIMARILY about general health, healthcare, or medical care in the context of child development, such as the impact of health on child development outcomes, health programs for children, or the role of healthcare in child health. This could include text about the impact of health conditions, healthcare services, or medical treatments on child development outcomes. DO NOT INCLUDE text that is simply about general health or healthcare without a direct application to young children, and DO NOT INCLUDE text about child care products or technology without a clearly stated impact on health.",
+    "keywords": ["child health", "healthcare"],
+    "filtering_keywords": [
+      "health",
+      "disease",
+      "sick",
+      "antibiotic",
+      "fever",
+      "immun",
+      "trauma"
+    ],
+    "examples": [
+      {
+        "label": "Relevant",
+        "text": "A kind of neonatal buttocks nursing device. The utility model discloses a nursing device for the buttocks of newborns, comprising a manual spraying component, which is provided with a liquid holding pipe and a liquid driving rod embedded in the liquid holding pipe, and a spraying component is detachably connected with one end of the liquid holding pipe away from the liquid driving rod. , and a buffer member is arranged between the liquid driving rod and the end of the liquid holding pipe. By rinsing and cleaning the buttocks nursing part of the newborn, the buttock nursing device can solve the disadvantages of the past clinically relying solely on wet paper towels and cannot completely remove the residual substances in the stool of the infant, resulting in serious development of buttock redness, etc., and reduce the residual substances in the stools. Stimulation of the skin on the buttocks, helps to improve the development of buttock redness in newborns. The buffer member can effectively slow down the driving speed of the liquid driving rod to the nursing solution, thereby reducing the ejection rate of the spraying component, and finally the nursing solution can be ejected at a slower ejection speed, reducing and avoiding discomfort to children. , to improve the effectiveness of cleaning operations."
+      },
+      {
+        "label": "Relevant",
+        "text": "The Impact of COVID-19 on the Progress towards Sustainable Development Goal 4 in the Early Years: A Rapid Review. As a result of the COVID-19 pandemic, many events have been interrupted, but young child development has not. This rapid review of the literature explores some of the potential impacts of the pandemic on young children, early childhood education and care (ECEC) and Sustainable Development Goal (SDG) 4 (United Nations 2015). In times of crises, ECEC can play a critical role in keeping children, healthy and safe, while promoting the foundations for lifelong learning and wellbeing. Yet, with the closure of schools as one of the measures to control the spread of the virus, many opportunities for learning and development in these formative years will be missed. This will cause major issues especially for vulnerable children. The pandemic also has long-lasting impacts on child development, lifelong learning opportunities, as well as economic and human capital. It also has implications on the progress towards SDG 4 (United Nations 2015), which had already fallen behind before the crisis. While it is impossible to say at this point how long the crisis will last, if school closure and the COVID-19 pandemic were to last into the next academic year, there will be enormous losses for young children, with implications for human and economic capital."
+      },
+      {
+        "label": "Not relevant",
+        "text": "A kind of composition with soothing and moisturizing effect and its preparation method and application. The present application discloses a composition with a soothing and moisturizing effect, and a preparation method and application thereof. The composition provided in the present application is obtained by symbiotic fermentation of Dendrobium officinale, Amomum, pomelo peel and jasmine. The composition provided in the present application has the functions of anti-oxidation, soothing and moisturizing, the composition is mild and non-irritating, and is suitable for use in child care products."
+      }
+    ]
+  },
+  "protection": {
+    "name": "Child protection",
+    "type": "Health",
+    "subtype": "Child protection",
+    "description": "Text that is PRIMARILY about child protection, safeguarding, or abuse in the context of child development, such as child protection programs, child safeguarding policies, the impact of abuse on child development outcomes, and approaches to create safe technologies for children. This could include text about the impact of child protection policies, child abuse prevention programs, or child safeguarding practices on child development outcomes. DO NOT INCLUDE text that is simply about general safety or security without a direct application to child development.",
+    "keywords": ["child protection", "safeguarding", "abuse"],
+    "filtering_keywords": [
+      "protect",
+      "safeguard",
+      "abuse",
+      "safe",
+      "violent",
+      "violence",
+      "neglect",
+      "maltreatment",
+      "griev",
+      "adversity",
+      "homeless",
+      "drug",
+      "injury",
+      "injuries",
+      "secure",
+      "security",
+      "refugee"
+    ],
+    "examples": [
+      {
+        "label": "Relevant",
+        "text": "Method, system and computer-readable storage medium for preventing children from getting lost. The invention discloses a child prevention processing method, system and computer-readable storage medium. By acquiring child status information, it is then judged whether the child status information satisfies a preset condition. Lost risk score, and finally according to the child lost risk score, determine the alert level, and execute the response operation corresponding to the alert level, wherein the child status information includes at least one of the child&#39;s personal status information, child emotional information, and child action behavior information, which can Effectively reduce the risk of children getting lost and increase the chances of finding lost children. For example, when the risk of losing children is low, use warning lights to warn nearby adults or play nursery rhymes and cartoons to attract children&#39;s attention, so as to prevent children from running around at will, which can effectively prevent Lost children: When the risk of being lost is high, children can be found as early as possible, and corresponding emergency measures can be taken to increase the chance of finding lost children."
+      },
+      {
+        "label": "Relevant",
+        "text": "Breaking Down the Silos that Harm Children: A Call to Child Welfare, Domestic Violence and Family Court Professionals. The intersection of domestic violence and child maltreatment has been the subject of research and reform efforts focused on the need to integrate a better understanding of domestic violence into child welfare system practice. But a similar effort at integration of domestic violence and child maltreatment concerns has never been directed at family courts adjudicating private custody litigation. And while such courts’ responses to domestic violence have been analyzed and discussed extensively in the literature, legal discussions of custody courts’ responses to child maltreatment are few and far between. At the same time, there has been an explosion of traumatic narratives on social media and in the literature describing family courts’ refusals to keep children safe from a parent alleged to be dangerous."
+      },
+      {
+        "label": "Not relevant",
+        "text": "Reconstructing the workforce within public health protective systems: Improving resilience, retention, service responsiveness and outcomes. Unacceptably high staff turnover has plagued traditional approaches to child protection, seemingly forever. Around the globe, numerous studies, reports and inquiries have highlighted how statutory agencies, focusing on risk-oriented investigations of suspected maltreatment, experience significant issues with worker stress and its occupational and organisational consequences. Yet, promoting staff resilience within child protection agencies’ workforces has proved to be quite elusive at a systems level. While concern about child protection services often centers on the children and families agencies they intend to assist, the experiences of workers within the system provide further evidence that the system is itself failing. As a result, governments around the world are increasingly embracing system reforms that promote public health approaches focusing on early intervention and prevention to build child, family and neighbourhood support capacity and resilience and thereby reduce child maltreatment. We review the workforce issues affecting traditional child protection approaches and its impacts."
+      }
+    ]
+  },
+  "internet": {
+    "name": "Internet",
+    "type": "Technology",
+    "subtype": "Internet",
+    "description": "Text that is PRIMARILY about the internet, world wide web, digital literacy, or online safety in the context of child development, such as the impact of the internet on child development outcomes, digital literacy programs for children and caregivers, or the role of online safety in child health. This could include text about the impact of digital technologies, online safety programs, or digital literacy on child development outcomes. DO NOT INCLUDE text that is simply about general technology or the internet without a direct application to child development. DO NOT INCLUDE text that mentions internet of things (IoT).",
+    "keywords": ["internet", "online", "digital literacy"],
+    "filtering_keywords": ["internet", "online", "website", "webpage", "web"],
+    "examples": [
+      {
+        "label": "Relevant",
+        "text": "The Use of YouTube and Apps by Digital Moms to Support Early Childhood Learning. This research aims to understand the use of ICT, in this context refers to internet, gadget, including apps and websites by digital moms to support early childhood learning. This is an explorative qualitative research. Four pairs of mother and child become the research subjects. The data shows that digital moms as active users of ICT, including internet, have also introduced and used the technology to support the learning activities of their children, even though not as the main and only medium. The early childhood skills include early mathematic skill, early literacy skill, socio-emotional development, and executive function. The result shows that those all four skills can be supported by the use of ICT (internet, gadget, websites, and apps). All children in this research access YouTube as entertainment source and also learning, and one of the children accesses game to learn math. Keywords: digital moms, early childhood learning, early childhood skills, online game, YouTube"
+      },
+      {
+        "label": "Relevant",
+        "text": "Adaptation to digital parenting in a pandemic: A case study of parents within higher education. Background: Using digital tools with children during the pandemic has positive and negative impacts. However, we must investigate how parents with higher education qualifications best apply digital parenting.Aim: The aim of this article was to explore the practice of digital parenting with parents with higher education backgrounds, the digital tools used and the parents’ motivation during the pandemic.Setting: This research was conducted with parents who work as university lecturers in Banjarmasin, South Kalimantan, Indonesia.Methods: This study involved 27 lecturers with children in early childhood education. Data were collected using structured interview techniques and analysed using presentation, reduction and verification techniques. The validity of the data was ensured through the triangulation of sources and the extension of the research time.Results: The results show that applying restrictive mediation through various regulations in using smartphones coupled with authoritative parenting is the leading choice for parents. During the pandemic, parents give children more freedom and time to use smartphones; therefore, they have to adjust their parenting patterns to counteract the negative impacts caused by these digital devices. However, the lack of parenting support, many work schedules and limited interaction time with children can affect this parenting style.Conclusion: Parents can implement a successful digital parenting transition during a pandemic. Support, motivation, communication, supervision, rules and restrictions imposed on children to continue to use smartphones according to their age are important factors to ensure parenting success in the digital era."
+      },
+      {
+        "label": "Not relevant",
+        "text": "Establishment of Childhood's Discipline Characters in a Clean and Healthy Life Behavior in The Pandemic Covid-19. Clean and healthy living behavior is a big challenge in early childhood education, especially during the Clean and healthy living behavior is a big challenge in early childhood education, especially during the covid 19 pandemic. One of the primary keys, in this case, is the disciplined character of children. This study aims to analyze the character of children's discipline in implementing Clean and Healthy Life Behavior during the Covid-19 Pandemic. This research is a type of qualitative research with a descriptive approach. Data analysis was carried out by systematically analyzing data obtained from interviews, field notes, and other materials so that they were quickly accessible and informed to others. The results showed that children's discipline in implementing Clean and Healthy Behavior (PHBS) during the Covid-19 pandemic was optimal. It showed the character of the following actions: using masks or face shields, hand washing discipline, and discipline in the application. From social distancing, discipline in activities, discipline in consuming healthy food, and discipline in maintaining environmental cleanliness. Then the factors that influence the disciplined character of children in implementing clean and healthy living behavior during the Covid-19 pandemic consist of internal factors in the form of habits and heredity and external factors in the form of education and environmental factors."
+      }
+    ]
+  },
+  "wearables": {
+    "name": "Wearables",
+    "type": "Technology",
+    "subtype": "Immersive tech",
+    "description": "Text that is PRIMARILY about wearable technology, smart watches, or other wearable devices in the context of child development, such as the impact of wearables on child development outcomes, wearable technology programs for children, or the role of wearables in child health. This could include text about the impact of wearable technology, wearable technology programs, or wearable devices on child development outcomes. DO NOT INCLUDE text that is simply about general technology, clothes or wearables without a direct application to child development.",
+    "keywords": ["wearable", "wearable", "smart watch"],
+    "filtering_keywords": ["wearable", "internet of things", " iot ", "wrist"],
+    "examples": [
+      {
+        "label": "Relevant",
+        "text": "Internet of things kangaroo nursing baby care system and application method. The invention discloses an Internet of Things kangaroo nursing infant care system and an application method, which can provide 24-hour uninterrupted kangaroo nursing for premature infants and help premature infants recover faster. In the incubator, the fixed pillow can keep the premature baby in a suitable sleeping position and provide a feeling of support. During kangaroo care, the system records the mother&#39;s heart rate and the blanket absorbs the mother&#39;s scent. When the baby is placed back in the incubator, he can continue to hear and smell his mother&#39;s heartbeat. Establish a data upload, management, training and application closed loop based on the Internet of Things. It consists of device side, edge gateway and cloud application. The device side is responsible for heartbeat collection, data upload and execution of heartbeat simulation. The edge gateway is responsible for summarizing the data of the devices and uploading them to the cloud for records, and undertaking the heartbeat simulation model sent by the cloud to update different devices. Cloud applications are responsible for collecting data, analyzing data and forming corresponding data-action models."
+      },
+      {
+        "label": "Relevant",
+        "text": "Sensing and Artificial Intelligent Maternal-Infant Health Care Systems: A Review. Currently, information and communication technology (ICT) allows health institutions to reach disadvantaged groups in rural areas using sensing and artificial intelligence (AI) technologies. Applications of these technologies are even more essential for maternal and infant health, since maternal and infant health is vital for a healthy society. Over the last few years, researchers have delved into sensing and artificially intelligent healthcare systems for maternal and infant health. Sensors are exploited to gauge health parameters, and machine learning techniques are investigated to predict the health conditions of patients to assist medical practitioners. Since these healthcare systems deal with large amounts of data, significant development is also noted in the computing platforms. The relevant literature reports the potential impact of ICT-enabled systems for improving maternal and infant health. This article reviews wearable sensors and AI algorithms based on existing systems designed to predict the risk factors during and after pregnancy for both mothers and infants. This review covers sensors and AI algorithms used in these systems and analyzes each approach with its features, outcomes, and novel aspects in chronological order. It also includes discussion on datasets used and extends challenges as well as future work directions for researchers."
+      },
+      {
+        "label": "Not relevant",
+        "text": "Intelligence baby monitoring device that accompanies. The utility model aims to provide an intelligent infant accompanying and caring monitoring device which comprises a bottom plate, a swinging mechanism, a swinging bed and a transparent protective frame, wherein the bottom plate is provided with a swinging hole; the bottom plate is provided with a swing mechanism; the shaking table is arranged on the swinging mechanism and can swing under the driving of the swinging mechanism; the top of one side of shaking table be equipped with transparent protecting frame, transparent protecting frame in be equipped with atmosphere lamp and music player. And a touch alarm is arranged on the edge of the top of the shaking table. The baby care device has reasonable structural design, can automatically sleep the baby through the swinging mechanism, can better sooth the baby emotion through the atmosphere lamp and the music player, and has good application prospect."
+      }
+    ]
+  }
+}

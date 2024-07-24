@@ -14,8 +14,15 @@ from discovery_child_development.utils import openalex_utils
 
 API_ROOT = config["openalex_keywords_api_root"]
 S3_PATH = "metaflow/openalex_keyword_search"
-YEARS = config["openalex_years"]
+# YEARS = config["openalex_years"]
+YEARS = list(range(2017, 2024))
 KEYWORDS = config["openalex_keywords"]
+
+TECH_KEYWORDS = '("chatgpt" OR "income" OR "early childhood education" OR "artificial intelligence" OR "assess" OR "assessment" OR "augmented reality" OR "autism" OR "behaviour" OR "behavior" OR "development" OR "eye tracking" OR "genetics" OR "income" OR "learning" OR "learning environment" OR "monitor" OR "psychotherapy" OR "randomised controlled trials" OR "robotics" OR "social media" OR "social services" OR "special need" OR "technology" OR "virtual reality" OR "wearable" OR "wearables" OR "app" OR "apps" OR "mobile" OR "math" OR "maths" OR "literacy" OR "reading" OR "read" OR "language" OR "communication" OR "machine learning" OR "deep learning" OR "generative ai" OR "speech")'
+CHILD_KEYWORDS = '("child" OR "infant" OR "baby" OR "prenatal" OR "pregnancy" OR "toddler" OR "family" OR "parent" OR "pupil" OR "children" OR "babies" OR "toddlers" OR "families" OR "parents" OR "pupils")'
+QUERY = f"https://api.openalex.org/works?search=(abstract:{CHILD_KEYWORDS} AND abstract:{TECH_KEYWORDS}) OR (title:{CHILD_KEYWORDS} AND title:{TECH_KEYWORDS})"
+QUERIES = [f"{QUERY}&filter=publication_year:{year},type:article" for year in YEARS]
+
 
 # Output path
 timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -66,15 +73,16 @@ class OpenAlexFlow(FlowSpec):
     def generate_api_calls(self):
         """Generates all API calls, if test, just one page"""
         # If production, generate all pages
-        if self.production:
-            keyword_list = KEYWORDS
-            year_list = YEARS
-        else:
-            keyword_list = KEYWORDS[:1]
-            year_list = YEARS[:1]
-        self.merged = openalex_utils.generate_keyword_queries(
-            API_ROOT, keyword_list, year_list
-        )
+        # if self.production:
+        #     keyword_list = KEYWORDS
+        #     year_list = YEARS
+        # else:
+        #     keyword_list = KEYWORDS[:1]
+        #     year_list = YEARS[:1]
+        # self.merged = openalex_utils.generate_keyword_queries(
+        #     API_ROOT, keyword_list, year_list
+        # )
+        self.merged = QUERIES
         print(len(self.merged))
         self.next(self.retrieve_data, foreach="merged")
 
@@ -108,11 +116,15 @@ class OpenAlexFlow(FlowSpec):
     def join(self, inputs):
         """Join all the outputs from the parallel steps"""
         all_outputs = []
-        for input in inputs:
-            all_outputs.extend(input.outputs)
+        for i, input in enumerate(inputs):
+            # all_outputs.extend(input.outputs)
+            # save the input list locally as a json file
+            data = json.dumps(input.outputs).encode("utf-8")
+            with open(f"output_{i}.json", "wb") as f:
+                f.write(data)
 
         # Save all outputs to a single JSON file
-        self.save_all_outputs_to_s3(all_outputs)
+        # self.save_all_outputs_to_s3(all_outputs)
         self.next(self.end)
 
     def save_all_outputs_to_s3(self, all_outputs):
@@ -133,9 +145,10 @@ class OpenAlexFlow(FlowSpec):
             )
         else:
             keywords_to_save = KEYWORDS
-            apis_to_save = openalex_utils.generate_keyword_queries(
-                API_ROOT, KEYWORDS, YEARS
-            )
+            # apis_to_save = openalex_utils.generate_keyword_queries(
+            #     API_ROOT, KEYWORDS, YEARS
+            # )
+            apis_to_save = QUERIES
 
         openalex_utils.save_keywords_to_s3(
             keywords_to_save, out_path, timestamp, "keywords"

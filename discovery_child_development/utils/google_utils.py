@@ -148,7 +148,7 @@ def create_patents_query(search_terms: List[str]) -> str:
         WHERE
             (({combined_conditions_title})
             OR ({combined_conditions_abstract}))
-            AND ((pub.grant_date BETWEEN 20190101 AND 20231231) OR (pub.filing_date BETWEEN 20190101 AND 20231231))
+            AND ((pub.grant_date BETWEEN 20130101 AND 20241231) OR (pub.filing_date BETWEEN 20130101 AND 20241231))
     )
 
     SELECT
