@@ -158,10 +158,11 @@ def load_patents_data():
     )
 
 
-def get_baseline_patents():
+def get_baseline_patents(df: pd.DataFrame = None):
+    if df is None:
+        df = pd.DataFrame(json.load(open("total_patents.json", "r")))
     return (
-        pd.DataFrame(json.load(open("total_patents.json", "r")))
-        .rename(columns={"total_publications": "counts", "publication_year": "year"})
+        df.rename(columns={"total_publications": "counts", "publication_year": "year"})
         .astype({"year": int, "counts": int})
         .query("year >= 2013 and year <= 2023")
     )
