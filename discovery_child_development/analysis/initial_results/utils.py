@@ -256,11 +256,9 @@ def adjust_by_uk_inflation(df, column="amount", reference_year=2019):
 
 
 def get_geographical_distribution(data_exploded_df, column="id"):
-    data_countries_df = (
-        data_exploded_df.explode("country_code")
-        .dropna(subset=["country_code"])
-        .drop_duplicates(["id"])
-    )
+    data_countries_df = data_exploded_df.dropna(
+        subset=["country_code"]
+    ).drop_duplicates(["id", "country_code"])
     country_codes = data_countries_df.country_code.unique()
 
     growth_df = []
