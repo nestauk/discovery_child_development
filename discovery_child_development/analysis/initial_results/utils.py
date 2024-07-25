@@ -264,16 +264,14 @@ def get_geographical_distribution(data_exploded_df, column="id"):
     growth_df = []
     ts_counts = []
     for country_code in country_codes:
-        country_df = data_countries_df.query("country_code == @country_code")
-        _ts_df = get_timeseries(country_df, column=column).assign(
-            country_code=country_code
-        )
+        country_df = data_countries_df.query("country_code == @country_code").drop(columns=["country_code"])
+        _ts_df = get_timeseries(country_df, column=column)
         growth_df.append(
             au.ts_magnitude_growth_(ts_df=_ts_df, year_start=2019, year_end=2023)
             .assign(country_code=country_code)
             .reset_index(drop=True)
         )
-        ts_counts.append(_ts_df)
+        ts_counts.append(_ts_df.assign(country_code=country_code))
     growth_df = pd.concat(growth_df, ignore_index=True)
     ts_counts = pd.concat(ts_counts, ignore_index=True)
     return growth_df, ts_counts
