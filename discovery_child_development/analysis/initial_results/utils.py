@@ -1,6 +1,7 @@
 import pandas as pd
 import json
 import ast
+import altair as alt
 
 from discovery_child_development.utils import plotting_utils as pu
 from discovery_child_development.utils import analysis_utils as au
@@ -44,7 +45,7 @@ def load_ukri_data():
         .drop(columns=["start", "end"])
         .merge(metadata_df[["id", "amount"]], on="id", how="left")
         .assign(amount=lambda df: df.amount / 1000)
-        .query("year >= 2013 and year <= 2023")
+        .query("year >= 2013 and year <= 2024")
     )
     return data_df
 
@@ -97,7 +98,7 @@ def load_openalex_data():
             (
                 data_df.merge(
                     metadata_df[["id", "year", "country_code"]], how="left", on="id"
-                ).query("year >= 2013 and year <= 2023")
+                ).query("year >= 2013 and year <= 2024")
             ),
             data_df_manual,
         ],
@@ -154,7 +155,7 @@ def load_patents_data():
         )
     )[["id", "year", "country_code"]]
     return data_df.merge(metadata_df, on="id", how="left").query(
-        "year >= 2013 and year <= 2023"
+        "year >= 2013 and year <= 2024"
     )
 
 
@@ -195,7 +196,7 @@ def load_crunchbase_data():
         .drop_duplicates("funding_round_id")
         .query("org_id in @cb_data_df['id'].unique()")
         .assign(year=lambda df: df.announced_on.apply(lambda x: int(x[:4])))
-        .query("year >= 2013 and year <= 2023")
+        .query("year >= 2013 and year <= 2024")
         .merge(
             cb_data_df[["id", "text", "topics"]],
             left_on="org_id",
@@ -206,6 +207,57 @@ def load_crunchbase_data():
         .assign(dataset="crunchbase")
         .assign(id=lambda df: df["funding_round_id"])
         .query("investment_type in @EARLY_STAGE_DEALS")
+        .drop("country_code", axis=1)
+        .merge(cb_country_codes, on="org_id", how="left")
+    )[
+        [
+            "id",
+            "text",
+            "dataset",
+            "topics",
+            "year",
+            "country_code",
+            "amount",
+            "investment_type",
+            "org_id",
+        ]
+    ]
+
+
+def load_crunchbase_data_all():
+    cb_data_df = pd.read_csv(
+        ENRICHED_DATA_DIR / "crunchbase_combined_labels_checked.csv"
+    )
+    # add missing companies - Byju's
+    df_extra = pd.DataFrame(
+        {
+            "id": ["15d119e6-d721-3baf-da4b-880891c0c3fd"],
+            "topics": ["mobile, literacy, numeracy, internet"],
+        }
+    )
+    cb_data_df = pd.concat([cb_data_df, df_extra], ignore_index=True)
+
+    cb_country_codes = (
+        pd.read_csv(ENRICHED_DATA_DIR / "crunchbase_country_codes.csv")
+        .drop_duplicates(subset=["id"])
+        .rename(columns={"id": "org_id"})
+    )
+    return (
+        pd.read_parquet(INPUTS_DATA_DIR / "crunchbase/funding_rounds_full.parquet")
+        .drop_duplicates("funding_round_id")
+        .query("org_id in @cb_data_df['id'].unique()")
+        .assign(year=lambda df: df.announced_on.apply(lambda x: int(x[:4])))
+        .query("year >= 2013 and year <= 2024")
+        .merge(
+            cb_data_df[["id", "text", "topics"]],
+            left_on="org_id",
+            right_on="id",
+            how="left",
+        )
+        .rename(columns={"raised_amount_gbp": "amount"})
+        .assign(dataset="crunchbase")
+        .assign(id=lambda df: df["funding_round_id"])
+        # .query("investment_type in @EARLY_STAGE_DEALS")
         .drop("country_code", axis=1)
         .merge(cb_country_codes, on="org_id", how="left")
     )[
@@ -264,7 +316,9 @@ def get_geographical_distribution(data_exploded_df, column="id"):
     growth_df = []
     ts_counts = []
     for country_code in country_codes:
-        country_df = data_countries_df.query("country_code == @country_code").drop(columns=["country_code"])
+        country_df = data_countries_df.query("country_code == @country_code").drop(
+            columns=["country_code"]
+        )
         _ts_df = get_timeseries(country_df, column=column)
         growth_df.append(
             au.ts_magnitude_growth_(ts_df=_ts_df, year_start=2019, year_end=2023)
@@ -325,6 +379,54 @@ def load_topic_data(is_crunchbase=False):
 
 
 TOPICS_DF = load_topic_data()
+
+
+def load_topic_data_with_descriptions(is_crunchbase=False):
+    topics_dict = json.load(open(PATH_TO_TOPICS, "r"))
+    topics = list(topics_dict.keys())
+
+    topics_df = []
+    for topic in topics_dict:
+        topics_df.append(
+            {
+                "topic": topic,
+                "type": topics_dict[topic]["type"],
+                "subtype": topics_dict[topic]["subtype"],
+                "name": topics_dict[topic]["name"],
+                "description": topics_dict[topic]["description"],
+            }
+        )
+    topics_df = (
+        pd.DataFrame(topics_df)
+        .sort_values(
+            [
+                "type",
+                "subtype",
+                "topic",
+            ]
+        )
+        .reset_index(drop=True)
+        .replace("Family and home", "Parenting")
+        .rename(columns={"type": "type"})
+        .replace("Data science and AI", "AI")
+    )
+    if is_crunchbase:
+        return pd.concat(
+            [
+                topics_df,
+                pd.DataFrame(
+                    {
+                        "topic": ["operations"],
+                        "type": ["Technology"],
+                        "subtype": ["Operations"],
+                        "name": ["Operations"],
+                    }
+                ),
+            ],
+            ignore_index=True,
+        )
+    else:
+        return topics_df
 
 
 def count_topic_mentions(data_df, column="topics"):
@@ -573,9 +675,6 @@ def get_counts_by_application(
         .merge(_tech_counts, on="name")
         .rename(columns={"counts": "Total"})
     )
-
-
-import altair as alt
 
 
 def get_counts_by_application_chart(

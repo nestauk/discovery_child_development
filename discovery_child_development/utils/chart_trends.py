@@ -18,7 +18,7 @@ _color_stabilising = "#94D8E4"
 _epsilon = 0.1
 # Fonts
 _font_size = 15
-_values_format =  ",.3f"
+_values_format = ",.3f"
 # Axes fine tuning
 _tickCountX = 5
 _tickCountY = 5
@@ -27,10 +27,10 @@ _circle_size = 30
 _trend_text_color = "#524940"
 _trend_text_opacity = 0.8
 _trend_font_size = _font_size
-_dormant_descr = 'Dormant: Relatively low magnitude and low growth'
-_emerging_descr = 'Emerging: Relatively low magnitude but high growth'
-_hot_descr = 'Hot: Relatively high magnitude and high growth'
-_stabilising_descr = 'Stabilising: Relatively high magnitude but low growth'
+_dormant_descr = "Dormant: Relatively low magnitude and low growth"
+_emerging_descr = "Emerging: Relatively low magnitude but high growth"
+_hot_descr = "Hot: Relatively high magnitude and high growth"
+_stabilising_descr = "Stabilising: Relatively high magnitude but low growth"
 _trend_descriptions = [_dormant_descr, _emerging_descr, _hot_descr, _stabilising_descr]
 # Dummy table
 _dummy_data = pd.DataFrame(
@@ -40,6 +40,7 @@ _dummy_data = pd.DataFrame(
         "category": ["Something", "Anything", "Nothing", "Hot stuff"],
     }
 )
+
 
 ## Functions
 def test_figure():
@@ -69,7 +70,11 @@ def test_figure():
 
 
 def gradient_background(
-    x_limit: float, y_limit: float, mid_point: int = 1, zero_point: float = _zero_point, x_min: float = 0
+    x_limit: float,
+    y_limit: float,
+    mid_point: int = 1,
+    zero_point: float = _zero_point,
+    x_min: float = 0,
 ):
     """Prepares an altair chart with a gradient background"""
     data_bottom = pd.DataFrame(
@@ -84,6 +89,7 @@ def gradient_background(
         data={
             "x": [0, x_limit],
             "y": [zero_point, zero_point],
+            "y2": [y_limit, y_limit],
         }
     )
 
@@ -91,7 +97,7 @@ def gradient_background(
         data_top,
         x_limit,
         y_limit,
-        True,
+        False,
         _color_emerging,
         _color_hot,
         mid_point,
@@ -186,11 +192,11 @@ def scatter_chart(
     height: int = 400,
     font_size: int = _font_size,
     x_min: float = 0,
-    values_format: str = _values_format
+    values_format: str = _values_format,
 ):
     """Scatter plot component of the magnitude versus growth plot"""
     scale = "log" if horizontal_log else "linear"
-    
+
     fig_points = (
         alt.Chart(data, width=width, height=height)
         .mark_circle(color="black", size=_circle_size, clip=True)
@@ -208,8 +214,10 @@ def scatter_chart(
                 scale=alt.Scale(domain=(-1, y_limit)),
             ),
             tooltip=[
-                alt.Tooltip(f"{text_column}"),                
-                alt.Tooltip("magnitude:Q", title=horizontal_values_title, format=_values_format),
+                alt.Tooltip(f"{text_column}"),
+                alt.Tooltip(
+                    "magnitude:Q", title=horizontal_values_title, format=_values_format
+                ),
                 alt.Tooltip("growth:Q", title="Growth", format=".1%"),
             ],
         )
@@ -285,114 +293,129 @@ def mangitude_vs_growth_chart(
         horizontal_log,
         width,
         height,
-        x_min = x_min,
+        x_min=x_min,
     )
     if show_trend_labels:
         return configure_trends_chart(gradient_bg + scatter + trends_labels_chart)
     else:
         return configure_trends_chart(gradient_bg + scatter)
-        
+
 
 def trends_labels(
     x_limit: float,
     y_limit: float,
-    text_color = _trend_text_color,
-    text_opacity = _trend_text_opacity,
+    text_color=_trend_text_color,
+    text_opacity=_trend_text_opacity,
     font_size=_trend_font_size,
-    x_min: float=0,
+    x_min: float = 0,
 ):
-    """ Add labels to the plot """
-    data = pd.DataFrame(data={
-        'label': ['DORMANT', 'EMERGING', 'HOT', 'STABILISING'],        
-        'x': [0, 0, x_limit, x_limit],
-        'y': [-1, y_limit, y_limit, -1],
-        'Trend': _trend_descriptions,
-    })
-    tooltip = ['Trend']
-    
+    """Add labels to the plot"""
+    data = pd.DataFrame(
+        data={
+            "label": ["DORMANT", "EMERGING", "HOT", "STABILISING"],
+            "x": [0, 0, x_limit, x_limit],
+            "y": [-1, y_limit, y_limit, -1],
+            "Trend": _trend_descriptions,
+        }
+    )
+    tooltip = ["Trend"]
+
     text_dormant = (
-        alt.Chart(data.query("label == 'DORMANT'"))
-        .mark_point()
-        .encode(
-            x='x',
-            y='y',
-            tooltip=tooltip,
+        (
+            alt.Chart(data.query("label == 'DORMANT'"))
+            .mark_point()
+            .encode(
+                x="x",
+                y="y",
+                tooltip=tooltip,
+            )
         )
-    ).mark_text(
-        align="left",
-        baseline="bottom",
-        font=pu.FONT,
-        dx=5,
-        fontSize=font_size,
-        fontStyle="bold",
-        color=text_color,
-        opacity=text_opacity,
-    ).encode(
-        text="label:N")
-    
+        .mark_text(
+            align="left",
+            baseline="bottom",
+            font=pu.FONT,
+            dx=5,
+            fontSize=font_size,
+            fontStyle="bold",
+            color=text_color,
+            opacity=text_opacity,
+        )
+        .encode(text="label:N")
+    )
+
     text_emerging = (
-        alt.Chart(data.query("label == 'EMERGING'"))
-        .mark_point()
-        .encode(
-            x='x',
-            y='y',
-            tooltip=tooltip,
+        (
+            alt.Chart(data.query("label == 'EMERGING'"))
+            .mark_point()
+            .encode(
+                x="x",
+                y="y",
+                tooltip=tooltip,
+            )
         )
-    ).mark_text(
-        align="left",
-        baseline="top",
-        font=pu.FONT,
-        dx=5,
-        dy=5,          
-        fontSize=font_size,
-        fontStyle="bold",
-        color=text_color, 
-        opacity=text_opacity,        
-    ).encode(
-        text="label:N")
+        .mark_text(
+            align="left",
+            baseline="top",
+            font=pu.FONT,
+            dx=5,
+            dy=5,
+            fontSize=font_size,
+            fontStyle="bold",
+            color=text_color,
+            opacity=text_opacity,
+        )
+        .encode(text="label:N")
+    )
 
     text_hot = (
-        alt.Chart(data.query("label == 'HOT'"))
-        .mark_point()
-        .encode(
-            x='x',
-            y='y',
-            tooltip=tooltip,            
+        (
+            alt.Chart(data.query("label == 'HOT'"))
+            .mark_point()
+            .encode(
+                x="x",
+                y="y",
+                tooltip=tooltip,
+            )
         )
-    ).mark_text(
-        align="right",
-        baseline="top",
-        font=pu.FONT,
-        dx=-5,
-        dy=5,        
-        fontSize=font_size,
-        fontStyle="bold",
-        color=text_color, 
-        opacity=text_opacity,        
-    ).encode(
-        text="label:N")   
-    
+        .mark_text(
+            align="right",
+            baseline="top",
+            font=pu.FONT,
+            dx=-5,
+            dy=5,
+            fontSize=font_size,
+            fontStyle="bold",
+            color=text_color,
+            opacity=text_opacity,
+        )
+        .encode(text="label:N")
+    )
+
     text_stabilising = (
-        alt.Chart(data.query("label == 'STABILISING'"))
-        .mark_point()
-        .encode(
-            x='x',
-            y='y',
-            tooltip=tooltip,            
+        (
+            alt.Chart(data.query("label == 'STABILISING'"))
+            .mark_point()
+            .encode(
+                x="x",
+                y="y",
+                tooltip=tooltip,
+            )
         )
-    ).mark_text(
-        align="right",
-        baseline="bottom",
-        font=pu.FONT,
-        dx=-5,
-        fontSize=font_size,
-        fontStyle="bold",
-        color=text_color, 
-        opacity=text_opacity,        
-    ).encode(
-        text="label:N")    
-    
+        .mark_text(
+            align="right",
+            baseline="bottom",
+            font=pu.FONT,
+            dx=-5,
+            fontSize=font_size,
+            fontStyle="bold",
+            color=text_color,
+            opacity=text_opacity,
+        )
+        .encode(text="label:N")
+    )
+
     return text_dormant + text_emerging + text_hot + text_stabilising
+
 
 def _estimate_trend_type(magnitude, growth, mid_point, tolerance=0.1):
     # Flags to double check trend type if ambiguous
