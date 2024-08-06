@@ -381,6 +381,54 @@ def load_topic_data(is_crunchbase=False):
 TOPICS_DF = load_topic_data()
 
 
+def load_topic_data_with_descriptions(is_crunchbase=False):
+    topics_dict = json.load(open(PATH_TO_TOPICS, "r"))
+    topics = list(topics_dict.keys())
+
+    topics_df = []
+    for topic in topics_dict:
+        topics_df.append(
+            {
+                "topic": topic,
+                "type": topics_dict[topic]["type"],
+                "subtype": topics_dict[topic]["subtype"],
+                "name": topics_dict[topic]["name"],
+                "description": topics_dict[topic]["description"],
+            }
+        )
+    topics_df = (
+        pd.DataFrame(topics_df)
+        .sort_values(
+            [
+                "type",
+                "subtype",
+                "topic",
+            ]
+        )
+        .reset_index(drop=True)
+        .replace("Family and home", "Parenting")
+        .rename(columns={"type": "type"})
+        .replace("Data science and AI", "AI")
+    )
+    if is_crunchbase:
+        return pd.concat(
+            [
+                topics_df,
+                pd.DataFrame(
+                    {
+                        "topic": ["operations"],
+                        "type": ["Technology"],
+                        "subtype": ["Operations"],
+                        "name": ["Operations"],
+                    }
+                ),
+            ],
+            ignore_index=True,
+        )
+    else:
+        return topics_df
+
+
 def count_topic_mentions(data_df, column="topics"):
     return data_df.groupby(column).agg(counts=("id", "count")).reset_index()
 
